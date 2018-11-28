@@ -2,23 +2,28 @@
 
 namespace RoussKS\FinancialYear\Interfaces;
 
-use RoussKS\FinancialYear\Exceptions\FinancialYearConfigException;
+use RoussKS\FinancialYear\Exceptions\ConfigException;
 
-interface FinancialYearAdapterInterface
+/**
+ * Interface AdapterInterface
+ *
+ * @package RoussKS\FinancialYear\Interfaces
+ */
+interface AdapterInterface
 {
     /**
      * @param  string $type
      *
      * @return void
      * 
-     * @throws FinancialYearConfigException
+     * @throws ConfigException
      */
     public function setType($type);
 
     /**
      * @return void
      *
-     * @throws FinancialYearConfigException
+     * @throws ConfigException
      */
     public function validate();
 
@@ -32,14 +37,14 @@ interface FinancialYearAdapterInterface
     /**
      * @return int
      *
-     * @throws FinancialYearConfigException
+     * @throws ConfigException
      */
     public function getDayTypePeriodId();
 
     /**
      * @return int
      *
-     * @throws FinancialYearConfigException
+     * @throws ConfigException
      */
     public function getDayTypeWeekId();
 }

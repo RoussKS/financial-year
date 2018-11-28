@@ -2,44 +2,45 @@
 
 namespace RoussKS\FinancialYear;
 
-use RoussKS\FinancialYear\Exceptions\FinancialYearConfigException;
-use RoussKS\FinancialYear\Interfaces\FinancialYearAdapterInterface;
+use RoussKS\FinancialYear\Exceptions\ConfigException;
+use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 
+/**
+ * Class FinancialYear
+ *
+ * @package RoussKS\FinancialYear
+ */
 class FinancialYear
 {
-    /** @var FinancialYearAdapterInterface  */
+    /** @var AdapterInterface  */
     public $adapter;
 
     /**
      * FinancialYear constructor.
      *
-     * @param  null|FinancialYearAdapterInterface $adapter
+     * @param  array $config = [
+     *     'adapter'   => 'string', any of the library's supported adapters
+     *     'type'      => 'string', calendar or business
+     *     'startDate' => 'date', YYYY-MM-DD format
+     *     'endDate'   => 'date', YYYY-MM-DD format
+     * ]
+     * @param  null|AdapterInterface $adapter
      *
      * @return void
      *
-     * @throws FinancialYearConfigException
+     * @throws ConfigException
      */
-    public function __construct($adapter = null)
+    public function __construct(array $config = [], AdapterInterface $adapter = null)
     {
         if ($adapter !== null) {
-
-            $implementations = class_implements($adapter);
-
-            if (!$implementations || !in_array(FinancialYearAdapterInterface::class, $implementations, true)) {
-                throw new FinancialYearConfigException('This class does not implement the FinancialYearAdapterInterface');
-            }
 
             $this->adapter = $adapter;
 
             return;
         }
-    }
 
-    /**
-     * @return FinancialYearAdapterInterface
-     */
-    public function getAdapter()
-    {
-        return $this->adapter;
+        if (!isset($config['adapter'])) {
+            throw new ConfigException('The adapter configuration key is required.');
+        }
     }
 }
