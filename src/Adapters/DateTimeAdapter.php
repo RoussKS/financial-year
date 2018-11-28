@@ -28,7 +28,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         parent::__construct($type, $startDate, $endDate);
     }
-
+    
     /**
      * @param  mixed $date
      *
