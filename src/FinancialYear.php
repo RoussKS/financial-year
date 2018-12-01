@@ -19,10 +19,10 @@ class FinancialYear
      * FinancialYear constructor.
      *
      * @param  array $config = [
-     *     'adapter'   => 'string', any of the library's supported adapters
-     *     'type'      => 'string', calendar or business
-     *     'startDate' => 'date', YYYY-MM-DD format
-     *     'endDate'   => 'date', YYYY-MM-DD format
+     *     'adapter'     => 'string', any of the library's supported adapters
+     *     'type'        => 'string', calendar or business
+     *     'fyStartDate' => 'date', ISO-8601 format or adapter's object
+     *     'fyEndDate'   => 'date', ISO-8601 format or adapter's object
      * ]
      * @param  null|AdapterInterface $adapter
      *

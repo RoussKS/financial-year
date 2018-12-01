@@ -32,8 +32,8 @@ class AdapterFactory
                 return new DateTimeAdapter(
                     new \DateTime(),
                     isset($config['type']) ? $config['type'] : null,
-                    isset($config['startDate']) ? $config['startDate'] : null,
-                    isset($config['endDate']) ? $config['endDate'] : null
+                    isset($config['fyStartDate']) ? $config['fyStartDate'] : null,
+                    isset($config['fyEndDate']) ? $config['fyEndDate'] : null
                 );
             default:
                 throw new ConfigException('Unknown adapter configuration key');

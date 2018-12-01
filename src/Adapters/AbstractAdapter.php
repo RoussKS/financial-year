@@ -2,6 +2,7 @@
 
 namespace RoussKS\FinancialYear\Adapters;
 
+use RoussKS\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 
 /**
@@ -17,67 +18,45 @@ abstract class AbstractAdapter
     protected $fy;
 
     /**
-     * @var string
+     * @var TypeEnum
      */
     protected $type;
 
     /**
-     * @var string
+     * @var mixed
      */
-    protected $startDate;
+    protected $fyStartDate;
 
-    /**
-     * @var string
+    /***
+     * @var mixed
      */
-    protected $endDate;
-
-    /**
-     * @var array
-     */
-    protected $types = ['calendar', 'business'];
+    protected $fyEndDate;
 
     /**
      * AbstractAdapter constructor.
      *
-     * @param  null|string $type
-     * @param  string|null $startDate
-     * @param  string|null $endDate
-     *
-     * @return void
-     *
-     * @throws ConfigException
-     */
-    public function __construct(string $type = null, string $startDate = null, string $endDate = null)
-    {
-        if ($type !== null) {
-            if (!\in_array($type, $this->types, true)) {
-                $this->throwConfigurationException('Invalid financial year type, only calendar & business are allowed');
-            }
-
-            $this->type = $type;
-        }
-
-        if ($startDate !== null) {
-            $this->startDate = $startDate;
-        }
-
-        if ($endDate !== null) {
-            $this->startDate = $endDate;
-        }
-    }
-
-    /**
      * @param  string $type
      *
      * @return void
      *
      * @throws ConfigException
+     * @throws \ReflectionException
      */
-    public function setType(string $type)
+    public function __construct(string $type)
     {
-        if ($type === null || !\in_array($type, $this->types, true)) {
+        if ($type === null) {
             $this->throwConfigurationException('Invalid financial year type, only calendar & business are allowed');
         }
+
+        $this->type = TypeEnum::get($type);
+    }
+
+    /**
+     * @return TypeEnum
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**
@@ -92,7 +71,7 @@ abstract class AbstractAdapter
         if (
             $this->fy === null ||
             $this->type === null ||
-            $this->startDate === null
+            $this->fyStartDate === null
         ) {
             $this->throwConfigurationException();
         }

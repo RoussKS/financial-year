@@ -2,11 +2,12 @@
 
 namespace RoussKS\FinancialYear\Adapters;
 
+use RoussKS\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 
 /**
- * Implementation of PHP's DateTime FinancialYear Adapter
+ * Implementation of PHP DateTime FinancialYear Adapter
  *
  * Class DateTimeAdapter
  *
@@ -14,11 +15,17 @@ use RoussKS\FinancialYear\Interfaces\AdapterInterface;
  */
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {
+    /** @var \DateTime */
+    protected $fyStartDate;
+
+    /** @var  \DateTime */
+    protected $fyEndDate;
+
     public function __construct(
         \DateTime $fy,
         string $type = null,
-        string $startDate = null,
-        string $endDate = null
+        string $fyStartDate = null,
+        string $fyEndDate = null
     ) {
         if ($fy === null) {
             $this->throwConfigurationException();
@@ -26,17 +33,91 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->fy = $fy;
 
-        parent::__construct($type, $startDate, $endDate);
+        if ($fyStartDate !== null) {
+            $this->setFyStartDate($fyStartDate);
+        }
+
+        if ($fyEndDate !== null) {
+            $this->setFyEndDate($fyEndDate);
+        }
+
+        parent::__construct($type);
     }
-    
+
     /**
-     * @param  mixed $date
-     *
-     * @return mixed
+     * @return \DateTime|null
      */
-    public function setStartOfTheYear($date)
+    public function getFyStartDate()
     {
-        // TODO: Implement setStartOfTheYear() method.
+        return $this->fyStartDate;
+    }
+
+    /**
+     * @param string|\DateTime $date
+     *
+     * {@inheritdoc}
+     */
+    public function setFyStartDate($date)
+    {
+        if ($date instanceof \DateTime) {
+            $this->fyStartDate = $date;
+
+            return;
+        }
+
+        $this->fyStartDate = \DateTime::createFromFormat('Y-m-d', $date);
+
+        if (!$this->fyStartDate || $this->fyStartDate === null) {
+            $this->throwConfigurationException('Invalid start date format. Needs to be ISO-8601 string or DateTime object');
+        }
+    }
+
+    /**
+     * @param string|\DateTime|null $date
+     *
+     * {@inheritdoc}
+     *
+     * @throws ConfigException
+     */
+    public function setFyEndDate($date = null, $fiftyThreeWeeks = false)
+    {
+        if ($date === null) {
+            if ($this->fyStartDate === null) {
+                $this->throwConfigurationException('Can not set end date without a start date');
+            }
+
+            // We will set end date from the start date object which should be present.
+            $this->fyEndDate = clone $this->fyStartDate;
+
+            // For calendar type, the end date is 1 year, minus 1 day after the start date.
+            if ($this->getType()->is(TypeEnum::CALENDAR())) {
+                $this->fyEndDate->modify('+1 year')
+                                ->modify('-1 day');
+
+                return;
+            }
+
+            if ($this->getType()->is(TypeEnum::BUSINESS())) {
+
+                // As a financial year would have 52 or 53 weeks, the param handles it.
+                $this->fyEndDate->modify($fiftyThreeWeeks ? '+53 week' : '+52 week')
+                                ->modify('-1 day');
+            }
+
+            return;
+        }
+
+        if ($date instanceof \DateTime) {
+            $this->fyEndDate = $date;
+
+            return;
+        }
+
+        $this->fyEndDate = \DateTime::createFromFormat('Y-m-d', $date);
+
+        if (!$this->fyEndDate || $this->fyEndDate === null) {
+            $this->throwConfigurationException('Invalid start date format. Needs to be ISO-8601 string or DateTime object');
+        }
     }
 
     /**
@@ -44,9 +125,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getDayTypePeriodId()
+    public function getPeriodId()
     {
-        // TODO: Implement getDayTypePeriodId() method.
+        // TODO: Implement getPeriodId() method.
     }
 
     /**
@@ -54,8 +135,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getDayTypeWeekId()
+    public function getBusinessWeekId()
     {
-        // TODO: Implement getDayTypeWeekId() method.
+        // TODO: Implement getBusinessWeekId() method.
     }
 }
