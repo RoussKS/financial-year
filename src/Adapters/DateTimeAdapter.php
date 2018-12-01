@@ -108,9 +108,10 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             }
 
             if ($this->getType()->is(TypeEnum::BUSINESS())) {
+                $this->setFyWeeks($fiftyThreeWeeks ? 53 : 52);
 
                 // As a financial year would have 52 or 53 weeks, the param handles it.
-                $this->fyEndDate->modify($fiftyThreeWeeks ? '+53 week' : '+52 week')
+                $this->fyEndDate->modify('+' . (string) $this->getFyWeeks() . 'week')
                                 ->modify('-1 day');
             }
 

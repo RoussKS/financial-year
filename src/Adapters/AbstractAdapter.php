@@ -33,6 +33,13 @@ abstract class AbstractAdapter
     protected $fyEndDate;
 
     /**
+     * Applicable to Business TypeEnum only.
+     *
+     * @var int
+     */
+    protected $fyWeeks;
+
+    /**
      * AbstractAdapter constructor.
      *
      * @param  string $type
@@ -57,6 +64,34 @@ abstract class AbstractAdapter
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFyWeeks()
+    {
+        return $this->fyWeeks;
+    }
+
+    /**
+     * Set the number of weeks for the Financial Year.
+     *
+     * Only applies to business TypeEnum
+     *
+     * @param int $fyWeeks
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     */
+    public function setFyWeeks(int $fyWeeks)
+    {
+        if ($this->type->isNot(TypeEnum::BUSINESS())) {
+            $this->throwConfigurationException('Can not set the financial year weeks property for non business year type');
+        }
+
+        $this->fyWeeks = $fyWeeks;
     }
 
     /**
