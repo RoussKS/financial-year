@@ -73,6 +73,16 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * @return \DateTime
+     */
+    public function getFyEndDate()
+    {
+        return $this->fyEndDate;
+    }
+
+    /**
      * @param string|\DateTime|null $date
      *
      * {@inheritdoc}
