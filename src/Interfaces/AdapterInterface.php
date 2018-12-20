@@ -61,6 +61,8 @@ interface AdapterInterface
      * @param  bool $fiftyThreeWeeks // applicable to Financial Year TypeEnum 'business'
      *
      * @return void
+     *
+     * @throws ConfigException
      */
     public function setFyEndDate($date, $fiftyThreeWeeks = false);
 
