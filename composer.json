@@ -3,7 +3,6 @@
     "description": "A simple library that accepts start of financial year date and splits into financial periods for business purposes. Accepts different interfaces to work with various time handling libraries",
     "type": "library",
     "require": {
-        "brick/date-time": "dev-master"
     },
     "autoload": {
         "RoussKS\\FinancialYear\\": "src/"
