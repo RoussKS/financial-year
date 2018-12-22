@@ -3,6 +3,7 @@
 namespace RoussKS\FinancialYear;
 
 use RoussKS\FinancialYear\Exceptions\ConfigException;
+use RoussKS\FinancialYear\Factories\AdapterFactory;
 use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 
 /**
@@ -19,28 +20,23 @@ class FinancialYear
      * FinancialYear constructor.
      *
      * @param  array $config = [
-     *     'adapter'     => 'string', any of the library's supported adapters
-     *     'type'        => 'string', calendar or business
+     *     'fyType'      => 'string', Enums\TypeEnum
      *     'fyStartDate' => 'date', ISO-8601 format or adapter's object
      *     'fyEndDate'   => 'date', ISO-8601 format or adapter's object
      * ]
-     * @param  null|AdapterInterface $adapter
+     * @param  \DateTimeInterface $adapterType
      *
      * @return void
      *
      * @throws ConfigException
      */
-    public function __construct(array $config = [], AdapterInterface $adapter = null)
-    {
-        if ($adapter !== null) {
-
-            $this->adapter = $adapter;
-
-            return;
+    public function __construct(
+        \DateTimeInterface $adapterType, array $config = []
+    ) {
+        if (!isset($config['fyType'])) {
+            throw new ConfigException('The financial year type is required.');
         }
 
-        if (!isset($config['adapter'])) {
-            throw new ConfigException('The adapter configuration key is required.');
-        }
+        $this->adapter = AdapterFactory::createAdapter($adapterType);
     }
 }

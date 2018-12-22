@@ -110,7 +110,8 @@ abstract class AbstractAdapter
         if (
             $this->fy === null ||
             $this->type === null ||
-            $this->fyStartDate === null
+            $this->fyStartDate === null ||
+            $this->fyEndDate === null
         ) {
             $this->throwConfigurationException();
         }

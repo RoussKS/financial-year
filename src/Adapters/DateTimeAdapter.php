@@ -4,6 +4,7 @@ namespace RoussKS\FinancialYear\Adapters;
 
 use RoussKS\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
+use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 
 /**
@@ -23,14 +24,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
     public function __construct(
         \DateTime $fy,
-        string $type = null,
-        string $fyStartDate = null,
-        string $fyEndDate = null
+        string $fyType,
+        string $fyStartDate,
+        string $fyEndDate = null,
+        bool $fiftyThreeWeeks = false
     ) {
-        if ($fy === null) {
-            $this->throwConfigurationException();
-        }
-
         $this->fy = $fy;
 
         if ($fyStartDate !== null) {
@@ -41,7 +39,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $this->setFyEndDate($fyEndDate);
         }
 
-        parent::__construct($type);
+        parent::__construct($fyType);
     }
 
     /**
@@ -132,22 +130,232 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
+     * @param  \DateTimeInterface $startDate
+     * @param  \DateTimeInterface $endDate
+     *
      * @return int
      *
      * @throws ConfigException
      */
-    public function getPeriodId()
+    public function getPeriodIdByDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
-        // TODO: Implement getPeriodId() method.
+        // TODO: Implement getPeriodIdByDateRange() method.
     }
 
     /**
+     * @param  \DateTimeInterface $startDate
+     * @param  \DateTimeInterface $endDate
+     *
      * @return int
      *
      * @throws ConfigException
      */
-    public function getBusinessWeekId()
+    public function getBusinessWeekIdByDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
-        // TODO: Implement getBusinessWeekId() method.
+        // TODO: Implement getBusinessWeekIdByDateRange() method.
+    }
+
+    /**
+     * Get the date range of the period with the given id.
+     *
+     * @param  int $id
+     *
+     * @return \Traversable
+     *
+     * @throws Exception
+     * @throws ConfigException
+     */
+    public function getPeriodById(int $id)
+    {
+        $this->validate();
+
+        if ($id > 12 || $id < 1) {
+            throw new Exception('There is no period with id: ' . $id);
+        }
+
+        $period = null;
+
+        // In case of immutable, use unchanged.
+        $dateTime = $this->fyStartDate;
+
+        // If not immutable, get a clone
+        if (!$this->fyStartDate instanceof \DateTimeImmutable) {
+            $dateTime = clone $this->fyStartDate;
+        }
+
+        // In calendar type, periods are always 12 as the months,
+        // regardless of the start date within the month.
+        if ($this->type->is(TypeEnum::CALENDAR())) {
+
+            $periodStart = $id - 1;
+            // If 1st period, no need for modification of start date.
+            $periodStartDate = $periodStart === 0 ?
+                $dateTime :
+                $dateTime->modify('+ ' . (string) $periodStart . ' month');
+
+            // If last period, use year modification for end date as faster.
+            $periodEnd = $id === 12 ? '+ 1 year' : '+ ' . (string) $id . ' month';
+            $periodEndDate = $dateTime->modify($periodEnd)
+                                      ->modify('-1 day');
+
+            $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('P1D'), $periodEndDate);
+        }
+
+        if ($this->type->is(TypeEnum::BUSINESS())) {
+
+            $periodStart = $id - 1;
+            // If 1st period, no need for modification of start date.
+            $periodStartDate = $periodStart === 0 ?
+                $dateTime :
+                $dateTime->modify('+ ' . (string) ($periodStart * 4) . ' week');
+
+            $periodEnd = '+ ' . $id === 12 ? (string) $this->fyWeeks : (string) ($id * 4) . ' week';
+            $periodEndDate = $dateTime->modify($periodEnd)
+                                      ->modify('-1 day');
+
+            $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('P1D'), $periodEndDate);
+        }
+
+        if ($period === null) {
+            throw new Exception('A date range period could not be set');
+        }
+
+        return $period;
+    }
+
+    /**
+     * Get the date range of the business week with the given id.
+     *
+     * @param  int $id
+     *
+     * @return \Traversable
+     *
+     * @throws ConfigException
+     */
+    public function getBusinessWeekById(int $id)
+    {
+        $this->validate();
+
+        if ($this->type->isNot(TypeEnum::BUSINESS())) {
+            $this->throwConfigurationException('Week date range is not applicable for non business type financial year.');
+        }
+
+        $dateTime = clone $this->fyStartDate;
+        $periodStartDate = $dateTime->modify('+' . (string) $id . ' week');
+        $periodEndDate = $dateTime->modify('+6 day');
+
+        return new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('P1D'), $periodEndDate);
+    }
+
+    /**
+     * Get the first date of the period with the given id.
+     *
+     * @param  int $id
+     *
+     * @return \DateTimeInterface
+     *
+     * @throws ConfigException
+     */
+    public function getFirstDateOfPeriodById(int $id)
+    {
+        // TODO: Implement getFirstDateOfPeriodById() method.
+    }
+
+    /**
+     * Get the last date of the period with the given id.
+     *
+     * @param  int $id
+     *
+     * @return \DateTimeInterface
+     *
+     * @throws ConfigException
+     */
+    public function getLastDateOfPeriodById(int $id)
+    {
+        // TODO: Implement getLastDateOfPeriodById() method.
+    }
+
+    /**
+     * Get the first date of the business week with the given id.
+     *
+     * @param  int $id
+     *
+     * @return \DateTimeInterface
+     *
+     * @throws ConfigException
+     */
+    public function getFirstDateOfBusinessWeekById(int $id)
+    {
+        // TODO: Implement getFirstDateOfBusinessWeekById() method.
+    }
+
+    /**
+     * Get the last date of the business week with the given id.
+     *
+     * @param  int $id
+     *
+     * @return \DateTimeInterface
+     *
+     * @throws ConfigException
+     */
+    public function getLastDateOfBusinessWeekById(int $id)
+    {
+        // TODO: Implement getLastDateOfBusinessWeekById() method.
+    }
+
+    /**
+     * Get the date range of the first business week of the period with the given id.
+     *
+     * @param  int $id
+     *
+     * @return \Traversable
+     *
+     * @throws ConfigException
+     */
+    public function getFirstBusinessWeekByPeriodId(int $id)
+    {
+        // TODO: Implement getFirstBusinessWeekByPeriodId() method.
+    }
+
+    /**
+     * Get the date range of the second business week of the period with the given id.
+     *
+     * @param  int $id
+     *
+     * @return \Traversable
+     *
+     * @throws ConfigException
+     */
+    public function getSecondBusinessWeekByPeriodId(int $id)
+    {
+        // TODO: Implement getSecondBusinessWeekByPeriodId() method.
+    }
+
+    /**
+     * Get the date range of the third business week of the period with the given id.
+     *
+     * @param  int $id
+     *
+     * @return \Traversable
+     *
+     * @throws ConfigException
+     */
+    public function getThirdBusinessWeekOfPeriodId(int $id)
+    {
+        // TODO: Implement getThirdBusinessWeekOfPeriodId() method.
+    }
+
+    /**
+     * Get the date range of the fourth business week of the period with the given id.
+     *
+     * @param  int $id
+     *
+     * @return \Traversable
+     *
+     * @throws ConfigException
+     */
+    public function getFourthBusinessWeekByPeriodId(int $id)
+    {
+        // TODO: Implement getFourthBusinessWeekByPeriodId() method.
     }
 }

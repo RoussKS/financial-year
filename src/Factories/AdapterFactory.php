@@ -14,24 +14,25 @@ use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 class AdapterFactory
 {
     /**
+     * @param  mixed $adapterType
      * @param  array $config
      *
      * @return AdapterInterface
      *
      * @throws ConfigException
-     * @throws \Exception
+     * @throws \ReflectionException
      */
-    public static function createAdapter(array $config = [])
+    public static function createAdapter($adapterType, array $config = [])
     {
         if (!isset($config['adapter'])) {
             throw new ConfigException('The adapter configuration key is required.');
         }
 
-        switch ($config['adapter']) {
-            case 'datetime':
+        switch (get_class($adapterType)){
+            case '\DateTime':
                 return new DateTimeAdapter(
-                    new \DateTime(),
-                    isset($config['type']) ? $config['type'] : null,
+                    $adapterType,
+                    isset($config['fyType']) ? $config['fyType'] : null,
                     isset($config['fyStartDate']) ? $config['fyStartDate'] : null,
                     isset($config['fyEndDate']) ? $config['fyEndDate'] : null
                 );
