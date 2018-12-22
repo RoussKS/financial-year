@@ -13,11 +13,6 @@ use RoussKS\FinancialYear\Exceptions\ConfigException;
 abstract class AbstractAdapter
 {
     /**
-     * @var mixed
-     */
-    protected $fy;
-
-    /**
      * @var TypeEnum
      */
     protected $type;
@@ -35,27 +30,32 @@ abstract class AbstractAdapter
     /**
      * Applicable to Business TypeEnum only.
      *
-     * @var int
+     * @var int|null
      */
-    protected $fyWeeks;
+    protected $fyWeeks = null;
 
     /**
      * AbstractAdapter constructor.
      *
      * @param  string $type
+     * @param  bool $fiftyThreeWeeks
      *
      * @return void
      *
      * @throws ConfigException
      * @throws \ReflectionException
      */
-    public function __construct(string $type)
+    public function __construct(string $type, bool $fiftyThreeWeeks)
     {
         if ($type === null) {
             $this->throwConfigurationException('Financial year type cannot be null.');
         }
 
         $this->type = TypeEnum::get($type);
+
+        if ($this->getType()->is(TypeEnum::BUSINESS())) {
+            $this->setFyWeeks($fiftyThreeWeeks);
+        }
     }
 
     /**
@@ -108,7 +108,6 @@ abstract class AbstractAdapter
     public function validate()
     {
         if (
-            $this->fy === null ||
             $this->type === null ||
             $this->fyStartDate === null ||
             $this->fyEndDate === null

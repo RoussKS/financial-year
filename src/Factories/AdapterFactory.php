@@ -14,7 +14,7 @@ use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 class AdapterFactory
 {
     /**
-     * @param  mixed $adapterType
+     * @param  mixed $adapterType, \DateTime currently supported.
      * @param  array $config
      *
      * @return AdapterInterface
@@ -31,10 +31,10 @@ class AdapterFactory
         switch (get_class($adapterType)){
             case '\DateTime':
                 return new DateTimeAdapter(
-                    $adapterType,
-                    isset($config['fyType']) ? $config['fyType'] : null,
-                    isset($config['fyStartDate']) ? $config['fyStartDate'] : null,
-                    isset($config['fyEndDate']) ? $config['fyEndDate'] : null
+                    $config['fyType'],
+                    $config['fyStartDate'],
+                    isset($config['fyEndDate']) ? $config['fyEndDate'] : null,
+                    isset($config['fiftyThreeWeeks']) ? $config['fiftyThreeWeeks'] : false
                 );
             default:
                 throw new ConfigException('Unknown adapter configuration key');
