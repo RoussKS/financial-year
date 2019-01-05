@@ -19,7 +19,7 @@ An organisation financial year can be based on the following 2 methods:
      
 
 ### Basic Use
-```
+```php
 $startDate = new \DateTime('2019-01-01');
 
 $config = [
