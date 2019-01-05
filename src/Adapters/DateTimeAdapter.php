@@ -16,10 +16,14 @@ use RoussKS\FinancialYear\Interfaces\AdapterInterface;
  */
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {
-    /** @var \DateTimeImmutable */
+    /**
+     * @var \DateTimeImmutable
+     */
     protected $fyStartDate;
 
-    /** @var  \DateTimeImmutable */
+    /**
+     * @var \DateTimeImmutable
+     */
     protected $fyEndDate;
 
     /**
@@ -104,7 +108,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         if ($this->type->is(TypeEnum::CALENDAR()) && $this->fyStartDate->format('md') == '0229') {
-            $this->throwConfigurationException('This library does not support 29th of February as the starting date for calendar type financial year.');
+            $this->throwConfigurationException('This library does not support 29th of February as the starting date for calendar type financial year');
         }
 
         // Set date to start of the day.
@@ -197,7 +201,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
                 return;
             }
 
-            $this->throwConfigurationException('The provided end date can not be validated against the start date.');
+            $this->throwConfigurationException('The provided end date can not be validated against the start date');
         }
 
         // Validate financial year end date if current method is not called on instantiation.
@@ -207,7 +211,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $diff = $this->fyStartDate->diff($pendingValidationFyEndDate)->days / 7;
 
             if ($diff !== 52 || $diff !== 53) {
-                $this->throwConfigurationException('The provided end date can not be validated against the start date.');
+                $this->throwConfigurationException('The provided end date can not be validated against the start date');
             }
 
             $this->fyWeeks = $diff;
@@ -307,7 +311,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $this->validate();
 
         if ($this->type->isNot(TypeEnum::BUSINESS())) {
-            $this->throwConfigurationException('Week date range is not applicable for non business type financial year.');
+            $this->throwConfigurationException('Week date range is not applicable for non business type financial year');
         }
 
         if ($id < 1 || $id > $this->fyWeeks) {
@@ -583,7 +587,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     protected function validateBusinessWeekId(int $id)
     {
         if ($this->type->isNot(TypeEnum::BUSINESS())) {
-            $this->throwConfigurationException('Week date range is not applicable for non business type financial year.');
+            $this->throwConfigurationException('Week date range is not applicable for non business type financial year');
         }
 
         if ($id < 1 || $id > $this->fyWeeks) {

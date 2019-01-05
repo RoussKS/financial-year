@@ -18,12 +18,12 @@ abstract class AbstractAdapter
     protected $type;
 
     /**
-     * @var mixed
+     * @var \DateTimeInterface
      */
     protected $fyStartDate;
 
     /***
-     * @var mixed
+     * @var \DateTimeInterface
      */
     protected $fyEndDate;
 
@@ -48,7 +48,7 @@ abstract class AbstractAdapter
     public function __construct(string $type, bool $fiftyThreeWeeks)
     {
         if ($type === null) {
-            $this->throwConfigurationException('Financial year type cannot be null.');
+            $this->throwConfigurationException('Financial year type cannot be null');
         }
 
         $this->type = TypeEnum::get($type);
