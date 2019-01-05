@@ -13,35 +13,32 @@ use RoussKS\FinancialYear\Interfaces\AdapterInterface;
  */
 class FinancialYear
 {
-    /** @var AdapterInterface  */
-    public $adapter;
-
     /**
      * FinancialYear constructor.
      *
+     * @param  \DateTimeInterface $adapterType
      * @param  array $config = [
      *     'fyType'         => 'string', Enums\TypeEnum
      *     'fyStartDate'    => 'date', ISO-8601 format or adapter's object
      *     'fyEndDate'      => 'date', ISO-8601 format or adapter's object
      *     'fiftyThreeWeeks => 'bool', Applicable to business type financial year, if year has 52 or 53 weeks.
      * ]
-     * @param  \DateTimeInterface $adapterType
      *
-     * @return AdapterInterface
+     * @return  AdapterInterface
      *
-     * @throws ConfigException
-     * @throws \ReflectionException
+     * @throws  ConfigException
+     * @throws  \ReflectionException
      */
-    public function __construct(\DateTimeInterface $adapterType, array $config = [])
+    public function __construct(\DateTimeInterface $adapterType, array $config)
     {
         if (!isset($config['fyType']) || !is_string($config['fyType'])) {
             throw new ConfigException('The financial year type is required. Either \'calendar\' or \'business\'.');
         }
 
         if (!isset($config['fyStartDate'])) {
-            throw new ConfigException('The financial year\'s start date is required.');
+            throw new ConfigException('The financial year start date is required.');
         }
 
-        return AdapterFactory::createAdapter($adapterType);
+        return AdapterFactory::createAdapter($adapterType, $config);
     }
 }

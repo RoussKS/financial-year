@@ -2,7 +2,7 @@
 
 namespace RoussKS\FinancialYear\Adapters;
 
-use RoussKS\Enums\TypeEnum;
+use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 
 /**
@@ -53,7 +53,7 @@ abstract class AbstractAdapter
 
         $this->type = TypeEnum::get($type);
 
-        if ($this->getType()->is(TypeEnum::BUSINESS())) {
+        if ($this->type->is(TypeEnum::BUSINESS())) {
             $this->setFyWeeks($fiftyThreeWeeks);
         }
     }
@@ -67,6 +67,8 @@ abstract class AbstractAdapter
     }
 
     /**
+     * This is always set on construct, so it would never return null (as set in the property).
+     *
      * @return int
      */
     public function getFyWeeks()
@@ -77,7 +79,7 @@ abstract class AbstractAdapter
     /**
      * Set the number of weeks for the Financial Year.
      *
-     * Only applies to business TypeEnum and can only be 52 or 53.
+     * Only applies to business TypeEnum and will be set either 52 or 53.
      *
      * @param  bool $fiftyThreeWeeks
      *

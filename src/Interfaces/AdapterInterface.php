@@ -2,7 +2,7 @@
 
 namespace RoussKS\FinancialYear\Interfaces;
 
-use RoussKS\Enums\TypeEnum;
+use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 
 /**
@@ -20,9 +20,27 @@ interface AdapterInterface
     public function getType();
 
     /**
+     * @return int
+     */
+    public function getFyWeeks();
+
+    /**
+     * Set the number of weeks for the Financial Year.
+     *
+     * Only applies to business TypeEnum and will be set either 52 or 53.
+     *
+     * @param  bool $fiftyThreeWeeks
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     */
+    public function setFyWeeks($fiftyThreeWeeks = false);
+
+    /**
      * Get the financial year's start date.
      *
-     * @return mixed
+     * @return \DateTimeInterface
      */
     public function getFyStartDate();
 
@@ -45,7 +63,7 @@ interface AdapterInterface
     /**
      * Get the financial year's end date.
      *
-     * @return mixed
+     * @return \DateTimeInterface
      */
     public function getFyEndDate();
 
@@ -58,13 +76,12 @@ interface AdapterInterface
      * Throws an exception if FyEndDate is already set.
      *
      * @param  string|\DateTimeInterface $date
-     * @param  bool $fiftyThreeWeeks // applicable to Financial Year TypeEnum 'business'
      *
      * @return void
      *
      * @throws ConfigException
      */
-    public function setFyEndDate($date, $fiftyThreeWeeks = false);
+    public function setFyEndDate($date);
 
     /**
      * @param  \DateTimeInterface $startDate

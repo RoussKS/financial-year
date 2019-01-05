@@ -1,6 +1,6 @@
 <?php
 
-namespace RoussKS\Enums;
+namespace RoussKS\FinancialYear\Enums;
 
 /**
  * Class BasicEnum

@@ -2,7 +2,7 @@
 
 namespace RoussKS\FinancialYear\Adapters;
 
-use RoussKS\Enums\TypeEnum;
+use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Interfaces\AdapterInterface;
@@ -16,34 +16,61 @@ use RoussKS\FinancialYear\Interfaces\AdapterInterface;
  */
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {
-    /** @var \DateTime */
+    /** @var \DateTimeImmutable */
     protected $fyStartDate;
 
-    /** @var  \DateTime */
+    /** @var  \DateTimeImmutable */
     protected $fyEndDate;
 
+    /**
+     * DateTimeAdapter constructor.
+     *
+     * $fyEndDate, if provided, has priority and overrides $fiftyThreeWeeks for 'business' $fyType.
+     *
+     * @param  string $fyType
+     * @param  \DateTime|\DateTimeImmutable|string $fyStartDate
+     * @param  bool $fiftyThreeWeeks
+     * @param  \DateTime|\DateTimeImmutable|string|null $fyEndDate
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws \ReflectionException
+     */
     public function __construct(
-        \DateTime $fy,
         string $fyType,
-        string $fyStartDate,
-        string $fyEndDate = null,
-        bool $fiftyThreeWeeks = false
+        $fyStartDate,
+        bool $fiftyThreeWeeks = false,
+        $fyEndDate = null
     ) {
-        $this->fy = $fy;
+        parent::__construct($fyType, $fiftyThreeWeeks);
 
-        if ($fyStartDate !== null) {
-            $this->setFyStartDate($fyStartDate);
-        }
+        $this->setFyStartDate($fyStartDate);
 
-        if ($fyEndDate !== null) {
-            $this->setFyEndDate($fyEndDate);
-        }
-
-        parent::__construct($fyType);
+        $this->setFyEndDate($fyEndDate);
     }
 
     /**
-     * @return \DateTime|null
+     * {@inheritdoc}
+     *
+     * Extend parent class in order to recalculate end date if the business year weeks change.
+     */
+    public function setFyWeeks($fiftyThreeWeeks = false)
+    {
+        $originalFyWeeks = $this->fyWeeks;
+
+        parent::setFyWeeks($fiftyThreeWeeks);
+
+        // Reset the financial year end date according to the weeks setting.
+        if ($originalFyWeeks !== null && $originalFyWeeks !== $this->fyWeeks) {
+            $this->setFyEndDate(null);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return \DateTimeInterface|\DateTimeImmutable
      */
     public function getFyStartDate()
     {
@@ -51,29 +78,50 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * @param string|\DateTime $date
-     *
      * {@inheritdoc}
+     *
+     * @param \DateTime|\DateTimeImmutable|string $date
      */
     public function setFyStartDate($date)
     {
-        if ($date instanceof \DateTime) {
-            $this->fyStartDate = $date;
+        $originalFyStartDate = null;
 
-            return;
+        if ($this->fyStartDate !== null) {
+            // fyStartDate property is an immutable object.
+            $originalFyStartDate = $this->fyStartDate;
         }
 
-        $this->fyStartDate = \DateTime::createFromFormat('Y-m-d', $date);
+        if ($date instanceof \DateTime) {
+            $this->fyStartDate = \DateTimeImmutable::createFromMutable($date);
+        }
+
+        if (is_string($date)) {
+            $this->fyStartDate = \DateTimeImmutable::createFromFormat('Y-m-d', $date);
+        }
 
         if (!$this->fyStartDate || $this->fyStartDate === null) {
             $this->throwConfigurationException('Invalid start date format. Needs to be ISO-8601 string or DateTime object');
+        }
+
+        if ($this->type->is(TypeEnum::CALENDAR()) && $this->fyStartDate->format('md') == '0229') {
+            $this->throwConfigurationException('This library does not support 29th of February as the starting date for calendar type financial year.');
+        }
+
+        // Set date to start of the day.
+        $this->fyStartDate->setTime(0,0,0,0);
+
+        // If this method was not called on instantiation,
+        // recalculate financial year end date from current settings,
+        // even if the new start date is the same as the previous one (why re-setting the same date?).
+        if ($originalFyStartDate !== null) {
+            $this->setFyEndDate(null);
         }
     }
 
     /**
      * {@inheritdoc}
      *
-     * @return \DateTime
+     * @return \DateTimeInterface|\DateTimeImmutable
      */
     public function getFyEndDate()
     {
@@ -81,61 +129,99 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * @param string|\DateTime|null $date
-     *
      * {@inheritdoc}
      *
-     * @throws ConfigException
+     * @param \DateTime|\DateTimeImmutable|string|null $date
      */
-    public function setFyEndDate($date = null, $fiftyThreeWeeks = false)
+    public function setFyEndDate($date = null)
     {
+        // If date param is null, we set end date relative to start date (it is already set from the constructor).
+        // At this point start date's time is set to 00:00:00
         if ($date === null) {
-            if ($this->fyStartDate === null) {
-                $this->throwConfigurationException('Can not set end date without a start date');
-            }
-
             // We will set end date from the start date object which should be present.
-            $this->fyEndDate = clone $this->fyStartDate;
+            // fyStartDate is an Immutable object so we can safely copy.
+            $this->fyEndDate = $this->fyStartDate;
 
             // For calendar type, the end date is 1 year, minus 1 day after the start date.
-            if ($this->getType()->is(TypeEnum::CALENDAR())) {
+            if ($this->type->is(TypeEnum::CALENDAR())) {
                 $this->fyEndDate->modify('+1 year')
                                 ->modify('-1 day');
+
+            }
+
+            if ($this->type->is(TypeEnum::BUSINESS())) {
+                // As a financial year would have 52 or 53 weeks, the param handles it.
+                $this->fyEndDate->modify('+' . (string) $this->fyWeeks . 'week')
+                                ->modify('-1 day');
+            }
+
+            // On null param, there is no need for extra logic.
+            // The financial year end date property has been computed according to existing settings.
+            return;
+        }
+
+        // Placeholder.
+        $fyEndDate = null;
+
+        if ($date instanceof \DateTime) {
+            $fyEndDate = \DateTimeImmutable::createFromMutable($date);
+        }
+
+        if ($date instanceof \DateTimeImmutable) {
+            $fyEndDate = $date;
+        }
+
+        if (is_string($date)) {
+            $fyEndDate = \DateTimeImmutable::createFromFormat('Y-m-d', $date);
+        }
+
+        if (!$fyEndDate || $fyEndDate === null) {
+            $this->throwConfigurationException('Invalid end date format. Needs to be ISO-8601 string or DateTime object');
+        }
+
+        // Set date to start of the day.
+        $fyEndDate->setTime(0,0,0,0);
+
+        // Safe copy as fyEndDate is an immutable object.
+        $pendingValidationFyEndDate = $fyEndDate;
+
+        // If the financial year type is calendar, Check that is correctly set.
+        if ($this->type->is(TypeEnum::CALENDAR())) {
+
+            $diff = $this->fyStartDate->diff($pendingValidationFyEndDate->modify('+1 day'));
+
+            // Check that end date + 1 day is exactly 1 year after the start date.
+            if ($diff->y === 1 && $diff->m === 0 && $diff->d === 0) {
+                $this->fyEndDate = $fyEndDate;
 
                 return;
             }
 
-            if ($this->getType()->is(TypeEnum::BUSINESS())) {
-                $this->setFyWeeks($fiftyThreeWeeks ? 53 : 52);
+            $this->throwConfigurationException('The provided end date can not be validated against the start date.');
+        }
 
-                // As a financial year would have 52 or 53 weeks, the param handles it.
-                $this->fyEndDate->modify('+' . (string) $this->getFyWeeks() . 'week')
-                                ->modify('-1 day');
+        // Validate financial year end date if current method is not called on instantiation.
+        // Set fyWeeks on success.
+        if ($this->type->is(TypeEnum::BUSINESS())) {
+
+            $diff = $this->fyStartDate->diff($pendingValidationFyEndDate)->days / 7;
+
+            if ($diff !== 52 || $diff !== 53) {
+                $this->throwConfigurationException('The provided end date can not be validated against the start date.');
             }
 
-            return;
+            $this->fyWeeks = $diff;
         }
 
-        if ($date instanceof \DateTime) {
-            $this->fyEndDate = $date;
-
-            return;
-        }
-
-        $this->fyEndDate = \DateTime::createFromFormat('Y-m-d', $date);
-
-        if (!$this->fyEndDate || $this->fyEndDate === null) {
-            $this->throwConfigurationException('Invalid start date format. Needs to be ISO-8601 string or DateTime object');
-        }
+        $this->fyEndDate = $fyEndDate;
     }
 
     /**
-     * @param  \DateTimeInterface $startDate
-     * @param  \DateTimeInterface $endDate
+     * {@inheritdoc}
      *
-     * @return int
+     * @param  \DateTimeInterface|\DateTime|\DateTimeImmutable $startDate
+     * @param  \DateTimeInterface|\DateTime|\DateTimeImmutable $endDate
      *
-     * @throws ConfigException
      */
     public function getPeriodIdByDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
@@ -143,12 +229,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * @param  \DateTimeInterface $startDate
-     * @param  \DateTimeInterface $endDate
+     * @inheritdoc
      *
-     * @return int
+     * @param  \DateTimeInterface|\DateTime|\DateTimeImmutable $startDate
+     * @param  \DateTimeInterface|\DateTime|\DateTimeImmutable $endDate
      *
-     * @throws ConfigException
      */
     public function getBusinessWeekIdByDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
@@ -156,62 +241,50 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * Get the date range of the period with the given id.
-     *
-     * @param  int $id
-     *
-     * @return \Traversable
+     * {@inheritdoc}
      *
      * @throws Exception
-     * @throws ConfigException
      */
     public function getPeriodById(int $id)
     {
         $this->validate();
 
-        if ($id > 12 || $id < 1) {
-            throw new Exception('There is no period with id: ' . $id);
-        }
+        $this->validatePeriodId($id);
 
         $period = null;
 
-        // In case of immutable, use unchanged.
-        $dateTime = $this->fyStartDate;
-
-        // If not immutable, get a clone
-        if (!$this->fyStartDate instanceof \DateTimeImmutable) {
-            $dateTime = clone $this->fyStartDate;
-        }
+        // Safe as immutable.
+        $fyStartDate = $this->fyStartDate;
 
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->type->is(TypeEnum::CALENDAR())) {
-
-            $periodStart = $id - 1;
             // If 1st period, no need for modification of start date.
-            $periodStartDate = $periodStart === 0 ?
-                $dateTime :
-                $dateTime->modify('+ ' . (string) $periodStart . ' month');
+            $periodStartDate = $id === 1 ?
+                $this->fyStartDate :
+                $fyStartDate->modify('+ ' . (string) $id - 1 . ' month');
 
-            // If last period, use year modification for end date as faster.
-            $periodEnd = $id === 12 ? '+ 1 year' : '+ ' . (string) $id . ' month';
-            $periodEndDate = $dateTime->modify($periodEnd)
-                                      ->modify('-1 day');
+            // If last period details requested, the end date is the financial year's end date.
+            $periodEndDate = $id === 12 ?
+                $this->fyEndDate :
+                $fyStartDate->modify('+ ' . (string) $id . ' month')
+                            ->modify('-1 day');
 
             $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('P1D'), $periodEndDate);
         }
 
         if ($this->type->is(TypeEnum::BUSINESS())) {
 
-            $periodStart = $id - 1;
             // If 1st period, no need for modification of start date.
-            $periodStartDate = $periodStart === 0 ?
-                $dateTime :
-                $dateTime->modify('+ ' . (string) ($periodStart * 4) . ' week');
+            $periodStartDate = $id === 1 ?
+                $this->fyStartDate :
+                $fyStartDate->modify('+ ' . (string) (($id - 1) * 4) . ' week');
 
-            $periodEnd = '+ ' . $id === 12 ? (string) $this->fyWeeks : (string) ($id * 4) . ' week';
-            $periodEndDate = $dateTime->modify($periodEnd)
-                                      ->modify('-1 day');
+            // If last period details requested, the end date is the financial year's end date.
+            $periodEndDate = $id === 12 ?
+                $this->fyEndDate :
+                $fyStartDate->modify('+ ' . (string) ($id * 4) . ' week')
+                            ->modify('-1 day');
 
             $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('P1D'), $periodEndDate);
         }
@@ -224,12 +297,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * Get the date range of the business week with the given id.
+     * {@inheritdoc}
      *
-     * @param  int $id
-     *
-     * @return \Traversable
-     *
+     * @throws Exception
      * @throws ConfigException
      */
     public function getBusinessWeekById(int $id)
@@ -240,122 +310,284 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $this->throwConfigurationException('Week date range is not applicable for non business type financial year.');
         }
 
-        $dateTime = clone $this->fyStartDate;
-        $periodStartDate = $dateTime->modify('+' . (string) $id . ' week');
-        $periodEndDate = $dateTime->modify('+6 day');
+        if ($id < 1 || $id > $this->fyWeeks) {
+            throw new Exception('There is no week with id: ' . $id);
+        }
+
+        // Safe copy as immutable.
+        $dateTime = $this->fyStartDate;
+
+        // If 1st week, get the start of the financial year.
+        $periodStartDate = $id === 1 ?
+            $this->fyStartDate :
+            $dateTime->modify('+' . (string) $id - 1 . ' week');
+
+        // If last week, get the end of the financial year.
+        $periodEndDate = $id === $this->fyWeeks ?
+            $this->fyEndDate :
+            $dateTime->modify('+6 day');
 
         return new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('P1D'), $periodEndDate);
     }
 
     /**
+     * {@inheritdoc}
+     *
      * Get the first date of the period with the given id.
      *
      * @param  int $id
      *
      * @return \DateTimeInterface
      *
+     * @throws Exception
      * @throws ConfigException
      */
     public function getFirstDateOfPeriodById(int $id)
     {
-        // TODO: Implement getFirstDateOfPeriodById() method.
+        $this->validate();
+
+        $this->validatePeriodId($id);
+
+        $periodStart = null;
+
+        // If 1st period, get the start of the financial year, regardless of the type.
+        if ($id === 1) {
+            return $this->fyStartDate;
+        }
+
+        // Safe as immutable.
+        $fyStartDate = $this->fyStartDate;
+
+        // In calendar type, periods are always 12 as the months,
+        // regardless of the start date within the month.
+        if ($this->type->is(TypeEnum::CALENDAR())) {
+            $periodStart = $fyStartDate->modify('+ ' . (string) $id - 1 . ' month');
+        }
+
+        if ($this->type->is(TypeEnum::BUSINESS())) {
+            $periodStart = $fyStartDate->modify('+ ' . (string) (($id - 1) * 4) . ' week');
+        }
+
+        if ($periodStart === null) {
+            throw new Exception('Could not calculate period start date');
+        }
+
+        return $periodStart;
     }
 
     /**
+     * {@inheritdoc}
+     *
      * Get the last date of the period with the given id.
      *
      * @param  int $id
      *
-     * @return \DateTimeInterface
+     * @return \DateTimeInterface|\DateTimeImmutable
      *
+     * @throws Exception
      * @throws ConfigException
      */
     public function getLastDateOfPeriodById(int $id)
     {
-        // TODO: Implement getLastDateOfPeriodById() method.
+        $this->validate();
+
+        $this->validatePeriodId($id);
+
+        $periodEnd = null;
+
+        // If last period, get the end of the financial year, regardless of the type.
+        if ($id === 12) {
+            return $this->fyEndDate;
+        }
+
+        // Safe as immutable.
+        $fyStartDate = $this->fyStartDate;
+
+        // In calendar type, periods are always 12 as the months,
+        // regardless of the start date within the month.
+        if ($this->type->is(TypeEnum::CALENDAR())) {
+            $periodEnd = $fyStartDate->modify('+ ' . (string) $id. ' month')
+                                     ->modify('-1 day');
+        }
+
+        if ($this->type->is(TypeEnum::BUSINESS())) {
+            $periodEnd = $fyStartDate->modify('+ ' . (string) (($id) * 4) . ' week')
+                                     ->modify('-1 day');
+        }
+
+        if ($periodEnd === null) {
+            throw new Exception('Could not calculate period end date');
+        }
+
+        return $periodEnd;
     }
 
     /**
-     * Get the first date of the business week with the given id.
+     * {@inheritdoc}
      *
-     * @param  int $id
+     * @return \DateTimeInterface|\DateTimeImmutable
      *
-     * @return \DateTimeInterface
-     *
+     * @throws Exception
      * @throws ConfigException
      */
     public function getFirstDateOfBusinessWeekById(int $id)
     {
-        // TODO: Implement getFirstDateOfBusinessWeekById() method.
+        $this->validate();
+
+        $this->validateBusinessWeekId($id);
+
+        // If 1st week, get the start of the financial year.
+        if ($id === 1) {
+            return $this->fyStartDate;
+        }
+
+        // Safe copy as immutable.
+        $dateTime = $this->fyStartDate;
+
+        return $dateTime->modify('+ ' . (string) $id - 1 . ' week');
     }
 
     /**
+     * {@inheritdoc}
+     *
      * Get the last date of the business week with the given id.
      *
      * @param  int $id
      *
-     * @return \DateTimeInterface
+     * @return \DateTimeInterface|\DateTimeImmutable
      *
+     * @throws Exception
      * @throws ConfigException
      */
     public function getLastDateOfBusinessWeekById(int $id)
     {
-        // TODO: Implement getLastDateOfBusinessWeekById() method.
+        $this->validate();
+
+        $this->validateBusinessWeekId($id);
+
+        // If last week, get the end of the financial year.
+        if ($id === $this->fyWeeks) {
+            return $this->fyEndDate;
+        }
+
+        // Safe copy as immutable.
+        $dateTime = $this->fyEndDate;
+
+        return $dateTime->modify('+ ' . (string) $id . ' week')
+                        ->modify('-1 day');
     }
 
     /**
+     * {@inheritdoc}
+     *
      * Get the date range of the first business week of the period with the given id.
      *
      * @param  int $id
      *
      * @return \Traversable
      *
+     * @throws Exception
      * @throws ConfigException
      */
     public function getFirstBusinessWeekByPeriodId(int $id)
     {
-        // TODO: Implement getFirstBusinessWeekByPeriodId() method.
+        return $this->getBusinessWeekById(($id - 1) * 4);
     }
 
     /**
+     * {@inheritdoc}
+     *
      * Get the date range of the second business week of the period with the given id.
      *
      * @param  int $id
      *
      * @return \Traversable
      *
+     * @throws Exception
      * @throws ConfigException
      */
     public function getSecondBusinessWeekByPeriodId(int $id)
     {
-        // TODO: Implement getSecondBusinessWeekByPeriodId() method.
+        return $this->getBusinessWeekById(($id - 1) * 4 + 2);
     }
 
     /**
+     * {@inheritdoc}
+     *
      * Get the date range of the third business week of the period with the given id.
      *
      * @param  int $id
      *
      * @return \Traversable
      *
+     * @throws Exception
      * @throws ConfigException
      */
     public function getThirdBusinessWeekOfPeriodId(int $id)
     {
-        // TODO: Implement getThirdBusinessWeekOfPeriodId() method.
+        return $this->getBusinessWeekById(($id - 1) * 4 + 3);
     }
 
     /**
+     * {@inheritdoc}
+     *
      * Get the date range of the fourth business week of the period with the given id.
      *
      * @param  int $id
      *
      * @return \Traversable
      *
+     * @throws Exception
      * @throws ConfigException
      */
     public function getFourthBusinessWeekByPeriodId(int $id)
     {
-        // TODO: Implement getFourthBusinessWeekByPeriodId() method.
+        return $this->getBusinessWeekById($id * 4);
+    }
+
+    /**
+     * @return  \Traversable
+     *
+     * @throws  Exception
+     * @throws  ConfigException
+     */
+    public function getFifthThirdBusinessWeekPeriod()
+    {
+        return $this->getBusinessWeekById(53);
+    }
+
+    /**
+     * Validate period $id is between 1 and 12.
+     *
+     * @param  int $id
+     *
+     * @return void
+     *
+     * @throws Exception
+     */
+    protected function validatePeriodId(int $id)
+    {
+        if ($id < 1 || $id > 12) {
+            throw new Exception('There is no period with id: ' . $id);
+        }
+    }
+
+    /**
+     * Validate fyType is business and week $id is between 1 and the set fyWeeks (52 or 53).
+     *
+     * @param  int $id
+     *
+     * @throws Exception
+     * @throws ConfigException
+     */
+    protected function validateBusinessWeekId(int $id)
+    {
+        if ($this->type->isNot(TypeEnum::BUSINESS())) {
+            $this->throwConfigurationException('Week date range is not applicable for non business type financial year.');
+        }
+
+        if ($id < 1 || $id > $this->fyWeeks) {
+            throw new Exception('There is no week with id: ' . $id);
+        }
     }
 }
