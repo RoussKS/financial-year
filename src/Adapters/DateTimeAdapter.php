@@ -268,7 +268,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
                 $this->fyStartDate :
                 $fyStartDate->modify('+ ' . (string) $id - 1 . ' month');
 
-            // If last period details requested, the end date is the financial year's end date.
+            // If last period details requested, the end date is the financial year end date.
             $periodEndDate = $id === 12 ?
                 $this->fyEndDate :
                 $fyStartDate->modify('+ ' . (string) $id . ' month')
@@ -284,7 +284,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
                 $this->fyStartDate :
                 $fyStartDate->modify('+ ' . (string) (($id - 1) * 4) . ' week');
 
-            // If last period details requested, the end date is the financial year's end date.
+            // If last period details requested, the end date is the financial year end date.
             $periodEndDate = $id === 12 ?
                 $this->fyEndDate :
                 $fyStartDate->modify('+ ' . (string) ($id * 4) . ' week')

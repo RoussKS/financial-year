@@ -38,14 +38,14 @@ interface AdapterInterface
     public function setFyWeeks($fiftyThreeWeeks = false);
 
     /**
-     * Get the financial year's start date.
+     * Get the financial year start date.
      *
      * @return \DateTimeInterface
      */
     public function getFyStartDate();
 
     /**
-     * Set the financial year's start date.
+     * Set the financial year start date.
      *
      * Expects either string ISO-8601 format 'YYYY-MM-DD'
      * or a date object, same object instance as the adapter's that extends the DateTimeInterface
@@ -61,14 +61,14 @@ interface AdapterInterface
     public function setFyStartDate($date);
 
     /**
-     * Get the financial year's end date.
+     * Get the financial year end date.
      *
      * @return \DateTimeInterface
      */
     public function getFyEndDate();
 
     /**
-     * Set the financial year's end date.
+     * Set the financial year end date.
      *
      * Expects either string ISO-8601 format 'YYYY-MM-DD'
      * or a date object, same object instance as the adapter's that extends the DateTimeInterface
