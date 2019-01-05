@@ -88,15 +88,15 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function setFyStartDate($date)
     {
-        $originalFyStartDate = null;
-
-        if ($this->fyStartDate !== null) {
-            // fyStartDate property is an immutable object.
-            $originalFyStartDate = $this->fyStartDate;
-        }
+        // fyStartDate property is an immutable object.
+        $originalFyStartDate = $this->fyStartDate;
 
         if ($date instanceof \DateTime) {
             $this->fyStartDate = \DateTimeImmutable::createFromMutable($date);
+        }
+
+        if ($date instanceof \DateTimeImmutable) {
+            $this->fyStartDate = $date;
         }
 
         if (is_string($date)) {

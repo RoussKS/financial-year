@@ -33,6 +33,13 @@ $fy = new \RoussKS\FinancialYear\FinancialYear($startDate, $config);
 echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31 
 ```
 
+### Limitations
+Unfortunately, the library does not support a start date of February 29th (29/02/YYYY) for *`calendar`* financial year type.
+
+This was a conscious decision as we do not expect anyone to select that date to open a business and use a year/calendar financial year.
+
+This is allowed for a *`business`* type financial year. 
+
 ### Versioning
 The current library will be using [Semantic Versioning](https://semver.org/)
 
