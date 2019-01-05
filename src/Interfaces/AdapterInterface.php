@@ -13,7 +13,7 @@ use RoussKS\FinancialYear\Exceptions\ConfigException;
 interface AdapterInterface
 {
     /**
-     * Get the financial year's type.
+     * Get the financial year type.
      *
      * @return TypeEnum
      */

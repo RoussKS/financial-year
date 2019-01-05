@@ -59,6 +59,8 @@ abstract class AbstractAdapter
     }
 
     /**
+     * Get the financial year's type.
+     *
      * @return TypeEnum
      */
     public function getType()
