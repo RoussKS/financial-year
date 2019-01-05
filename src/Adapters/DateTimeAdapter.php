@@ -153,6 +153,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
             }
 
+            // For business type, the end date is the number of weeks , minus 1 day after the start date.
             if ($this->type->is(TypeEnum::BUSINESS())) {
                 // As a financial year would have 52 or 53 weeks, the param handles it.
                 $this->fyEndDate->modify('+' . (string) $this->fyWeeks . 'week')
