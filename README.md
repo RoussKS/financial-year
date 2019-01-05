@@ -1,5 +1,8 @@
 # Financial Year PHP Library
 
+## v0.9.1
+v1.0.0 will be released when all testing is completed and a test suite is added.
+
 ### Purpose
 
 This library aims to solve a business problem in a consistent manner.
