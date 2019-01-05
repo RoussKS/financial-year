@@ -85,34 +85,19 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * {@inheritdoc}
      *
      * @param \DateTime|\DateTimeImmutable|string $date
+     *
+     * @throws Exception
      */
     public function setFyStartDate($date)
     {
         // fyStartDate property is an immutable object.
         $originalFyStartDate = $this->fyStartDate;
 
-        if ($date instanceof \DateTime) {
-            $this->fyStartDate = \DateTimeImmutable::createFromMutable($date);
-        }
-
-        if ($date instanceof \DateTimeImmutable) {
-            $this->fyStartDate = $date;
-        }
-
-        if (is_string($date)) {
-            $this->fyStartDate = \DateTimeImmutable::createFromFormat('Y-m-d', $date);
-        }
-
-        if (!$this->fyStartDate || $this->fyStartDate === null) {
-            $this->throwConfigurationException('Invalid start date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object');
-        }
+        $this->fyStartDate = $this->getDateObject($date);
 
         if ($this->type->is(TypeEnum::CALENDAR()) && $this->fyStartDate->format('md') == '0229') {
             $this->throwConfigurationException('This library does not support 29th of February as the starting date for calendar type financial year');
         }
-
-        // Set date to start of the day.
-        $this->fyStartDate->setTime(0,0,0,0);
 
         // If this method was not called on instantiation,
         // recalculate financial year end date from current settings,
@@ -136,6 +121,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * {@inheritdoc}
      *
      * @param \DateTime|\DateTimeImmutable|string|null $date
+     *
+     * @throws Exception
      */
     public function setFyEndDate($date = null)
     {
@@ -165,27 +152,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return;
         }
 
-        // Placeholder.
-        $fyEndDate = null;
-
-        if ($date instanceof \DateTime) {
-            $fyEndDate = \DateTimeImmutable::createFromMutable($date);
-        }
-
-        if ($date instanceof \DateTimeImmutable) {
-            $fyEndDate = $date;
-        }
-
-        if (is_string($date)) {
-            $fyEndDate = \DateTimeImmutable::createFromFormat('Y-m-d', $date);
-        }
-
-        if (!$fyEndDate || $fyEndDate === null) {
-            $this->throwConfigurationException('Invalid end date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object');
-        }
-
-        // Set date to start of the day.
-        $fyEndDate->setTime(0,0,0,0);
+        $fyEndDate = $this->getDateObject($date);
 
         // Safe copy as fyEndDate is an immutable object.
         $pendingValidationFyEndDate = $fyEndDate;
@@ -310,7 +277,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param \DateTime|\DateTimeImmutable|string $date
+     * @param  \DateTime|\DateTimeImmutable|string $date
      *
      * @throws Exception
      */
@@ -333,7 +300,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param \DateTime|\DateTimeImmutable|string $date
+     * @param  \DateTime|\DateTimeImmutable|string $date
      *
      * @throws Exception
      */
@@ -568,6 +535,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         if (!$dateTime || $dateTime === null) {
             throw new Exception('Invalid date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object');
         }
+
+        // Set date object to start of the day.
+        $dateTime->setTime(0,0,0,0);
 
         return $dateTime;
     }
