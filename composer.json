@@ -3,7 +3,6 @@
     "description": "A simple library that accepts start of financial year date and splits into financial periods for business purposes. Accepts different interfaces to work with various time handling libraries",
     "type": "library",
     "require": {
-        "brick/date-time": "dev-master"
     },
     "autoload": {
         "RoussKS\\FinancialYear\\": "src/"
@@ -15,5 +14,8 @@
             "email": "roussetos@roussks.com"
         }
     ],
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "require-dev": {
+        "phpunit/phpunit": "7.5.x-dev"
+    }
 }

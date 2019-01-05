@@ -3,11 +3,11 @@
 namespace RoussKS\FinancialYear\Exceptions;
 
 /**
- * Class FinancialYearException
+ * Class Exception
  *
  * @package RoussKS\FinancialYear\Exception
  */
-class FinancialYearException extends \Exception
+class Exception extends \Exception
 {
     //
 }

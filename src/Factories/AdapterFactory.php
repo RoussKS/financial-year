@@ -1,0 +1,46 @@
+<?php
+
+namespace RoussKS\FinancialYear\Factories;
+
+use RoussKS\FinancialYear\Adapters\DateTimeAdapter;
+use RoussKS\FinancialYear\Exceptions\ConfigException;
+use RoussKS\FinancialYear\Interfaces\AdapterInterface;
+
+/***
+ * Class AdapterFactory
+ *
+ * @package RoussKS\FinancialYear\Factories
+ */
+class AdapterFactory
+{
+    /**
+     * @param  \DateTimeInterface $adapterType
+     * @param  array $config = [
+     *     'fyType'         => 'string', Enums\TypeEnum
+     *     'fyStartDate'    => 'date', ISO-8601 format or adapter's object
+     *     'fyEndDate'      => 'date', ISO-8601 format or adapter's object
+     *     'fiftyThreeWeeks => 'bool', Applicable to business type financial year, if year has 52 or 53 weeks.
+     * ]
+     *
+     * @return AdapterInterface
+     *
+     * @throws ConfigException
+     * @throws \ReflectionException
+     */
+    public static function createAdapter(\DateTimeInterface $adapterType, array $config)
+    {
+        // Switch on fully qualified class name.
+        switch (get_class($adapterType)){
+            case 'DateTime':
+            case 'DateTimeImmutable':
+                return new DateTimeAdapter(
+                    $config['fyType'],
+                    $config['fyStartDate'],
+                    isset($config['fiftyThreeWeeks']) ? $config['fiftyThreeWeeks'] : false,
+                    isset($config['fyEndDate']) ? $config['fyEndDate'] : null
+                );
+            default:
+                throw new ConfigException('Unknown adapter configuration key');
+        }
+    }
+}
