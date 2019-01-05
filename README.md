@@ -32,3 +32,10 @@ $fy = new \RoussKS\FinancialYear\FinancialYear($startDate, $config);
 
 echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31 
 ```
+
+### Versioning
+The current library will be using [Semantic Versioning](https://semver.org/)
+
+Non-breaking changes will result in a MINOR or a PATCH version update as classified by SemVer.
+
+Major version releases will not guarantee backwards compatibility.
