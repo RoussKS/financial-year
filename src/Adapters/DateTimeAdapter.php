@@ -208,7 +208,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // Set fyWeeks on success.
         if ($this->type->is(TypeEnum::BUSINESS())) {
 
-            $diff = $this->fyStartDate->diff($pendingValidationFyEndDate)->days / 7;
+            $diff = $this->fyStartDate->diff($pendingValidationFyEndDate->modify('+1 day'))->days / 7;
 
             if ($diff !== 52 || $diff !== 53) {
                 $this->throwConfigurationException('The provided end date can not be validated against the start date');
