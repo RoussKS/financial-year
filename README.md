@@ -12,9 +12,9 @@ According to [wikipedia](https://en.wikipedia.org/wiki/Fiscal_year)
 
 An organisation financial year can be based on the following 2 methods:
 1. Starting on the same date every year.
-   - This is the 'calendar' type for this library.
+   - This is the *`calendar`* type for this library.
 2. Ending on the same day of the week every year.
-   - This is the 'business' type for this library.
+   - This is the *`business`* type for this library.
      >The "fiscal year end" (FYE) is the date that marks the end of the fiscal year. Some companies—such as Cisco Systems[1]—end their fiscal year on the same day of the week each year, e.g. the day that is closest to a particular date (for example, the Friday closest to 31 December). Under such a system, some fiscal years will have 52 weeks and others 53 weeks.
      
 
