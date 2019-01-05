@@ -10,7 +10,7 @@ According to [wikipedia](https://en.wikipedia.org/wiki/Fiscal_year)
 
 >A fiscal year (or financial year, or sometimes budget year) is the period used by governments for accounting and budget purposes, which varies between countries. It is also used for financial reporting by business and other organizations.
 
-An organisation financial year can be based on the follow 2 methods:
+An organisation financial year can be based on the following 2 methods:
 1. Starting on the same date every year.
    - This is the 'calendar' type for this library.
 2. Ending on the same day of the week every year.
