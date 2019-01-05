@@ -257,41 +257,42 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $period = null;
 
         // Safe as immutable.
-        $fyStartDate = $this->fyStartDate;
+        $dateTime = $this->fyStartDate;
 
-        // In calendar type, periods are always 12 as the months,
-        // regardless of the start date within the month.
+        // In calendar type, periods are always 12 as the months, regardless of the start date within the month.
         if ($this->type->is(TypeEnum::CALENDAR())) {
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
-                $fyStartDate->modify('+ ' . (string) $id - 1 . ' month');
+                $dateTime->modify('+ ' . (string) $id - 1 . ' month');
 
             // If last period details requested, the end date is the financial year end date.
+            // Else, it's the end of the month.
             $periodEndDate = $id === 12 ?
                 $this->fyEndDate :
-                $fyStartDate->modify('+ ' . (string) $id . ' month')
-                            ->modify('-1 day');
+                $dateTime->modify('+1 month')
+                         ->modify('-1 day');
 
             $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('P1D'), $periodEndDate);
         }
 
         if ($this->type->is(TypeEnum::BUSINESS())) {
-
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
-                $fyStartDate->modify('+ ' . (string) (($id - 1) * 4) . ' week');
+                $dateTime->modify('+ ' . (string) (($id - 1) * 4) . ' week');
 
             // If last period details requested, the end date is the financial year end date.
+            // This way we also overcome the potential issue of a 53rd week.
             $periodEndDate = $id === 12 ?
                 $this->fyEndDate :
-                $fyStartDate->modify('+ ' . (string) ($id * 4) . ' week')
-                            ->modify('-1 day');
+                $dateTime->modify('+4 week')
+                         ->modify('-1 day');
 
             $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('P1D'), $periodEndDate);
         }
 
+        // This case should never happen.
         if ($period === null) {
             throw new Exception('A date range period could not be set');
         }
@@ -303,19 +304,12 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * {@inheritdoc}
      *
      * @throws Exception
-     * @throws ConfigException
      */
     public function getBusinessWeekById(int $id)
     {
         $this->validate();
 
-        if ($this->type->isNot(TypeEnum::BUSINESS())) {
-            $this->throwConfigurationException('Week date range is not applicable for non business type financial year');
-        }
-
-        if ($id < 1 || $id > $this->fyWeeks) {
-            throw new Exception('There is no week with id: ' . $id);
-        }
+        $this->validateBusinessWeekId($id);
 
         // Safe copy as immutable.
         $dateTime = $this->fyStartDate;
@@ -336,14 +330,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * Get the first date of the period with the given id.
-     *
-     * @param  int $id
-     *
-     * @return \DateTimeInterface
-     *
      * @throws Exception
-     * @throws ConfigException
      */
     public function getFirstDateOfPeriodById(int $id)
     {
@@ -359,16 +346,16 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         // Safe as immutable.
-        $fyStartDate = $this->fyStartDate;
+        $dateTime = $this->fyStartDate;
 
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->type->is(TypeEnum::CALENDAR())) {
-            $periodStart = $fyStartDate->modify('+ ' . (string) $id - 1 . ' month');
+            $periodStart = $dateTime->modify('+ ' . (string) $id - 1 . ' month');
         }
 
         if ($this->type->is(TypeEnum::BUSINESS())) {
-            $periodStart = $fyStartDate->modify('+ ' . (string) (($id - 1) * 4) . ' week');
+            $periodStart = $dateTime->modify('+ ' . (string) (($id - 1) * 4) . ' week');
         }
 
         if ($periodStart === null) {
@@ -381,14 +368,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * Get the last date of the period with the given id.
-     *
-     * @param  int $id
-     *
-     * @return \DateTimeInterface|\DateTimeImmutable
-     *
      * @throws Exception
-     * @throws ConfigException
      */
     public function getLastDateOfPeriodById(int $id)
     {
@@ -404,18 +384,18 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         // Safe as immutable.
-        $fyStartDate = $this->fyStartDate;
+        $dateTime = $this->fyStartDate;
 
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->type->is(TypeEnum::CALENDAR())) {
-            $periodEnd = $fyStartDate->modify('+ ' . (string) $id. ' month')
-                                     ->modify('-1 day');
+            $periodEnd = $dateTime->modify('+ ' . (string) $id. ' month')
+                                  ->modify('-1 day');
         }
 
         if ($this->type->is(TypeEnum::BUSINESS())) {
-            $periodEnd = $fyStartDate->modify('+ ' . (string) (($id) * 4) . ' week')
-                                     ->modify('-1 day');
+            $periodEnd = $dateTime->modify('+ ' . (string) (($id) * 4) . ' week')
+                                  ->modify('-1 day');
         }
 
         if ($periodEnd === null) {
@@ -431,7 +411,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @return \DateTimeInterface|\DateTimeImmutable
      *
      * @throws Exception
-     * @throws ConfigException
      */
     public function getFirstDateOfBusinessWeekById(int $id)
     {
@@ -453,14 +432,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * Get the last date of the business week with the given id.
-     *
-     * @param  int $id
-     *
      * @return \DateTimeInterface|\DateTimeImmutable
      *
      * @throws Exception
-     * @throws ConfigException
      */
     public function getLastDateOfBusinessWeekById(int $id)
     {
@@ -483,31 +457,17 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * Get the date range of the first business week of the period with the given id.
-     *
-     * @param  int $id
-     *
-     * @return \Traversable
-     *
      * @throws Exception
-     * @throws ConfigException
      */
     public function getFirstBusinessWeekByPeriodId(int $id)
     {
-        return $this->getBusinessWeekById(($id - 1) * 4);
+        return $this->getBusinessWeekById(($id - 1) * 4 + 1);
     }
 
     /**
      * {@inheritdoc}
      *
-     * Get the date range of the second business week of the period with the given id.
-     *
-     * @param  int $id
-     *
-     * @return \Traversable
-     *
      * @throws Exception
-     * @throws ConfigException
      */
     public function getSecondBusinessWeekByPeriodId(int $id)
     {
@@ -517,14 +477,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * Get the date range of the third business week of the period with the given id.
-     *
-     * @param  int $id
-     *
-     * @return \Traversable
-     *
      * @throws Exception
-     * @throws ConfigException
      */
     public function getThirdBusinessWeekOfPeriodId(int $id)
     {
@@ -534,14 +487,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * Get the date range of the fourth business week of the period with the given id.
-     *
-     * @param  int $id
-     *
-     * @return \Traversable
-     *
      * @throws Exception
-     * @throws ConfigException
      */
     public function getFourthBusinessWeekByPeriodId(int $id)
     {
@@ -586,7 +532,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     protected function validateBusinessWeekId(int $id)
     {
         if ($this->type->isNot(TypeEnum::BUSINESS())) {
-            $this->throwConfigurationException('Week date range is not applicable for non business type financial year');
+            $this->throwConfigurationException('Week id is not applicable for non business type financial year');
         }
 
         if ($id < 1 || $id > $this->fyWeeks) {
