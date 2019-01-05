@@ -82,26 +82,6 @@ interface AdapterInterface
     public function setFyEndDate($date);
 
     /**
-     * @param  \DateTimeInterface $startDate
-     * @param  \DateTimeInterface $endDate
-     *
-     * @return int
-     *
-     * @throws ConfigException
-     */
-    public function getPeriodIdByDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate);
-
-    /**
-     * @param  \DateTimeInterface $startDate
-     * @param  \DateTimeInterface $endDate
-     *
-     * @return int
-     *
-     * @throws ConfigException
-     */
-    public function getBusinessWeekIdByDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate);
-
-    /**
      * Get the date range of the period with the given id.
      *
      * @param  int $id
@@ -122,6 +102,24 @@ interface AdapterInterface
      * @throws ConfigException
      */
     public function getBusinessWeekById(int $id);
+
+    /**
+     * @param  string|\DateTimeInterface $date
+     *
+     * @return int
+     *
+     * @throws ConfigException
+     */
+    public function getPeriodIdByDate($date);
+
+    /**
+     * @param  string|\DateTimeInterface $date
+     *
+     * @return int
+     *
+     * @throws ConfigException
+     */
+    public function getBusinessWeekIdIdByDate($date);
 
     /**
      * Get the first date of the period with the given id.

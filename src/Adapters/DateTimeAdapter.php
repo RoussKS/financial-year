@@ -104,7 +104,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         if (!$this->fyStartDate || $this->fyStartDate === null) {
-            $this->throwConfigurationException('Invalid start date format. Needs to be ISO-8601 string or DateTime object');
+            $this->throwConfigurationException('Invalid start date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object');
         }
 
         if ($this->type->is(TypeEnum::CALENDAR()) && $this->fyStartDate->format('md') == '0229') {
@@ -181,7 +181,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         if (!$fyEndDate || $fyEndDate === null) {
-            $this->throwConfigurationException('Invalid end date format. Needs to be ISO-8601 string or DateTime object');
+            $this->throwConfigurationException('Invalid end date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object');
         }
 
         // Set date to start of the day.
@@ -222,29 +222,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  \DateTimeInterface|\DateTime|\DateTimeImmutable $startDate
-     * @param  \DateTimeInterface|\DateTime|\DateTimeImmutable $endDate
-     *
-     */
-    public function getPeriodIdByDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
-    {
-        // TODO: Implement getPeriodIdByDateRange() method.
-    }
-
-    /**
-     * @inheritdoc
-     *
-     * @param  \DateTimeInterface|\DateTime|\DateTimeImmutable $startDate
-     * @param  \DateTimeInterface|\DateTime|\DateTimeImmutable $endDate
-     *
-     */
-    public function getBusinessWeekIdByDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
-    {
-        // TODO: Implement getBusinessWeekIdByDateRange() method.
-    }
-
-    /**
-     * {@inheritdoc}
+     * @return \DatePeriod
      *
      * @throws Exception
      */
@@ -303,6 +281,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
+     * @return \DatePeriod
+     *
      * @throws Exception
      */
     public function getBusinessWeekById(int $id)
@@ -325,6 +305,52 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $dateTime->modify('+6 day');
 
         return new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('P1D'), $periodEndDate);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param \DateTime|\DateTimeImmutable|string $date
+     *
+     * @throws Exception
+     */
+    public function getPeriodIdByDate($date)
+    {
+        $dateTime = $this->getDateObject($date);
+
+        for ($id = 1; $id <= 12; $id++) {
+            /** @var \DateTimeInterface $interval */
+            foreach ($this->getPeriodById($id) as $interval) {
+                if ($dateTime->format('Y-m-d') === $interval->format('Y-m-d')) {
+                    return $id;
+                }
+            }
+        }
+
+        throw new Exception('A period could not be found for the specified date');
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param \DateTime|\DateTimeImmutable|string $date
+     *
+     * @throws Exception
+     */
+    public function getBusinessWeekIdIdByDate($date)
+    {
+        $dateTime = $this->getDateObject($date);
+
+        for ($id = 1; $id <= $this->fyWeeks; $id++) {
+            /** @var \DateTimeInterface $interval */
+            foreach ($this->getBusinessWeekById($id) as $interval) {
+                if ($dateTime->format('Y-m-d') === $interval->format('Y-m-d')) {
+                    return $id;
+                }
+            }
+        }
+
+        throw new Exception('A business week could not be found for the specified date');
     }
 
     /**
@@ -457,6 +483,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
+     * @return \DatePeriod
+     *
      * @throws Exception
      */
     public function getFirstBusinessWeekByPeriodId(int $id)
@@ -466,6 +494,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return \DatePeriod
      *
      * @throws Exception
      */
@@ -477,6 +507,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
+     * @return \DatePeriod
+     *
      * @throws Exception
      */
     public function getThirdBusinessWeekOfPeriodId(int $id)
@@ -487,6 +519,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
+     * @return \DatePeriod
+     *
      * @throws Exception
      */
     public function getFourthBusinessWeekByPeriodId(int $id)
@@ -495,7 +529,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * @return  \Traversable
+     * @return \DatePeriod
      *
      * @throws  Exception
      * @throws  ConfigException
@@ -503,6 +537,39 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     public function getFifthThirdBusinessWeekPeriod()
     {
         return $this->getBusinessWeekById(53);
+    }
+
+    /**
+     * Get a date object from the provided param.
+     *
+     * @param  \DateTime|\DateTimeImmutable|string $date$date
+     *
+     * @return \DateTimeImmutable
+     *
+     * @throws Exception
+     */
+    protected function getDateObject($date)
+    {
+        // Placeholder
+        $dateTime = null;
+
+        if ($date instanceof \DateTime) {
+            $dateTime = \DateTimeImmutable::createFromMutable($date);
+        }
+
+        if ($date instanceof \DateTimeImmutable) {
+            $dateTime = $date;
+        }
+
+        if (is_string($date)) {
+            $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', $date);
+        }
+
+        if (!$dateTime || $dateTime === null) {
+            throw new Exception('Invalid date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object');
+        }
+
+        return $dateTime;
     }
 
     /**
