@@ -195,22 +195,19 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
             $diff = $this->fyStartDate->diff($pendingValidationFyEndDate->modify('+1 day'));
 
-            // Check that end date + 1 day is exactly 1 year after the start date.
-            if ($diff->y === 1 && $diff->m === 0 && $diff->d === 0) {
-                $this->fyEndDate = $fyEndDate;
-
-                return;
+            // Check that end date + 1 day (start date of next financial year) is exactly 1 year after the start date.
+            if ($diff->y !== 1 && $diff->m !== 0 && $diff->days !== 0) {
+                $this->throwConfigurationException('The provided end date can not be validated against the start date');
             }
-
-            $this->throwConfigurationException('The provided end date can not be validated against the start date');
         }
 
-        // Validate financial year end date if current method is not called on instantiation.
+        // If the financial year type is business, Check that is correctly set.
         // Set fyWeeks on success.
         if ($this->type->is(TypeEnum::BUSINESS())) {
 
             $diff = $this->fyStartDate->diff($pendingValidationFyEndDate->modify('+1 day'))->days / 7;
 
+            // Check that end date + 1 day (start date of next financial year) is exactly 52 or 53 weeks after the start date.
             if ($diff !== 52 || $diff !== 53) {
                 $this->throwConfigurationException('The provided end date can not be validated against the start date');
             }
@@ -218,6 +215,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $this->fyWeeks = $diff;
         }
 
+        // The above conditions cover all types (which is strictly set on instantiation, so we can safely set the fyEndDate.
         $this->fyEndDate = $fyEndDate;
     }
 
