@@ -9,6 +9,9 @@
             "homepage": "https://www.roussks.com"
         }
     ],
+    "config": {
+        "sort-packages": true
+    },
     "autoload": {
         "psr-4": {
             "RoussKS\\FinancialYear\\": "src/"
