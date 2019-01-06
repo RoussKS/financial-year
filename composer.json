@@ -17,6 +17,11 @@
             "RoussKS\\FinancialYear\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "RoussKS\\FinancialYear\\Tests\\": "tests/"
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
