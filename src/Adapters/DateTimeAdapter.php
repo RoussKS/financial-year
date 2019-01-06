@@ -145,7 +145,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             // For business type, the end date is the number of weeks , minus 1 day after the start date.
             if ($this->type->is(TypeEnum::BUSINESS())) {
                 // As a financial year would have 52 or 53 weeks, the param handles it.
-                $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString((string) $this->fyWeeks . ' weeks'))
+                $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString($this->fyWeeks . ' weeks'))
                                                      ->sub(\DateInterval::createFromDateString('1 day'));
             }
 
@@ -207,7 +207,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
-                $this->fyStartDate->add(\DateInterval::createFromDateString((string) ($id - 1) . $id === 2 ? ' month' : ' months'));
+                $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' months'));
 
             // If last period details requested, the end date is the financial year end date.
             // Else, it's the end of the month.
@@ -223,7 +223,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
-                $this->fyStartDate->add(\DateInterval::createFromDateString((string) (($id - 1) * 4) . ' weeks'));
+                $this->fyStartDate->add(\DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
 
             // If last period details requested, the end date is the financial year end date.
             // This way we also overcome the potential issue of a 53rd week.
@@ -259,7 +259,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // If 1st week, get the start of the financial year.
         $weekStartDate = $id === 1 ?
             $this->fyStartDate :
-            $this->fyStartDate->add(\DateInterval::createFromDateString((string) ($id - 1) . $id === 2 ? ' week' : ' weeks'));
+            $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' weeks'));
 
         // If last week, get the end of the financial year.
         $weekEndDate = $id === $this->fyWeeks ?
@@ -336,11 +336,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->type->is(TypeEnum::CALENDAR())) {
-            $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString((string) ($id - 1) . $id === 2 ? ' month' : ' months'));
+            $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' months'));
         }
 
         if ($this->type->is(TypeEnum::BUSINESS())) {
-            $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString((string) (($id - 1) * 4) . ' weeks'));
+            $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
         }
 
         if ($periodStart === null) {
@@ -371,12 +371,12 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->type->is(TypeEnum::CALENDAR())) {
-            $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString((string) $id . $id === 1 ? ' month' : ' months'))
+            $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString($id . ' months'))
                                            ->sub(\DateInterval::createFromDateString('1 day'));
         }
 
         if ($this->type->is(TypeEnum::BUSINESS())) {
-            $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString((string) (($id) * 4) . ' weeks'))
+            $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString($id * 4 . ' weeks'))
                                            ->sub(\DateInterval::createFromDateString('1 day'));
         }
 
@@ -405,7 +405,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $this->fyStartDate;
         }
 
-        return $this->fyStartDate->add(\DateInterval::createFromDateString((string) ($id - 1) . $id === 2 ? ' week' : ' weeks'));
+        return $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' weeks'));
     }
 
     /**
@@ -426,7 +426,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $this->fyEndDate;
         }
 
-        return $this->fyStartDate->add(\DateInterval::createFromDateString((string) $id . $id === 1 ? ' week' : ' weeks'))
+        return $this->fyStartDate->add(\DateInterval::createFromDateString($id . ' weeks'))
                                  ->sub(\DateInterval::createFromDateString('1 day'));
     }
 
@@ -521,40 +521,5 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // Set date object to start of the day.
         return $dateTime;
-    }
-
-    /**
-     * Validate period $id is between 1 and 12.
-     *
-     * @param  int $id
-     *
-     * @return void
-     *
-     * @throws Exception
-     */
-    protected function validatePeriodId(int $id)
-    {
-        if ($id < 1 || $id > 12) {
-            throw new Exception('There is no period with id: ' . $id);
-        }
-    }
-
-    /**
-     * Validate fyType is business and week $id is between 1 and the set fyWeeks (52 or 53).
-     *
-     * @param  int $id
-     *
-     * @throws Exception
-     * @throws ConfigException
-     */
-    protected function validateBusinessWeekId(int $id)
-    {
-        if ($this->type->isNot(TypeEnum::BUSINESS())) {
-            $this->throwConfigurationException('Week id is not applicable for non business type financial year');
-        }
-
-        if ($id < 1 || $id > $this->fyWeeks) {
-            throw new Exception('There is no week with id: ' . $id);
-        }
     }
 }

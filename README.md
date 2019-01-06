@@ -26,12 +26,12 @@ An organisation financial year can be based on the following 2 methods:
 $startDate = new \DateTime('2019-01-01');
 
 $config = [
-    'fyType' => 'calendar'
+    'fyType' => 'calendar',
     'fyStartDate' => $startDate,
-]
+];
 
 /** \RoussKS\FinancialYear\Interfaces\AdapterInterface $fy */
-$fy = (new \RoussKS\FinancialYear\FinancialYear($startDate, $config))->getAdapter();
+$fy = (new \RoussKS\FinancialYear\FinancialYear($startDate, $config))->getFinancialYearAdapter();
 
 echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31 
 ```
