@@ -6,7 +6,6 @@ use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Interfaces\AdapterInterface;
-use function Sodium\add;
 
 /**
  * Implementation of PHP DateTime FinancialYear Adapter
@@ -138,16 +137,16 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
             // For calendar type, the end date is 1 year, minus 1 day after the start date.
             if ($this->type->is(TypeEnum::CALENDAR())) {
-                $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString('P1Y'))
-                                                     ->sub(\DateInterval::createFromDateString('P1D'));
+                $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString('1 year'))
+                                                     ->sub(\DateInterval::createFromDateString('1 day'));
 
             }
 
             // For business type, the end date is the number of weeks , minus 1 day after the start date.
             if ($this->type->is(TypeEnum::BUSINESS())) {
                 // As a financial year would have 52 or 53 weeks, the param handles it.
-                $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString('P' . (string) $this->fyWeeks . 'W'))
-                                                     ->sub(\DateInterval::createFromDateString('P1D'));
+                $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString((string) $this->fyWeeks . ' weeks'))
+                                                     ->sub(\DateInterval::createFromDateString('1 day'));
             }
 
             // On null param, there is no need for extra logic.
@@ -161,7 +160,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // If the financial year type is calendar, Check that is correctly set.
         if ($this->type->is(TypeEnum::CALENDAR())) {
 
-            $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('P1D')));
+            $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('1 day')));
 
             // Check that end date + 1 day (start date of next financial year) is exactly 1 year after the start date.
             if ($diff->y !== 1 && $diff->m !== 0 && $diff->days !== 0) {
@@ -173,7 +172,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // Set fyWeeks on success.
         if ($this->type->is(TypeEnum::BUSINESS())) {
 
-            $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('P1D')))->days / 7;
+            $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('1 day')))->days / 7;
 
             // Check that end date + 1 day (start date of next financial year) is exactly 52 or 53 weeks after the start date.
             if ($diff !== 52 || $diff !== 53) {
@@ -208,32 +207,32 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
-                $this->fyStartDate->add(new \DateInterval('P' . (string) $id - 1 . 'M'));
+                $this->fyStartDate->add(\DateInterval::createFromDateString((string) ($id - 1) . $id === 2 ? ' month' : ' months'));
 
             // If last period details requested, the end date is the financial year end date.
             // Else, it's the end of the month.
             $periodEndDate = $id === 12 ?
                 $this->fyEndDate :
-                $periodStartDate->add(\DateInterval::createFromDateString('P1M'))
-                                ->sub(\DateInterval::createFromDateString('P1D'));
+                $periodStartDate->add(\DateInterval::createFromDateString('1 month'))
+                                ->sub(\DateInterval::createFromDateString('1 day'));
 
-            $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('P1D'), $periodEndDate);
+            $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
 
         if ($this->type->is(TypeEnum::BUSINESS())) {
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
-                $this->fyStartDate->add(\DateInterval::createFromDateString('P' . (string) (($id - 1) * 4) . 'W'));
+                $this->fyStartDate->add(\DateInterval::createFromDateString((string) (($id - 1) * 4) . ' weeks'));
 
             // If last period details requested, the end date is the financial year end date.
             // This way we also overcome the potential issue of a 53rd week.
             $periodEndDate = $id === 12 ?
                 $this->fyEndDate :
-                $periodStartDate->add(\DateInterval::createFromDateString('P4W'))
-                                ->sub(\DateInterval::createFromDateString('P1D'));
+                $periodStartDate->add(\DateInterval::createFromDateString('4 weeks'))
+                                ->sub(\DateInterval::createFromDateString('1 day'));
 
-            $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('P1D'), $periodEndDate);
+            $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
 
         // This case should never happen.
@@ -260,14 +259,14 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // If 1st week, get the start of the financial year.
         $weekStartDate = $id === 1 ?
             $this->fyStartDate :
-            $this->fyStartDate->add(\DateInterval::createFromDateString('P' . (string) $id - 1 . 'W'));
+            $this->fyStartDate->add(\DateInterval::createFromDateString((string) ($id - 1) . $id === 2 ? ' week' : ' weeks'));
 
         // If last week, get the end of the financial year.
         $weekEndDate = $id === $this->fyWeeks ?
             $this->fyEndDate :
-            $weekStartDate->add(\DateInterval::createFromDateString('P6D'));
+            $weekStartDate->add(\DateInterval::createFromDateString('6 days'));
 
-        return new \DatePeriod($weekStartDate, \DateInterval::createFromDateString('P1D'), $weekEndDate);
+        return new \DatePeriod($weekStartDate, \DateInterval::createFromDateString('1 day'), $weekEndDate);
     }
 
     /**
@@ -337,11 +336,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->type->is(TypeEnum::CALENDAR())) {
-            $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString('P' . (string) $id - 1 . 'M'));
+            $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString((string) ($id - 1) . $id === 2 ? ' month' : ' months'));
         }
 
         if ($this->type->is(TypeEnum::BUSINESS())) {
-            $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString('P' . (string) (($id - 1) * 4) . 'W'));
+            $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString((string) (($id - 1) * 4) . ' weeks'));
         }
 
         if ($periodStart === null) {
@@ -372,13 +371,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->type->is(TypeEnum::CALENDAR())) {
-            $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString('P' . (string) $id . 'M'))
-                                           ->sub(\DateInterval::createFromDateString('P1D'));
+            $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString((string) $id . $id === 1 ? ' month' : ' months'))
+                                           ->sub(\DateInterval::createFromDateString('1 day'));
         }
 
         if ($this->type->is(TypeEnum::BUSINESS())) {
-            $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString('P' . (string) (($id) * 4) . 'W'))
-                                           ->sub(\DateInterval::createFromDateString('P1D'));
+            $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString((string) (($id) * 4) . ' weeks'))
+                                           ->sub(\DateInterval::createFromDateString('1 day'));
         }
 
         if ($periodEnd === null) {
@@ -406,7 +405,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $this->fyStartDate;
         }
 
-        return $this->fyStartDate->add(\DateInterval::createFromDateString('P' . (string) $id - 1 . 'W'));
+        return $this->fyStartDate->add(\DateInterval::createFromDateString((string) ($id - 1) . $id === 2 ? ' week' : ' weeks'));
     }
 
     /**
@@ -427,8 +426,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $this->fyEndDate;
         }
 
-        return $this->fyStartDate->add(\DateInterval::createFromDateString('P' . (string) $id . 'W'))
-                                 ->sub(\DateInterval::createFromDateString('P1D'));
+        return $this->fyStartDate->add(\DateInterval::createFromDateString((string) $id . $id === 1 ? ' week' : ' weeks'))
+                                 ->sub(\DateInterval::createFromDateString('1 day'));
     }
 
     /**
