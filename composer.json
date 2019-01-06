@@ -2,19 +2,31 @@
     "name": "roussks/financial-year",
     "description": "A simple library that accepts start of financial year date and splits into financial periods for business purposes. Accepts different interfaces to work with various time handling libraries",
     "type": "library",
-    "require": {
-    },
-    "autoload": {
-        "RoussKS\\FinancialYear\\": "src/"
-    },
     "license": "MIT",
     "authors": [
         {
             "name": "RoussKS",
-            "email": "roussetos@roussks.com"
+            "homepage": "https://www.roussks.com"
         }
     ],
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "RoussKS\\FinancialYear\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RoussKS\\FinancialYear\\Tests\\": "tests/"
+        }
+    },
     "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^7.1"
+    },
     "require-dev": {
         "phpunit/phpunit": "7.5.x-dev"
     }

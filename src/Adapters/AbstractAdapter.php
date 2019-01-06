@@ -3,6 +3,7 @@
 namespace RoussKS\FinancialYear\Adapters;
 
 use RoussKS\FinancialYear\Enums\TypeEnum;
+use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 
 /**
@@ -117,6 +118,41 @@ abstract class AbstractAdapter
             $this->fyEndDate === null
         ) {
             $this->throwConfigurationException();
+        }
+    }
+
+    /**
+     * Validate period $id is between 1 and 12.
+     *
+     * @param  int $id
+     *
+     * @return void
+     *
+     * @throws Exception
+     */
+    protected function validatePeriodId(int $id)
+    {
+        if ($id < 1 || $id > 12) {
+            throw new Exception('There is no period with id: ' . $id);
+        }
+    }
+
+    /**
+     * Validate fyType is business and week $id is between 1 and the set fyWeeks (52 or 53).
+     *
+     * @param  int $id
+     *
+     * @throws Exception
+     * @throws ConfigException
+     */
+    protected function validateBusinessWeekId(int $id)
+    {
+        if ($this->type->isNot(TypeEnum::BUSINESS())) {
+            $this->throwConfigurationException('Week id is not applicable for non business type financial year');
+        }
+
+        if ($id < 1 || $id > $this->fyWeeks) {
+            throw new Exception('There is no week with id: ' . $id);
         }
     }
 
