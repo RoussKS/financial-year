@@ -4,6 +4,7 @@ namespace RoussKS\FinancialYear\Factories;
 
 use RoussKS\FinancialYear\Adapters\DateTimeAdapter;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
+use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 
 /***
@@ -24,13 +25,14 @@ class AdapterFactory
      *
      * @return AdapterInterface
      *
+     * @throws Exception
      * @throws ConfigException
      * @throws \ReflectionException
      */
     public static function createAdapter(\DateTimeInterface $adapterType, array $config)
     {
         // Switch on fully qualified class name.
-        switch (get_class($adapterType)){
+        switch (get_class($adapterType)) {
             case 'DateTime':
             case 'DateTimeImmutable':
                 return new DateTimeAdapter(

@@ -3,6 +3,7 @@
 namespace RoussKS\FinancialYear;
 
 use RoussKS\FinancialYear\Exceptions\ConfigException;
+use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Factories\AdapterFactory;
 use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 
@@ -14,6 +15,11 @@ use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 class FinancialYear
 {
     /**
+     * @var AdapterInterface
+     */
+    protected $adapter;
+
+    /**
      * FinancialYear constructor.
      *
      * @param  \DateTimeInterface $adapterType
@@ -24,10 +30,9 @@ class FinancialYear
      *     'fiftyThreeWeeks => 'bool', Applicable to business type financial year, if year has 52 or 53 weeks.
      * ]
      *
-     * @return  AdapterInterface
-     *
-     * @throws  ConfigException
-     * @throws  \ReflectionException
+     * @throws Exception
+     * @throws ConfigException
+     * @throws \ReflectionException
      */
     public function __construct(\DateTimeInterface $adapterType, array $config)
     {
@@ -39,6 +44,14 @@ class FinancialYear
             throw new ConfigException('The financial year start date is required.');
         }
 
-        return AdapterFactory::createAdapter($adapterType, $config);
+        $this->adapter = AdapterFactory::createAdapter($adapterType, $config);
+    }
+
+    /**
+     * @return AdapterInterface
+     */
+    public function getAdapter()
+    {
+        return $this->adapter;
     }
 }
