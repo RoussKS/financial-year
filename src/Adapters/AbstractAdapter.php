@@ -33,7 +33,7 @@ abstract class AbstractAdapter
      *
      * @var int|null
      */
-    protected $fyWeeks = null;
+    protected $fyWeeks;
 
     /**
      * AbstractAdapter constructor.
@@ -64,7 +64,7 @@ abstract class AbstractAdapter
      *
      * @return TypeEnum
      */
-    public function getType()
+    public function getType(): TypeEnum
     {
         return $this->type;
     }
@@ -74,7 +74,7 @@ abstract class AbstractAdapter
      *
      * @return int
      */
-    public function getFyWeeks()
+    public function getFyWeeks(): int
     {
         return $this->fyWeeks;
     }
@@ -90,7 +90,7 @@ abstract class AbstractAdapter
      *
      * @throws ConfigException
      */
-    public function setFyWeeks($fiftyThreeWeeks = false)
+    public function setFyWeeks($fiftyThreeWeeks = false): void
     {
         if ($this->type->isNot(TypeEnum::BUSINESS())) {
             $this->throwConfigurationException('Can not set the financial year weeks property for non business year type');
@@ -110,7 +110,7 @@ abstract class AbstractAdapter
      *
      * @throws ConfigException
      */
-    public function validate()
+    public function validate(): void
     {
         if (
             $this->type === null ||
@@ -130,7 +130,7 @@ abstract class AbstractAdapter
      *
      * @throws Exception
      */
-    protected function validatePeriodId(int $id)
+    protected function validatePeriodId(int $id): void
     {
         if ($id < 1 || $id > 12) {
             throw new Exception('There is no period with id: ' . $id);
@@ -142,10 +142,12 @@ abstract class AbstractAdapter
      *
      * @param  int $id
      *
+     * @return void
+     *
      * @throws Exception
      * @throws ConfigException
      */
-    protected function validateBusinessWeekId(int $id)
+    protected function validateBusinessWeekId(int $id): void
     {
         if ($this->type->isNot(TypeEnum::BUSINESS())) {
             $this->throwConfigurationException('Week id is not applicable for non business type financial year');
@@ -161,7 +163,7 @@ abstract class AbstractAdapter
      *
      * @throws ConfigException
      */
-    protected function throwConfigurationException($message = null)
+    protected function throwConfigurationException($message = null): void
     {
         if ($message === null) {
             $message = 'Invalid configuration of financial year adapter';

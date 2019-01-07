@@ -29,7 +29,7 @@ class AdapterFactory
      * @throws ConfigException
      * @throws \ReflectionException
      */
-    public static function createAdapter(\DateTimeInterface $adapterType, array $config)
+    public static function createAdapter(\DateTimeInterface $adapterType, array $config): ?AdapterInterface
     {
         // Switch on fully qualified class name.
         switch (get_class($adapterType)) {
@@ -38,8 +38,8 @@ class AdapterFactory
                 return new DateTimeAdapter(
                     $config['fyType'],
                     $config['fyStartDate'],
-                    isset($config['fiftyThreeWeeks']) ? $config['fiftyThreeWeeks'] : false,
-                    isset($config['fyEndDate']) ? $config['fyEndDate'] : null
+                    $config['fiftyThreeWeeks'] ?? false,
+                    $config['fyEndDate'] ?? null
                 );
             default:
                 throw new ConfigException('Unknown adapter configuration key');

@@ -62,7 +62,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function setFyWeeks($fiftyThreeWeeks = false)
+    public function setFyWeeks($fiftyThreeWeeks = false): void
     {
         $originalFyWeeks = $this->fyWeeks;
 
@@ -79,7 +79,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return \DateTimeInterface|\DateTimeImmutable
      */
-    public function getFyStartDate()
+    public function getFyStartDate(): \DateTimeInterface
     {
         return $this->fyStartDate;
     }
@@ -91,14 +91,14 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function setFyStartDate($date)
+    public function setFyStartDate($date): void
     {
         // fyStartDate property is an immutable object.
         $originalFyStartDate = $this->fyStartDate;
 
         $this->fyStartDate = $this->getDateObject($date);
 
-        if ($this->type->is(TypeEnum::CALENDAR()) && $this->fyStartDate->format('md') == '0229') {
+        if ($this->fyStartDate->format('md') === '0229' && $this->type->is(TypeEnum::CALENDAR())) {
             $this->throwConfigurationException('This library does not support 29th of February as the starting date for calendar type financial year');
         }
 
@@ -106,7 +106,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // recalculate financial year end date from current settings,
         // even if the new start date is the same as the previous one (why re-setting the same date?).
         if ($originalFyStartDate !== null) {
-            $this->setFyEndDate(null);
+            $this->setFyEndDate();
         }
     }
 
@@ -115,7 +115,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return \DateTimeInterface|\DateTimeImmutable
      */
-    public function getFyEndDate()
+    public function getFyEndDate(): \DateTimeInterface
     {
         return $this->fyEndDate;
     }
@@ -128,7 +128,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @throws Exception
      * @throws \Exception
      */
-    public function setFyEndDate($date = null)
+    public function setFyEndDate($date = null): void
     {
         // If date param is null, we set end date relative to start date (it is already set from the constructor).
         // At this point start date's time is set to 00:00:00
@@ -194,7 +194,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @throws \Exception
      * @throws Exception
      */
-    public function getPeriodById(int $id)
+    public function getPeriodById(int $id): \Traversable
     {
         $this->validate();
 
@@ -250,7 +250,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getBusinessWeekById(int $id)
+    public function getBusinessWeekById(int $id): \Traversable
     {
         $this->validate();
 
@@ -276,7 +276,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getPeriodIdByDate($date)
+    public function getPeriodIdByDate($date): int
     {
         $dateTime = $this->getDateObject($date);
 
@@ -299,7 +299,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getBusinessWeekIdIdByDate($date)
+    public function getBusinessWeekIdIdByDate($date): int
     {
         $dateTime = $this->getDateObject($date);
 
@@ -320,7 +320,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getFirstDateOfPeriodById(int $id)
+    public function getFirstDateOfPeriodById(int $id): \DateTimeInterface
     {
         $this->validate();
 
@@ -355,7 +355,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getLastDateOfPeriodById(int $id)
+    public function getLastDateOfPeriodById(int $id): \DateTimeInterface
     {
         $this->validate();
 
@@ -394,7 +394,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getFirstDateOfBusinessWeekById(int $id)
+    public function getFirstDateOfBusinessWeekById(int $id): \DateTimeInterface
     {
         $this->validate();
 
@@ -415,7 +415,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getLastDateOfBusinessWeekById(int $id)
+    public function getLastDateOfBusinessWeekById(int $id): \DateTimeInterface
     {
         $this->validate();
 
@@ -437,7 +437,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getFirstBusinessWeekByPeriodId(int $id)
+    public function getFirstBusinessWeekByPeriodId(int $id): \Traversable
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 1);
     }
@@ -449,7 +449,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getSecondBusinessWeekByPeriodId(int $id)
+    public function getSecondBusinessWeekByPeriodId(int $id): \Traversable
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 2);
     }
@@ -461,7 +461,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getThirdBusinessWeekOfPeriodId(int $id)
+    public function getThirdBusinessWeekOfPeriodId(int $id): \Traversable
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 3);
     }
@@ -473,7 +473,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getFourthBusinessWeekByPeriodId(int $id)
+    public function getFourthBusinessWeekByPeriodId(int $id): \Traversable
     {
         return $this->getBusinessWeekById($id * 4);
     }
@@ -484,7 +484,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @throws  Exception
      * @throws  ConfigException
      */
-    public function getFifthThirdBusinessWeekPeriod()
+    public function getFifthThirdBusinessWeekPeriod(): \Traversable
     {
         return $this->getBusinessWeekById(53);
     }
@@ -498,7 +498,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    protected function getDateObject($date)
+    protected function getDateObject($date): \DateTimeImmutable
     {
         // Placeholder
         $dateTime = null;
