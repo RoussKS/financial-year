@@ -39,7 +39,6 @@ class FinancialYear
      *
      * @throws Exception
      * @throws ConfigException
-     * @throws \ReflectionException
      */
     public function __construct(\DateTimeInterface $adapterType, array $config = null)
     {
@@ -61,7 +60,6 @@ class FinancialYear
      *
      * @throws ConfigException
      * @throws Exception
-     * @throws \ReflectionException
      */
     public function instantiateFinancialYearAdapter(array $config): void
     {

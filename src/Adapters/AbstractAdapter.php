@@ -44,19 +44,23 @@ abstract class AbstractAdapter
      * @return void
      *
      * @throws ConfigException
-     * @throws \ReflectionException
      */
     public function __construct(string $type, bool $fiftyThreeWeeks)
     {
-        if ($type === null) {
-            $this->throwConfigurationException('Financial year type cannot be null');
+        if (TypeEnum::isCalendar($type)) {
+            $this->type = $type;
+
+            return;
         }
 
-        $this->type = TypeEnum::get($type);
-
-        if ($this->type->is(TypeEnum::BUSINESS())) {
+        if (TypeEnum::isBusiness($type)) {
+            $this->type = $type;
             $this->setFyWeeks($fiftyThreeWeeks);
+
+            return;
         }
+
+        $this->throwConfigurationException('Invalid Financial Year Type');
     }
 
     /**
@@ -92,7 +96,7 @@ abstract class AbstractAdapter
      */
     public function setFyWeeks($fiftyThreeWeeks = false): void
     {
-        if ($this->type->isNot(TypeEnum::BUSINESS())) {
+        if (!TypeEnum::isBusiness($this->type)) {
             $this->throwConfigurationException('Can not set the financial year weeks property for non business year type');
         }
 
@@ -149,7 +153,7 @@ abstract class AbstractAdapter
      */
     protected function validateBusinessWeekId(int $id): void
     {
-        if ($this->type->isNot(TypeEnum::BUSINESS())) {
+        if (!TypeEnum::isBusiness($this->type)) {
             $this->throwConfigurationException('Week id is not applicable for non business type financial year');
         }
 

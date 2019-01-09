@@ -27,7 +27,6 @@ class AdapterFactory
      *
      * @throws Exception
      * @throws ConfigException
-     * @throws \ReflectionException
      */
     public static function createAdapter(\DateTimeInterface $adapterType, array $config): ?AdapterInterface
     {
