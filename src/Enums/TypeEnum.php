@@ -2,8 +2,6 @@
 
 namespace RoussKS\FinancialYear\Enums;
 
-use RoussKS\FinancialYear\Exceptions\Exception;
-
 /**
  * Class TypeEnum
  *
