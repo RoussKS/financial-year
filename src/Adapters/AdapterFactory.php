@@ -1,11 +1,9 @@
 <?php
 
-namespace RoussKS\FinancialYear\Factories;
+namespace RoussKS\FinancialYear\Adapters;
 
-use RoussKS\FinancialYear\Adapters\DateTimeAdapter;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
-use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 
 /***
  * Class AdapterFactory
@@ -27,9 +25,8 @@ class AdapterFactory
      *
      * @throws Exception
      * @throws ConfigException
-     * @throws \ReflectionException
      */
-    public static function createAdapter(\DateTimeInterface $adapterType, array $config)
+    public static function createAdapter(\DateTimeInterface $adapterType, array $config): ?AdapterInterface
     {
         // Switch on fully qualified class name.
         switch (get_class($adapterType)) {
@@ -38,8 +35,8 @@ class AdapterFactory
                 return new DateTimeAdapter(
                     $config['fyType'],
                     $config['fyStartDate'],
-                    isset($config['fiftyThreeWeeks']) ? $config['fiftyThreeWeeks'] : false,
-                    isset($config['fyEndDate']) ? $config['fyEndDate'] : null
+                    $config['fiftyThreeWeeks'] ?? false,
+                    $config['fyEndDate'] ?? null
                 );
             default:
                 throw new ConfigException('Unknown adapter configuration key');

@@ -5,13 +5,41 @@ namespace RoussKS\FinancialYear\Enums;
 /**
  * Class TypeEnum
  *
- * @package RoussKS\Enums
- *
- * @method static self CALENDAR()
- * @method static self BUSINESS()
+ * @package RoussKS\FinancialYear\Enums
  */
-final class TypeEnum extends BasicEnum
+class TypeEnum
 {
-    public const CALENDAR = 'calendar';
-    public const BUSINESS = 'business';
+    /**
+     * The financial year calendar type constant.
+     */
+    public const TYPE_CALENDAR = 'calendar';
+
+    /**
+     * The financial year business type constant.
+     */
+    public const TYPE_BUSINESS = 'business';
+
+    /**
+     * Check if calendar type financial year.
+     *
+     * @param  string $value
+     *
+     * @return bool
+     */
+    public static function isCalendar(string $value): bool
+    {
+        return $value === self::TYPE_CALENDAR;
+    }
+
+    /**
+     * Check if business type financial year.
+     *
+     * @param  string $value
+     *
+     * @return bool
+     */
+    public static function isBusiness(string $value): bool
+    {
+        return $value === self::TYPE_CALENDAR;
+    }
 }

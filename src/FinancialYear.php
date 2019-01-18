@@ -4,8 +4,8 @@ namespace RoussKS\FinancialYear;
 
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
-use RoussKS\FinancialYear\Factories\AdapterFactory;
-use RoussKS\FinancialYear\Interfaces\AdapterInterface;
+use RoussKS\FinancialYear\Adapters\AdapterFactory;
+use RoussKS\FinancialYear\Adapters\AdapterInterface;
 
 /**
  * Class FinancialYear
@@ -39,7 +39,6 @@ class FinancialYear
      *
      * @throws Exception
      * @throws ConfigException
-     * @throws \ReflectionException
      */
     public function __construct(\DateTimeInterface $adapterType, array $config = null)
     {
@@ -61,9 +60,8 @@ class FinancialYear
      *
      * @throws ConfigException
      * @throws Exception
-     * @throws \ReflectionException
      */
-    public function instantiateFinancialYearAdapter(array $config)
+    public function instantiateFinancialYearAdapter(array $config): void
     {
         if ($this->financialYearAdapter !== null) {
             throw new Exception('The adapter has already been instantiated');
@@ -79,7 +77,7 @@ class FinancialYear
      *
      * @throws Exception
      */
-    public function getFinancialYearAdapter()
+    public function getFinancialYearAdapter(): AdapterInterface
     {
         if ($this->financialYearAdapter === null) {
             throw new Exception('The adapter has not been set yet');
@@ -95,7 +93,7 @@ class FinancialYear
      *
      * @throws ConfigException
      */
-    protected function validateConfiguration(array $config)
+    protected function validateConfiguration(array $config): void
     {
         if (!isset($config['fyType']) || !is_string($config['fyType'])) {
             throw new ConfigException('The financial year type is required. Either \'calendar\' or \'business\'.');

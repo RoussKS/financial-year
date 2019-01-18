@@ -1,6 +1,6 @@
 <?php
 
-namespace RoussKS\FinancialYear\Interfaces;
+namespace RoussKS\FinancialYear\Adapters;
 
 use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
@@ -17,12 +17,12 @@ interface AdapterInterface
      *
      * @return TypeEnum
      */
-    public function getType();
+    public function getType(): TypeEnum;
 
     /**
      * @return int
      */
-    public function getFyWeeks();
+    public function getFyWeeks(): int;
 
     /**
      * Set the number of weeks for the Financial Year.
@@ -35,14 +35,14 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function setFyWeeks($fiftyThreeWeeks = false);
+    public function setFyWeeks($fiftyThreeWeeks = false): void;
 
     /**
      * Get the financial year start date.
      *
      * @return \DateTimeInterface
      */
-    public function getFyStartDate();
+    public function getFyStartDate(): \DateTimeInterface;
 
     /**
      * Set the financial year start date.
@@ -58,14 +58,14 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function setFyStartDate($date);
+    public function setFyStartDate($date): void;
 
     /**
      * Get the financial year end date.
      *
      * @return \DateTimeInterface
      */
-    public function getFyEndDate();
+    public function getFyEndDate(): \DateTimeInterface;
 
     /**
      * Set the financial year end date.
@@ -79,7 +79,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function setFyEndDate($date);
+    public function setFyEndDate($date): void;
 
     /**
      * Get the date range of the period with the given id.
@@ -90,7 +90,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getPeriodById(int $id);
+    public function getPeriodById(int $id): \Traversable;
 
     /**
      * Get the date range of the business week with the given id.
@@ -101,7 +101,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getBusinessWeekById(int $id);
+    public function getBusinessWeekById(int $id): \Traversable;
 
     /**
      * @param  string|\DateTimeInterface $date
@@ -110,7 +110,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getPeriodIdByDate($date);
+    public function getPeriodIdByDate($date): int;
 
     /**
      * @param  string|\DateTimeInterface $date
@@ -119,7 +119,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getBusinessWeekIdIdByDate($date);
+    public function getBusinessWeekIdIdByDate($date): int;
 
     /**
      * Get the first date of the period with the given id.
@@ -130,7 +130,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getFirstDateOfPeriodById(int $id);
+    public function getFirstDateOfPeriodById(int $id): \DateTimeInterface;
 
     /**
      * Get the last date of the period with the given id.
@@ -141,7 +141,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getLastDateOfPeriodById(int $id);
+    public function getLastDateOfPeriodById(int $id): \DateTimeInterface;
 
     /**
      * Get the first date of the business week with the given id.
@@ -152,7 +152,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getFirstDateOfBusinessWeekById(int $id);
+    public function getFirstDateOfBusinessWeekById(int $id): \DateTimeInterface;
 
     /**
      * Get the last date of the business week with the given id.
@@ -163,7 +163,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getLastDateOfBusinessWeekById(int $id);
+    public function getLastDateOfBusinessWeekById(int $id): \DateTimeInterface;
 
     /**
      * Get the date range of the first business week of the period with the given id.
@@ -174,7 +174,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getFirstBusinessWeekByPeriodId(int $id);
+    public function getFirstBusinessWeekByPeriodId(int $id): \Traversable;
 
     /**
      * Get the date range of the second business week of the period with the given id.
@@ -185,7 +185,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getSecondBusinessWeekByPeriodId(int $id);
+    public function getSecondBusinessWeekByPeriodId(int $id): \Traversable;
 
     /**
      * Get the date range of the third business week of the period with the given id.
@@ -196,7 +196,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getThirdBusinessWeekOfPeriodId(int $id);
+    public function getThirdBusinessWeekOfPeriodId(int $id): \Traversable;
 
     /**
      * Get the date range of the fourth business week of the period with the given id.
@@ -207,12 +207,12 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function getFourthBusinessWeekByPeriodId(int $id);
+    public function getFourthBusinessWeekByPeriodId(int $id): \Traversable;
 
     /**
      * @return void
      *
      * @throws ConfigException
      */
-    public function validate();
+    public function validate(): void;
 }

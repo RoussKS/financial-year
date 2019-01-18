@@ -5,7 +5,6 @@ namespace RoussKS\FinancialYear\Adapters;
 use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
-use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 
 /**
  * Implementation of PHP DateTime FinancialYear Adapter
@@ -40,7 +39,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      * @throws ConfigException
-     * @throws \ReflectionException
      */
     public function __construct(
         string $fyType,
@@ -62,7 +60,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function setFyWeeks($fiftyThreeWeeks = false)
+    public function setFyWeeks($fiftyThreeWeeks = false): void
     {
         $originalFyWeeks = $this->fyWeeks;
 
@@ -70,7 +68,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // Reset the financial year end date according to the weeks setting.
         if ($originalFyWeeks !== null && $originalFyWeeks !== $this->fyWeeks) {
-            $this->setFyEndDate(null);
+            $this->setFyEndDate();
         }
     }
 
@@ -79,7 +77,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return \DateTimeInterface|\DateTimeImmutable
      */
-    public function getFyStartDate()
+    public function getFyStartDate(): \DateTimeInterface
     {
         return $this->fyStartDate;
     }
@@ -91,14 +89,14 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function setFyStartDate($date)
+    public function setFyStartDate($date): void
     {
         // fyStartDate property is an immutable object.
         $originalFyStartDate = $this->fyStartDate;
 
         $this->fyStartDate = $this->getDateObject($date);
 
-        if ($this->type->is(TypeEnum::CALENDAR()) && $this->fyStartDate->format('md') == '0229') {
+        if ($this->fyStartDate->format('md') === '0229' && TypeEnum::isCalendar($this->type)) {
             $this->throwConfigurationException('This library does not support 29th of February as the starting date for calendar type financial year');
         }
 
@@ -106,7 +104,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // recalculate financial year end date from current settings,
         // even if the new start date is the same as the previous one (why re-setting the same date?).
         if ($originalFyStartDate !== null) {
-            $this->setFyEndDate(null);
+            $this->setFyEndDate();
         }
     }
 
@@ -115,7 +113,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return \DateTimeInterface|\DateTimeImmutable
      */
-    public function getFyEndDate()
+    public function getFyEndDate(): \DateTimeInterface
     {
         return $this->fyEndDate;
     }
@@ -128,7 +126,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @throws Exception
      * @throws \Exception
      */
-    public function setFyEndDate($date = null)
+    public function setFyEndDate($date = null): void
     {
         // If date param is null, we set end date relative to start date (it is already set from the constructor).
         // At this point start date's time is set to 00:00:00
@@ -136,14 +134,14 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             // We will set end date from the start date object which should be present.
 
             // For calendar type, the end date is 1 year, minus 1 day after the start date.
-            if ($this->type->is(TypeEnum::CALENDAR())) {
+            if (TypeEnum::isCalendar($this->type)) {
                 $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString('1 year'))
                                                      ->sub(\DateInterval::createFromDateString('1 day'));
 
             }
 
             // For business type, the end date is the number of weeks , minus 1 day after the start date.
-            if ($this->type->is(TypeEnum::BUSINESS())) {
+            if (TypeEnum::isBusiness($this->type)) {
                 // As a financial year would have 52 or 53 weeks, the param handles it.
                 $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString($this->fyWeeks . ' weeks'))
                                                      ->sub(\DateInterval::createFromDateString('1 day'));
@@ -158,7 +156,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $dateTime = $this->getDateObject($date);
 
         // If the financial year type is calendar, Check that is correctly set.
-        if ($this->type->is(TypeEnum::CALENDAR())) {
+        if (TypeEnum::isCalendar($this->type)) {
 
             $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('1 day')));
 
@@ -170,7 +168,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // If the financial year type is business, Check that is correctly set.
         // Set fyWeeks on success.
-        if ($this->type->is(TypeEnum::BUSINESS())) {
+        if (TypeEnum::isBusiness($this->type)) {
 
             $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('1 day')))->days / 7;
 
@@ -194,7 +192,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @throws \Exception
      * @throws Exception
      */
-    public function getPeriodById(int $id)
+    public function getPeriodById(int $id): \Traversable
     {
         $this->validate();
 
@@ -203,7 +201,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $period = null;
 
         // In calendar type, periods are always 12 as the months, regardless of the start date within the month.
-        if ($this->type->is(TypeEnum::CALENDAR())) {
+        if (TypeEnum::isCalendar($this->type)) {
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
@@ -219,7 +217,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
 
-        if ($this->type->is(TypeEnum::BUSINESS())) {
+        if (TypeEnum::isBusiness($this->type)) {
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
@@ -250,7 +248,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getBusinessWeekById(int $id)
+    public function getBusinessWeekById(int $id): \Traversable
     {
         $this->validate();
 
@@ -276,7 +274,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getPeriodIdByDate($date)
+    public function getPeriodIdByDate($date): int
     {
         $dateTime = $this->getDateObject($date);
 
@@ -299,7 +297,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getBusinessWeekIdIdByDate($date)
+    public function getBusinessWeekIdIdByDate($date): int
     {
         $dateTime = $this->getDateObject($date);
 
@@ -320,7 +318,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getFirstDateOfPeriodById(int $id)
+    public function getFirstDateOfPeriodById(int $id): \DateTimeInterface
     {
         $this->validate();
 
@@ -335,11 +333,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
-        if ($this->type->is(TypeEnum::CALENDAR())) {
+        if (TypeEnum::isCalendar($this->type)) {
             $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' months'));
         }
 
-        if ($this->type->is(TypeEnum::BUSINESS())) {
+        if (TypeEnum::isBusiness($this->type)) {
             $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
         }
 
@@ -355,7 +353,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getLastDateOfPeriodById(int $id)
+    public function getLastDateOfPeriodById(int $id): \DateTimeInterface
     {
         $this->validate();
 
@@ -370,12 +368,12 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
-        if ($this->type->is(TypeEnum::CALENDAR())) {
+        if (TypeEnum::isCalendar($this->type)) {
             $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString($id . ' months'))
                                            ->sub(\DateInterval::createFromDateString('1 day'));
         }
 
-        if ($this->type->is(TypeEnum::BUSINESS())) {
+        if (TypeEnum::isBusiness($this->type)) {
             $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString($id * 4 . ' weeks'))
                                            ->sub(\DateInterval::createFromDateString('1 day'));
         }
@@ -394,7 +392,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getFirstDateOfBusinessWeekById(int $id)
+    public function getFirstDateOfBusinessWeekById(int $id): \DateTimeInterface
     {
         $this->validate();
 
@@ -415,7 +413,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getLastDateOfBusinessWeekById(int $id)
+    public function getLastDateOfBusinessWeekById(int $id): \DateTimeInterface
     {
         $this->validate();
 
@@ -437,7 +435,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getFirstBusinessWeekByPeriodId(int $id)
+    public function getFirstBusinessWeekByPeriodId(int $id): \Traversable
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 1);
     }
@@ -449,7 +447,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getSecondBusinessWeekByPeriodId(int $id)
+    public function getSecondBusinessWeekByPeriodId(int $id): \Traversable
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 2);
     }
@@ -461,7 +459,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getThirdBusinessWeekOfPeriodId(int $id)
+    public function getThirdBusinessWeekOfPeriodId(int $id): \Traversable
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 3);
     }
@@ -473,7 +471,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getFourthBusinessWeekByPeriodId(int $id)
+    public function getFourthBusinessWeekByPeriodId(int $id): \Traversable
     {
         return $this->getBusinessWeekById($id * 4);
     }
@@ -484,7 +482,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @throws  Exception
      * @throws  ConfigException
      */
-    public function getFifthThirdBusinessWeekPeriod()
+    public function getFifthThirdBusinessWeekPeriod(): \Traversable
     {
         return $this->getBusinessWeekById(53);
     }
@@ -498,7 +496,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    protected function getDateObject($date)
+    protected function getDateObject($date): \DateTimeImmutable
     {
         // Placeholder
         $dateTime = null;
