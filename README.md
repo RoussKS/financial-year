@@ -1,4 +1,6 @@
-# Financial Year PHP Library
+# \RoussKS\FinancialYear - Financial Year PHP Library
+
+[![Build Status](https://travis-ci.com/RoussKS/financial-year.svg?branch=master)](https://travis-ci.com/RoussKS/financial-year)
 
 ## v0.9.1
 v1.0.0 will be released when all testing is completed and a test suite is added.
