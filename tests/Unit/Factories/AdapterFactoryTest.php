@@ -4,7 +4,7 @@ namespace RoussKS\FinancialYear\Tests\Unit\Factories;
 
 use PHPUnit\Framework\TestCase;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
-use RoussKS\FinancialYear\Factories\AdapterFactory;
+use RoussKS\FinancialYear\Adapters\AdapterFactory;
 use RoussKS\FinancialYear\Tests\MockObjects\MockDateTimeInterfaceClass;
 
 class AdapterFactoryTest extends TestCase

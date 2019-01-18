@@ -4,8 +4,8 @@ namespace RoussKS\FinancialYear;
 
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
-use RoussKS\FinancialYear\Factories\AdapterFactory;
-use RoussKS\FinancialYear\Interfaces\AdapterInterface;
+use RoussKS\FinancialYear\Adapters\AdapterFactory;
+use RoussKS\FinancialYear\Adapters\AdapterInterface;
 
 /**
  * Class FinancialYear

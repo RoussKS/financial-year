@@ -1,11 +1,9 @@
 <?php
 
-namespace RoussKS\FinancialYear\Factories;
+namespace RoussKS\FinancialYear\Adapters;
 
-use RoussKS\FinancialYear\Adapters\DateTimeAdapter;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
-use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 
 /***
  * Class AdapterFactory

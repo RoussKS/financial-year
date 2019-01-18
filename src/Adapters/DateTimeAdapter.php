@@ -5,7 +5,6 @@ namespace RoussKS\FinancialYear\Adapters;
 use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
-use RoussKS\FinancialYear\Interfaces\AdapterInterface;
 
 /**
  * Implementation of PHP DateTime FinancialYear Adapter
