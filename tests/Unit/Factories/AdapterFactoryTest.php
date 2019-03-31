@@ -3,8 +3,6 @@
 namespace RoussKS\FinancialYear\Tests\Unit\Factories;
 
 use PHPUnit\Framework\TestCase;
-use RoussKS\FinancialYear\Exceptions\ConfigException;
-use RoussKS\FinancialYear\Adapters\AdapterFactory;
 use RoussKS\FinancialYear\Tests\MockObjects\MockDateTimeInterfaceClass;
 
 class AdapterFactoryTest extends TestCase
@@ -18,7 +16,7 @@ class AdapterFactoryTest extends TestCase
      */
     public function assertAdapterFactoryThrowsExceptionOnUnsupportedAdapterType(): void
     {
-        $this->expectException(ConfigException::class);
+        $this->expectException(\RoussKS\FinancialYear\Exceptions\ConfigException::class);
 
         $fakeDateTimeInterfaceClass = new MockDateTimeInterfaceClass();
 
@@ -27,6 +25,6 @@ class AdapterFactoryTest extends TestCase
             'fyStartDate' => $fakeDateTimeInterfaceClass,
         ];
 
-        AdapterFactory::createAdapter($fakeDateTimeInterfaceClass, $config);
+        \RoussKS\FinancialYear\Adapters\AdapterFactory::createAdapter($fakeDateTimeInterfaceClass, $config);
     }
 }

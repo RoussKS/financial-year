@@ -3,9 +3,6 @@
 namespace RoussKS\FinancialYear\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use RoussKS\FinancialYear\Exceptions\ConfigException;
-use RoussKS\FinancialYear\Exceptions\Exception;
-use RoussKS\FinancialYear\FinancialYear;
 
 class FinancialYearTest extends TestCase
 {
@@ -18,14 +15,14 @@ class FinancialYearTest extends TestCase
      */
     public function assertAdapterInterfaceReturnedOnConstructWithConfig(): void
     {
-        $dateTime = new \DateTime('now');
+        $dateTime = new \DateTime();
 
         $config = [
             'fyType' => 'calendar',
             'fyStartDate' => $dateTime,
         ];
 
-        $fy = new FinancialYear($dateTime, $config);
+        $fy = new \RoussKS\FinancialYear\FinancialYear($dateTime, $config);
 
         $this->assertNotNull($fy->getFinancialYearAdapter());
     }
@@ -39,9 +36,9 @@ class FinancialYearTest extends TestCase
      */
     public function assertAdapterThrowsExceptionIfNotInstantiated(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(\RoussKS\FinancialYear\Exceptions\Exception::class);
 
-        $fy = new FinancialYear(new \DateTime('now'));
+        $fy = new \RoussKS\FinancialYear\FinancialYear(new \DateTime());
 
         $fy->getFinancialYearAdapter();
     }
@@ -55,16 +52,16 @@ class FinancialYearTest extends TestCase
      */
     public function assertAdapterThrowsExceptionIfReInstantiated(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(\RoussKS\FinancialYear\Exceptions\Exception::class);
 
-        $dateTime = new \DateTime('now');
+        $dateTime = new \DateTime();
 
         $config = [
             'fyType' => 'calendar',
             'fyStartDate' => $dateTime,
         ];
 
-        $fy = new FinancialYear($dateTime, $config);
+        $fy = new \RoussKS\FinancialYear\FinancialYear($dateTime, $config);
 
         $fy->instantiateFinancialYearAdapter($config);
     }
@@ -77,14 +74,14 @@ class FinancialYearTest extends TestCase
      */
     public function assertAdapterNotNullIfInstantiatedOnMethod(): void
     {
-        $dateTime = new \DateTime('now');
+        $dateTime = new \DateTime();
 
         $config = [
             'fyType' => 'calendar',
             'fyStartDate' => $dateTime,
         ];
 
-        $fy = new FinancialYear($dateTime);
+        $fy = new \RoussKS\FinancialYear\FinancialYear($dateTime);
 
 
         $fy->instantiateFinancialYearAdapter($config);
@@ -100,15 +97,15 @@ class FinancialYearTest extends TestCase
      */
     public function assertAdapterThrowsExceptionIfTypeIsNotSet(): void
     {
-        $this->expectException(ConfigException::class);
+        $this->expectException(\RoussKS\FinancialYear\Exceptions\ConfigException::class);
 
-        $dateTime = new \DateTime('now');
+        $dateTime = new \DateTime();
 
         $config = [
             'fyStartDate' => $dateTime,
         ];
 
-        new FinancialYear($dateTime, $config);
+        new \RoussKS\FinancialYear\FinancialYear($dateTime, $config);
     }
 
     /**
@@ -119,16 +116,16 @@ class FinancialYearTest extends TestCase
      */
     public function assertAdapterThrowsExceptionIfTypeIsNotString(): void
     {
-        $this->expectException(ConfigException::class);
+        $this->expectException(\RoussKS\FinancialYear\Exceptions\ConfigException::class);
 
-        $dateTime = new \DateTime('now');
+        $dateTime = new \DateTime();
 
         $config = [
             'fyType' => [],
             'fyStartDate' => $dateTime,
         ];
 
-        new FinancialYear($dateTime, $config);
+        new \RoussKS\FinancialYear\FinancialYear($dateTime, $config);
     }
 
     /**
@@ -139,14 +136,14 @@ class FinancialYearTest extends TestCase
      */
     public function assertAdapterThrowsExceptionIfStartDateIsNotSet(): void
     {
-        $this->expectException(ConfigException::class);
+        $this->expectException(\RoussKS\FinancialYear\Exceptions\ConfigException::class);
 
-        $dateTime = new \DateTime('now');
+        $dateTime = new \DateTime();
 
         $config = [
             'fyType' => 'calendar',
         ];
 
-        new FinancialYear($dateTime, $config);
+        new \RoussKS\FinancialYear\FinancialYear($dateTime, $config);
     }
 }
