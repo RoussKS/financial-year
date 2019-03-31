@@ -36,8 +36,8 @@ class AdapterFactory
                 return new DateTimeAdapter(
                     $config['fyType'],
                     $config['fyStartDate'],
-                    $config['fiftyThreeWeeks'] ?? false,
-                    $config['fyEndDate'] ?? null
+                    $config['fyEndDate'] ?? null,
+                    $config['fiftyThreeWeeks'] ?? false
                 );
             default:
                 throw new ConfigException('Unknown adapter configuration key');
