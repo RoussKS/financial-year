@@ -2,6 +2,7 @@
 
 namespace RoussKS\FinancialYear\Adapters;
 
+use DateTimeInterface;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 
@@ -13,7 +14,7 @@ use RoussKS\FinancialYear\Exceptions\Exception;
 class AdapterFactory
 {
     /**
-     * @param  \DateTimeInterface $adapterType
+     * @param  DateTimeInterface $adapterType
      * @param  array $config = [
      *     'fyType'         => 'string', Enums\TypeEnum
      *     'fyStartDate'    => 'date', ISO-8601 format or adapter's object
@@ -26,7 +27,7 @@ class AdapterFactory
      * @throws Exception
      * @throws ConfigException
      */
-    public static function createAdapter(\DateTimeInterface $adapterType, array $config): ?AdapterInterface
+    public static function createAdapter(DateTimeInterface $adapterType, array $config): ?AdapterInterface
     {
         // Switch on fully qualified class name.
         switch (get_class($adapterType)) {

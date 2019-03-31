@@ -2,6 +2,7 @@
 
 namespace RoussKS\FinancialYear;
 
+use DateTimeInterface;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Adapters\AdapterFactory;
@@ -15,7 +16,7 @@ use RoussKS\FinancialYear\Adapters\AdapterInterface;
 class FinancialYear
 {
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      */
     protected $financialYearAdapterType;
 
@@ -27,7 +28,7 @@ class FinancialYear
     /**
      * FinancialYear constructor.
      *
-     * @param  \DateTimeInterface $adapterType
+     * @param  DateTimeInterface $adapterType
      * @param  array|null $config = [
      *     'fyType'         => 'string', Enums\TypeEnum
      *     'fyStartDate'    => 'date', ISO-8601 format or adapter's object
@@ -40,7 +41,7 @@ class FinancialYear
      * @throws Exception
      * @throws ConfigException
      */
-    public function __construct(\DateTimeInterface $adapterType, array $config = null)
+    public function __construct(DateTimeInterface $adapterType, array $config = null)
     {
         $this->financialYearAdapterType = $adapterType;
 

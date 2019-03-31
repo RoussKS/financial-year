@@ -2,6 +2,7 @@
 
 namespace RoussKS\FinancialYear\Adapters;
 
+use DateTimeInterface;
 use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
@@ -19,12 +20,12 @@ abstract class AbstractAdapter
     protected $type;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      */
     protected $fyStartDate;
 
     /***
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      */
     protected $fyEndDate;
 
