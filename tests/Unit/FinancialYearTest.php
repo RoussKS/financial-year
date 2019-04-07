@@ -2,9 +2,9 @@
 
 namespace RoussKS\FinancialYear\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
+use RoussKS\FinancialYear\Tests\BaseTestCase;
 
-class FinancialYearTest extends TestCase
+class FinancialYearTest extends BaseTestCase
 {
     /**
      * @test
@@ -15,7 +15,7 @@ class FinancialYearTest extends TestCase
      */
     public function assertAdapterInterfaceReturnedOnConstructWithConfig(): void
     {
-        $dateTime = new \DateTime();
+        $dateTime = $this->faker->dateTime();
 
         $config = [
             'fyType' => 'calendar',
@@ -38,7 +38,7 @@ class FinancialYearTest extends TestCase
     {
         $this->expectException(\RoussKS\FinancialYear\Exceptions\Exception::class);
 
-        $fy = new \RoussKS\FinancialYear\FinancialYear(new \DateTime());
+        $fy = new \RoussKS\FinancialYear\FinancialYear($this->faker->dateTime());
 
         $fy->getFinancialYearAdapter();
     }
@@ -54,7 +54,7 @@ class FinancialYearTest extends TestCase
     {
         $this->expectException(\RoussKS\FinancialYear\Exceptions\Exception::class);
 
-        $dateTime = new \DateTime();
+        $dateTime = $this->faker->dateTime();
 
         $config = [
             'fyType' => 'calendar',
@@ -74,7 +74,7 @@ class FinancialYearTest extends TestCase
      */
     public function assertAdapterNotNullIfInstantiatedOnMethod(): void
     {
-        $dateTime = new \DateTime();
+        $dateTime = $this->faker->dateTime();
 
         $config = [
             'fyType' => 'calendar',
@@ -99,7 +99,7 @@ class FinancialYearTest extends TestCase
     {
         $this->expectException(\RoussKS\FinancialYear\Exceptions\ConfigException::class);
 
-        $dateTime = new \DateTime();
+        $dateTime = $this->faker->dateTime();
 
         $config = [
             'fyStartDate' => $dateTime,
@@ -118,7 +118,7 @@ class FinancialYearTest extends TestCase
     {
         $this->expectException(\RoussKS\FinancialYear\Exceptions\ConfigException::class);
 
-        $dateTime = new \DateTime();
+        $dateTime = $this->faker->dateTime();
 
         $config = [
             'fyType' => [],
@@ -138,7 +138,7 @@ class FinancialYearTest extends TestCase
     {
         $this->expectException(\RoussKS\FinancialYear\Exceptions\ConfigException::class);
 
-        $dateTime = new \DateTime();
+        $dateTime = $this->faker->dateTime();
 
         $config = [
             'fyType' => 'calendar',
