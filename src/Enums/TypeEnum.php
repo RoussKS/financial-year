@@ -40,6 +40,6 @@ class TypeEnum
      */
     public static function isBusiness(string $value): bool
     {
-        return $value === self::TYPE_CALENDAR;
+        return $value === self::TYPE_BUSINESS;
     }
 }
