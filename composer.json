@@ -28,7 +28,7 @@
         "php": "^7.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "7.5.x-dev",
-        "fzaninotto/faker": "~1.8"
+        "fzaninotto/faker": "~1.8",
+        "phpunit/phpunit": "^8"
     }
 }
