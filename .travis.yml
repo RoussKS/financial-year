@@ -1,6 +1,10 @@
 language: php
 php:
+  - '7.1'
   - '7.2'
+before_install:
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.1" ]]; then composer require --dev --no-update phpunit/phppunit ^7; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.2" ]]; then composer require --dev --no-update phpunit/phppunit ^8; fi
 before_script:
   - composer self-update
 install:
