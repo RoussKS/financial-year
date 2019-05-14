@@ -3,7 +3,6 @@
 namespace RoussKS\FinancialYear\Adapters;
 
 use DateTimeInterface;
-use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 
@@ -15,7 +14,17 @@ use RoussKS\FinancialYear\Exceptions\ConfigException;
 abstract class AbstractAdapter
 {
     /**
-     * @var TypeEnum
+     * The financial year calendar type constant.
+     */
+    public const TYPE_CALENDAR = 'calendar';
+
+    /**
+     * The financial year business type constant.
+     */
+    public const TYPE_BUSINESS = 'business';
+
+    /**
+     * @var string
      */
     protected $type;
 
@@ -30,7 +39,7 @@ abstract class AbstractAdapter
     protected $fyEndDate;
 
     /**
-     * Applicable to Business TypeEnum only.
+     * Applicable to Business financial year type only.
      *
      * @var int|null
      */
@@ -48,13 +57,13 @@ abstract class AbstractAdapter
      */
     public function __construct(string $type, bool $fiftyThreeWeeks)
     {
-        if (TypeEnum::isCalendar($type)) {
+        if ($this->isCalendarType($type)) {
             $this->type = $type;
 
             return;
         }
 
-        if (TypeEnum::isBusiness($type)) {
+        if ($this->isBusinessType($type)) {
             $this->type = $type;
             $this->setFyWeeks($fiftyThreeWeeks);
 
@@ -67,19 +76,18 @@ abstract class AbstractAdapter
     /**
      * Get the financial year's type.
      *
-     * @return TypeEnum
+     * @return string
      */
-    public function getType(): TypeEnum
+    public function getType(): string
     {
         return $this->type;
     }
 
     /**
-     * This is always set on construct, so it would never return null (as set in the property).
      *
-     * @return int
+     * @return int|null
      */
-    public function getFyWeeks(): int
+    public function getFyWeeks(): ?int
     {
         return $this->fyWeeks;
     }
@@ -87,7 +95,7 @@ abstract class AbstractAdapter
     /**
      * Set the number of weeks for the Financial Year.
      *
-     * Only applies to business TypeEnum and will be set either 52 or 53.
+     * Only applies to business financial year type and will be set either 52 or 53.
      *
      * @param  bool $fiftyThreeWeeks
      *
@@ -97,7 +105,7 @@ abstract class AbstractAdapter
      */
     public function setFyWeeks($fiftyThreeWeeks = false): void
     {
-        if (!TypeEnum::isBusiness($this->type)) {
+        if (!$this->isBusinessType($this->type)) {
             $this->throwConfigurationException('Can not set the financial year weeks property for non business year type');
         }
 
@@ -154,13 +162,37 @@ abstract class AbstractAdapter
      */
     protected function validateBusinessWeekId(int $id): void
     {
-        if (!TypeEnum::isBusiness($this->type)) {
+        if (!$this->isBusinessType($this->type)) {
             $this->throwConfigurationException('Week id is not applicable for non business type financial year');
         }
 
         if ($id < 1 || $id > $this->fyWeeks) {
             throw new Exception('There is no week with id: ' . $id);
         }
+    }
+
+    /**
+     * Check if calendar type financial year.
+     *
+     * @param  string $value
+     *
+     * @return bool
+     */
+    protected function isCalendarType(string $value): bool
+    {
+        return $value === self::TYPE_CALENDAR;
+    }
+
+    /**
+     * Check if business type financial year.
+     *
+     * @param  string $value
+     *
+     * @return bool
+     */
+    protected function isBusinessType(string $value): bool
+    {
+        return $value === self::TYPE_BUSINESS;
     }
 
     /**

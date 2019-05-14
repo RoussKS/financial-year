@@ -3,7 +3,6 @@
 namespace RoussKS\FinancialYear\Adapters;
 
 use DateTimeInterface;
-use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use Traversable;
 
@@ -17,19 +16,19 @@ interface AdapterInterface
     /**
      * Get the financial year type.
      *
-     * @return TypeEnum
+     * @return string
      */
-    public function getType(): TypeEnum;
+    public function getType(): string;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getFyWeeks(): int;
+    public function getFyWeeks(): ?int;
 
     /**
      * Set the number of weeks for the Financial Year.
      *
-     * Only applies to business TypeEnum and will be set either 52 or 53.
+     * Only applies to business financial year type and will be set either 52 or 53.
      *
      * @param  bool $fiftyThreeWeeks
      *

@@ -2,7 +2,6 @@
 
 namespace RoussKS\FinancialYear\Adapters;
 
-use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 
@@ -96,7 +95,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->fyStartDate = $this->getDateObject($date);
 
-        if ($this->fyStartDate->format('md') === '0229' && TypeEnum::isCalendar($this->type)) {
+        if ($this->fyStartDate->format('md') === '0229' && $this->isCalendarType($this->type)) {
             $this->throwConfigurationException('This library does not support 29th of February as the starting date for calendar type financial year');
         }
 
@@ -134,14 +133,14 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             // We will set end date from the start date object which should be present.
 
             // For calendar type, the end date is 1 year, minus 1 day after the start date.
-            if (TypeEnum::isCalendar($this->type)) {
+            if ($this->isCalendarType($this->type)) {
                 $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString('1 year'))
                                                      ->sub(\DateInterval::createFromDateString('1 day'));
 
             }
 
             // For business type, the end date is the number of weeks , minus 1 day after the start date.
-            if (TypeEnum::isBusiness($this->type)) {
+            if ($this->isBusinessType($this->type)) {
                 // As a financial year would have 52 or 53 weeks, the param handles it.
                 $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString($this->fyWeeks . ' weeks'))
                                                      ->sub(\DateInterval::createFromDateString('1 day'));
@@ -156,7 +155,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $dateTime = $this->getDateObject($date);
 
         // If the financial year type is calendar, Check that is correctly set.
-        if (TypeEnum::isCalendar($this->type)) {
+        if ($this->isCalendarType($this->type)) {
 
             $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('1 day')));
 
@@ -168,7 +167,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // If the financial year type is business, Check that is correctly set.
         // Set fyWeeks on success.
-        if (TypeEnum::isBusiness($this->type)) {
+        if ($this->isBusinessType($this->type)) {
 
             $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('1 day')))->days / 7;
 
@@ -201,7 +200,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $period = null;
 
         // In calendar type, periods are always 12 as the months, regardless of the start date within the month.
-        if (TypeEnum::isCalendar($this->type)) {
+        if ($this->isCalendarType($this->type)) {
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
@@ -217,7 +216,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
 
-        if (TypeEnum::isBusiness($this->type)) {
+        if ($this->isBusiness($this->type)) {
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
@@ -331,11 +330,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
-        if (TypeEnum::isCalendar($this->type)) {
+        if ($this->isCalendarType($this->type)) {
             $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' months'));
         }
 
-        if (TypeEnum::isBusiness($this->type)) {
+        if ($this->isBusiness($this->type)) {
             $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
         }
 
@@ -366,12 +365,12 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
-        if (TypeEnum::isCalendar($this->type)) {
+        if ($this->isCalendarType($this->type)) {
             $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString($id . ' months'))
                                            ->sub(\DateInterval::createFromDateString('1 day'));
         }
 
-        if (TypeEnum::isBusiness($this->type)) {
+        if ($this->isBusiness($this->type)) {
             $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString($id * 4 . ' weeks'))
                                            ->sub(\DateInterval::createFromDateString('1 day'));
         }

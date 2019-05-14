@@ -16,7 +16,7 @@ class AdapterFactory
     /**
      * @param  DateTimeInterface $adapterType
      * @param  array $config = [
-     *     'fyType'         => 'string', Enums\TypeEnum
+     *     'fyType'         => 'string', `calendar` or `business`
      *     'fyStartDate'    => 'date', ISO-8601 format or adapter's object
      *     'fyEndDate'      => 'date', ISO-8601 format or adapter's object
      *     'fiftyThreeWeeks => 'bool', Applicable to business type financial year, if year has 52 or 53 weeks.

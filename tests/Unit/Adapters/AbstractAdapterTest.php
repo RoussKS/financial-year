@@ -2,10 +2,10 @@
 
 namespace RoussKS\FinancialYear\Tests\Unit\Adapters;
 
+use RoussKS\FinancialYear\Adapters\AbstractAdapter;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
-use RoussKS\FinancialYear\Tests\MockObjects\MockDateTimeInterfaceClass;
 
-class AdapterFactoryTest extends BaseTestCase
+class AbstractAdapterTest extends BaseTestCase
 {
     /**
      * @test
@@ -14,37 +14,173 @@ class AdapterFactoryTest extends BaseTestCase
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \Exception
      */
-    public function assertAdapterFactoryThrowsExceptionOnUnsupportedAdapterType(): void
+    public function assertConstructorThrowsExceptionOnInvalidFinancialYearType(): void
     {
-        $this->expectException(\RoussKS\FinancialYear\Exceptions\ConfigException::class);
+        $this->expectException('RoussKS\FinancialYear\Exceptions\ConfigException');
+        $this->expectExceptionMessage('Invalid Financial Year Type');
 
-        $fakeDateTimeInterfaceClass = new MockDateTimeInterfaceClass();
-
-        $config = [
-            'fyType' => 'calendar',
-            'fyStartDate' => $fakeDateTimeInterfaceClass,
-        ];
-
-        \RoussKS\FinancialYear\Adapters\AdapterFactory::createAdapter($fakeDateTimeInterfaceClass, $config);
+        $this->getMockForAbstractClass('RoussKS\FinancialYear\Adapters\AbstractAdapter', [
+            'test', $this->faker->boolean
+        ]);
     }
 
     /**
      * @test
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \Exception
      */
-    public function assertAdapterFactoryReturnsDateTimeAdapterWithCorrectConfig()
+    public function assertGetTypeReturnsString(): void
     {
-        $dateTime = $this->faker->dateTime();
+        /** @var  $fy \RoussKS\FinancialYear\Adapters\AdapterInterface */
+        $fy = $this->getMockForAbstractClass('RoussKS\FinancialYear\Adapters\AbstractAdapter', [
+            'calendar', $this->faker->boolean
+        ]);
 
-        $config = [
-            'fyType' => 'calendar',
-            'fyStartDate' => $dateTime,
-        ];
+        $this->assertIsString($fy->getType());
+    }
 
-        $dateTimeAdapter = \RoussKS\FinancialYear\Adapters\AdapterFactory::createAdapter($dateTime, $config);
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \Exception
+     */
+    public function assertFinancialYearCalendarType(): void
+    {
+        /** @var  $fy \RoussKS\FinancialYear\Adapters\AdapterInterface */
+        $fy = $this->getMockForAbstractClass('RoussKS\FinancialYear\Adapters\AbstractAdapter', [
+            'calendar', $this->faker->boolean
+        ]);
 
-        $this->assertInstanceOf(\RoussKS\FinancialYear\Adapters\DateTimeAdapter::class, $dateTimeAdapter);
+        $this->assertEquals(AbstractAdapter::TYPE_CALENDAR, $fy->getType());
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \Exception
+     */
+    public function assertFinancialYearBusinessType(): void
+    {
+        /** @var  $fy \RoussKS\FinancialYear\Adapters\AdapterInterface */
+        $fy = $this->getMockForAbstractClass('RoussKS\FinancialYear\Adapters\AbstractAdapter', [
+            'business', $this->faker->boolean
+        ]);
+
+        $this->assertEquals(AbstractAdapter::TYPE_BUSINESS, $fy->getType());
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \Exception
+     */
+    public function assertFyWeeksReturnsNullForFinancialYearCalendarType(): void
+    {
+        /** @var  $fy \RoussKS\FinancialYear\Adapters\AdapterInterface */
+        $fy = $this->getMockForAbstractClass('RoussKS\FinancialYear\Adapters\AbstractAdapter', [
+            'calendar', $this->faker->boolean
+        ]);
+
+        $this->assertNull($fy->getFyWeeks());
+    }
+
+    /**
+     * @test
+     *
+     * Assert both true and false scenarios.
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \Exception
+     */
+    public function assertFyWeeksReturnsIntForFinancialYearBusinessType(): void
+    {
+        /** @var  $fy \RoussKS\FinancialYear\Adapters\AdapterInterface */
+        $fy = $this->getMockForAbstractClass('RoussKS\FinancialYear\Adapters\AbstractAdapter', [
+            'business', true
+        ]);
+
+        $this->assertIsInt($fy->getFyWeeks());
+
+        /** @var  $fy \RoussKS\FinancialYear\Adapters\AdapterInterface */
+        $fy = $this->getMockForAbstractClass('RoussKS\FinancialYear\Adapters\AbstractAdapter', [
+            'business', false
+        ]);
+
+        $this->assertIsInt($fy->getFyWeeks());
+    }
+
+    /**
+     * @test
+     *
+     * Assert both true (53 weeks) and false (52 weeks) scenarios.
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \Exception
+     */
+    public function assertFyWeeksReturnsCorrectWeeksForFinancialYearBusinessType(): void
+    {
+        /** @var  $fy \RoussKS\FinancialYear\Adapters\AdapterInterface */
+        $fy = $this->getMockForAbstractClass('RoussKS\FinancialYear\Adapters\AbstractAdapter', [
+            'business', true
+        ]);
+
+        $this->assertEquals(53, $fy->getFyWeeks());
+
+        /** @var  $fy \RoussKS\FinancialYear\Adapters\AdapterInterface */
+        $fy = $this->getMockForAbstractClass('RoussKS\FinancialYear\Adapters\AbstractAdapter', [
+            'business', false
+        ]);
+
+        $this->assertEquals(52, $fy->getFyWeeks());
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \Exception
+     */
+    public function assertFyWeeksSetterThrowsExceptionForFinancialYearCalendarType(): void
+    {
+        $this->expectException('RoussKS\FinancialYear\Exceptions\ConfigException');
+        $this->expectExceptionMessage('Can not set the financial year weeks property for non business year type');
+
+        /** @var  $fy \RoussKS\FinancialYear\Adapters\AdapterInterface */
+        $fy = $this->getMockForAbstractClass('RoussKS\FinancialYear\Adapters\AbstractAdapter', [
+            'calendar', true
+        ]);
+
+        $fy->setFyWeeks($this->faker->boolean);
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \Exception
+     */
+    public function assertValidationThrowsExceptionForMissingDates(): void
+    {
+        $this->expectException('RoussKS\FinancialYear\Exceptions\ConfigException');
+        $this->expectExceptionMessage('Invalid configuration of financial year adapter');
+
+        /** @var  $fy \RoussKS\FinancialYear\Adapters\AdapterInterface */
+        $fy = $this->getMockForAbstractClass('RoussKS\FinancialYear\Adapters\AbstractAdapter', [
+            'calendar', true
+        ]);
+
+        $fy->validate();
     }
 }
