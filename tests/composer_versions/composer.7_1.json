@@ -25,10 +25,10 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": "^7.2"
+        "php": "^7.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.8",
-        "phpunit/phpunit": "^8"
+        "phpunit/phpunit": "^7"
     }
 }
