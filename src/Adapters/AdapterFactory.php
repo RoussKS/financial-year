@@ -2,6 +2,7 @@
 
 namespace RoussKS\FinancialYear\Adapters;
 
+use DateTimeInterface;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 
@@ -13,9 +14,9 @@ use RoussKS\FinancialYear\Exceptions\Exception;
 class AdapterFactory
 {
     /**
-     * @param  \DateTimeInterface $adapterType
+     * @param  DateTimeInterface $adapterType
      * @param  array $config = [
-     *     'fyType'         => 'string', Enums\TypeEnum
+     *     'fyType'         => 'string', `calendar` or `business`
      *     'fyStartDate'    => 'date', ISO-8601 format or adapter's object
      *     'fyEndDate'      => 'date', ISO-8601 format or adapter's object
      *     'fiftyThreeWeeks => 'bool', Applicable to business type financial year, if year has 52 or 53 weeks.
@@ -26,7 +27,7 @@ class AdapterFactory
      * @throws Exception
      * @throws ConfigException
      */
-    public static function createAdapter(\DateTimeInterface $adapterType, array $config): ?AdapterInterface
+    public static function createAdapter(DateTimeInterface $adapterType, array $config): ?AdapterInterface
     {
         // Switch on fully qualified class name.
         switch (get_class($adapterType)) {
@@ -35,8 +36,8 @@ class AdapterFactory
                 return new DateTimeAdapter(
                     $config['fyType'],
                     $config['fyStartDate'],
-                    $config['fiftyThreeWeeks'] ?? false,
-                    $config['fyEndDate'] ?? null
+                    $config['fyEndDate'] ?? null,
+                    $config['fiftyThreeWeeks'] ?? false
                 );
             default:
                 throw new ConfigException('Unknown adapter configuration key');

@@ -2,7 +2,6 @@
 
 namespace RoussKS\FinancialYear\Adapters;
 
-use RoussKS\FinancialYear\Enums\TypeEnum;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 
@@ -32,8 +31,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @param  string $fyType
      * @param  \DateTime|\DateTimeImmutable|string $fyStartDate
-     * @param  bool $fiftyThreeWeeks
      * @param  \DateTime|\DateTimeImmutable|string|null $fyEndDate
+     * @param  bool $fiftyThreeWeeks
      *
      * @return void
      *
@@ -43,8 +42,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     public function __construct(
         string $fyType,
         $fyStartDate,
-        bool $fiftyThreeWeeks = false,
-        $fyEndDate = null
+        $fyEndDate = null,
+        bool $fiftyThreeWeeks = false
     ) {
         parent::__construct($fyType, $fiftyThreeWeeks);
 
@@ -85,7 +84,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param \DateTime|\DateTimeImmutable|string $date
+     * @param  \DateTime|\DateTimeImmutable|string $date
      *
      * @throws Exception
      */
@@ -96,7 +95,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->fyStartDate = $this->getDateObject($date);
 
-        if ($this->fyStartDate->format('md') === '0229' && TypeEnum::isCalendar($this->type)) {
+        if ($this->fyStartDate->format('md') === '0229' && $this->isCalendarType($this->type)) {
             $this->throwConfigurationException('This library does not support 29th of February as the starting date for calendar type financial year');
         }
 
@@ -121,7 +120,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param \DateTime|\DateTimeImmutable|string|null $date
+     * @param  \DateTime|\DateTimeImmutable|string|null $date
      *
      * @throws Exception
      * @throws \Exception
@@ -134,14 +133,14 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             // We will set end date from the start date object which should be present.
 
             // For calendar type, the end date is 1 year, minus 1 day after the start date.
-            if (TypeEnum::isCalendar($this->type)) {
+            if ($this->isCalendarType($this->type)) {
                 $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString('1 year'))
                                                      ->sub(\DateInterval::createFromDateString('1 day'));
 
             }
 
             // For business type, the end date is the number of weeks , minus 1 day after the start date.
-            if (TypeEnum::isBusiness($this->type)) {
+            if ($this->isBusinessType($this->type)) {
                 // As a financial year would have 52 or 53 weeks, the param handles it.
                 $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString($this->fyWeeks . ' weeks'))
                                                      ->sub(\DateInterval::createFromDateString('1 day'));
@@ -156,7 +155,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $dateTime = $this->getDateObject($date);
 
         // If the financial year type is calendar, Check that is correctly set.
-        if (TypeEnum::isCalendar($this->type)) {
+        if ($this->isCalendarType($this->type)) {
 
             $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('1 day')));
 
@@ -168,7 +167,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // If the financial year type is business, Check that is correctly set.
         // Set fyWeeks on success.
-        if (TypeEnum::isBusiness($this->type)) {
+        if ($this->isBusinessType($this->type)) {
 
             $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('1 day')))->days / 7;
 
@@ -187,10 +186,10 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \DatePeriod
+     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
      *
-     * @throws \Exception
      * @throws Exception
+     * @throws \Exception
      */
     public function getPeriodById(int $id): \Traversable
     {
@@ -201,7 +200,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $period = null;
 
         // In calendar type, periods are always 12 as the months, regardless of the start date within the month.
-        if (TypeEnum::isCalendar($this->type)) {
+        if ($this->isCalendarType($this->type)) {
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
@@ -217,7 +216,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
 
-        if (TypeEnum::isBusiness($this->type)) {
+        if ($this->isBusiness($this->type)) {
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
@@ -244,7 +243,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \DatePeriod
+     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
      *
      * @throws Exception
      */
@@ -279,7 +278,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $dateTime = $this->getDateObject($date);
 
         for ($id = 1; $id <= 12; $id++) {
-            /** @var \DateTimeInterface $interval */
             foreach ($this->getPeriodById($id) as $interval) {
                 if ($dateTime->format('Y-m-d') === $interval->format('Y-m-d')) {
                     return $id;
@@ -302,7 +300,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $dateTime = $this->getDateObject($date);
 
         for ($id = 1; $id <= $this->fyWeeks; $id++) {
-            /** @var \DateTimeInterface $interval */
             foreach ($this->getBusinessWeekById($id) as $interval) {
                 if ($dateTime->format('Y-m-d') === $interval->format('Y-m-d')) {
                     return $id;
@@ -333,11 +330,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
-        if (TypeEnum::isCalendar($this->type)) {
+        if ($this->isCalendarType($this->type)) {
             $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' months'));
         }
 
-        if (TypeEnum::isBusiness($this->type)) {
+        if ($this->isBusiness($this->type)) {
             $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
         }
 
@@ -368,12 +365,12 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
-        if (TypeEnum::isCalendar($this->type)) {
+        if ($this->isCalendarType($this->type)) {
             $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString($id . ' months'))
                                            ->sub(\DateInterval::createFromDateString('1 day'));
         }
 
-        if (TypeEnum::isBusiness($this->type)) {
+        if ($this->isBusiness($this->type)) {
             $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString($id * 4 . ' weeks'))
                                            ->sub(\DateInterval::createFromDateString('1 day'));
         }
@@ -431,7 +428,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \DatePeriod
+     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
      *
      * @throws Exception
      */
@@ -443,7 +440,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \DatePeriod
+     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
      *
      * @throws Exception
      */
@@ -467,7 +464,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \DatePeriod
+     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
      *
      * @throws Exception
      */
@@ -477,7 +474,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * @return \DatePeriod
+     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
      *
      * @throws  Exception
      * @throws  ConfigException
@@ -500,17 +497,22 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         // Placeholder
         $dateTime = null;
+        $className = null;
 
-        if ($date instanceof \DateTime) {
-            $dateTime = \DateTimeImmutable::createFromMutable($date)->setTime(0,0,0,0);
+        if (is_object($date)) {
+            $className = get_class($date);
         }
 
-        if ($date instanceof \DateTimeImmutable) {
-            $dateTime = $date->setTime(0,0,0,0);
+        if ($className === 'DateTime') {
+            $dateTime = \DateTimeImmutable::createFromMutable($date)->setTime(0,0);
+        }
+
+        if ($className === 'DateTimeImmutable') {
+            $dateTime = $date->setTime(0,0);
         }
 
         if (is_string($date)) {
-            $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', $date)->setTime(0,0,0,0);
+            $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', $date)->setTime(0,0);
         }
 
         if (!$dateTime || $dateTime === null) {

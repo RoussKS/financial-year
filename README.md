@@ -33,7 +33,7 @@ $config = [
 ];
 
 /** \RoussKS\FinancialYear\Interfaces\AdapterInterface $fy */
-$fy = (new \RoussKS\FinancialYear\FinancialYear($startDate, $config))->getFinancialYearAdapter();
+$fy = (new \RoussKS\FinancialYear\FinancialYear($startDate, $config))->getAdapter();
 
 echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31 
 ```

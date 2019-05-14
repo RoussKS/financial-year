@@ -1,1 +1,5 @@
+# Composer files
 /vendor/
+
+# PHPUnit report
+/tests/report/

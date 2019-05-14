@@ -2,6 +2,7 @@
 
 namespace RoussKS\FinancialYear;
 
+use DateTimeInterface;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Adapters\AdapterFactory;
@@ -15,21 +16,21 @@ use RoussKS\FinancialYear\Adapters\AdapterInterface;
 class FinancialYear
 {
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      */
-    protected $financialYearAdapterType;
+    protected $adapterType;
 
     /**
      * @var AdapterInterface
      */
-    protected $financialYearAdapter;
+    protected $adapter;
 
     /**
      * FinancialYear constructor.
      *
-     * @param  \DateTimeInterface $adapterType
+     * @param  DateTimeInterface $adapterType
      * @param  array|null $config = [
-     *     'fyType'         => 'string', Enums\TypeEnum
+     *     'fyType'         => 'string', `calendar` or `business`
      *     'fyStartDate'    => 'date', ISO-8601 format or adapter's object
      *     'fyEndDate'      => 'date', ISO-8601 format or adapter's object
      *     'fiftyThreeWeeks => 'bool', Applicable to business type financial year, if year has 52 or 53 weeks.
@@ -40,14 +41,14 @@ class FinancialYear
      * @throws Exception
      * @throws ConfigException
      */
-    public function __construct(\DateTimeInterface $adapterType, array $config = null)
+    public function __construct(DateTimeInterface $adapterType, array $config = null)
     {
-        $this->financialYearAdapterType = $adapterType;
+        $this->adapterType = $adapterType;
 
         if ($config !== null) {
             $this->validateConfiguration($config);
 
-            $this->financialYearAdapter = AdapterFactory::createAdapter($this->financialYearAdapterType, $config);
+            $this->adapter = AdapterFactory::createAdapter($this->adapterType, $config);
         }
     }
 
@@ -63,13 +64,13 @@ class FinancialYear
      */
     public function instantiateFinancialYearAdapter(array $config): void
     {
-        if ($this->financialYearAdapter !== null) {
+        if ($this->adapter !== null) {
             throw new Exception('The adapter has already been instantiated');
         }
 
         $this->validateConfiguration($config);
 
-        $this->financialYearAdapter = AdapterFactory::createAdapter($this->financialYearAdapterType, $config);
+        $this->adapter = AdapterFactory::createAdapter($this->adapterType, $config);
     }
 
     /**
@@ -77,13 +78,13 @@ class FinancialYear
      *
      * @throws Exception
      */
-    public function getFinancialYearAdapter(): AdapterInterface
+    public function getAdapter(): AdapterInterface
     {
-        if ($this->financialYearAdapter === null) {
+        if ($this->adapter === null) {
             throw new Exception('The adapter has not been set yet');
         }
 
-        return $this->financialYearAdapter;
+        return $this->adapter;
     }
 
     /**
