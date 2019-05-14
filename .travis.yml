@@ -1,9 +1,7 @@
 language: php
 php:
-  - '7.1'
   - '7.2'
 before_script:
   - composer self-update
-  - cp tests/composer_versions/composer.7_1.json composer.json && composer update && composer install
-  - rm composer.json && rm composer.lock
-  - cp tests/composer_versions/composer.7_2.json composer.json && composer update && composer install
+install:
+  - composer install
