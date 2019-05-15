@@ -1,11 +1,14 @@
 language: php
+
 php:
   - '7.1'
   - '7.2'
+
+sudo: false
+
 before_install:
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.1" ]]; then composer require --dev phpunit/phpunit ^7; fi
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.2" ]]; then composer require --dev phpunit/phpunit ^8; fi
-before_script:
-  - composer self-update
-  - composer update
-  - composer install
+  - travis_retry composer self-update
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.1" ]]; then travis_retry composer require --dev phpunit/phpunit ^7 --update-with-dependencies; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.2" ]]; then travis_retry composer require --dev phpunit/phpunit ^8 --update-with-dependencies; fi
+  - travis_retry composer update
+  - travis_retry composer install
