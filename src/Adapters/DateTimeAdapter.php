@@ -15,12 +15,12 @@ use RoussKS\FinancialYear\Exceptions\Exception;
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {
     /**
-     * @var \DateTimeImmutable
+     * @var \DateTimeInterface|\DateTimeImmutable
      */
     protected $fyStartDate;
 
     /**
-     * @var \DateTimeImmutable
+     * @var \DateTimeInterface|\DateTimeImmutable
      */
     protected $fyEndDate;
 
