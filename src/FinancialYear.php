@@ -3,13 +3,15 @@
 namespace RoussKS\FinancialYear;
 
 use DateTimeInterface;
+use RoussKS\FinancialYear\Adapters\DateTimeAdapter;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
-use RoussKS\FinancialYear\Adapters\AdapterFactory;
 use RoussKS\FinancialYear\Adapters\AdapterInterface;
 
 /**
  * Class FinancialYear
+ *
+ * Handles relevant financial year adapter instantiation (acts like a factory).
  *
  * @package RoussKS\FinancialYear
  */
@@ -45,17 +47,21 @@ class FinancialYear
     {
         $this->adapterType = $adapterType;
 
+        // If a config is provided, instantiate the relevant adapter.
         if ($config !== null) {
-            $this->validateConfiguration($config);
-
-            $this->adapter = AdapterFactory::createAdapter($this->adapterType, $config);
+            $this->instantiateFinancialYearAdapter($config);
         }
     }
 
     /**
-     * Instantiate the adapter if it hasn't already.
+     * Instantiate the adapter if it hasn't been instantiated already.
      *
-     * @param  array $config
+     * @param  array $config = [
+     *     'fyType'         => 'string', `calendar` or `business`
+     *     'fyStartDate'    => 'date', ISO-8601 format or adapter's object
+     *     'fyEndDate'      => 'date', ISO-8601 format or adapter's object
+     *     'fiftyThreeWeeks => 'bool', Applicable to business type financial year, if year has 52 or 53 weeks.
+     * ]
      *
      * @return void
      *
@@ -64,13 +70,27 @@ class FinancialYear
      */
     public function instantiateFinancialYearAdapter(array $config): void
     {
+        // Throw exception for improper use (multiple instantiations).
         if ($this->adapter !== null) {
             throw new Exception('The adapter has already been instantiated');
         }
 
         $this->validateConfiguration($config);
 
-        $this->adapter = AdapterFactory::createAdapter($this->adapterType, $config);
+        // Switch on fully qualified class name.
+        switch (get_class($this->adapterType)) {
+            case 'DateTime':
+            case 'DateTimeImmutable':
+                $this->adapter = new DateTimeAdapter(
+                    $config['fyType'],
+                    $config['fyStartDate'],
+                    $config['fyEndDate'] ?? null,
+                    $config['fiftyThreeWeeks'] ?? false
+                );
+                break;
+            default:
+                throw new ConfigException('Unknown adapter configuration key');
+        }
     }
 
     /**

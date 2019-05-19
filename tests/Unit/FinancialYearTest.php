@@ -3,6 +3,7 @@
 namespace RoussKS\FinancialYear\Tests\Unit;
 
 use RoussKS\FinancialYear\Tests\BaseTestCase;
+use RoussKS\FinancialYear\Tests\MockObjects\MockDateTimeInterfaceClass;
 
 class FinancialYearTest extends BaseTestCase
 {
@@ -13,22 +14,7 @@ class FinancialYearTest extends BaseTestCase
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \Exception
      */
-    public function assertAdapterInterfaceReturnedOnConstructWithConfig(): void
-    {
-        /** @var \RoussKS\FinancialYear\FinancialYear $fy */
-        $fy = $this->createMock('RoussKS\FinancialYear\FinancialYear');
-
-        $this->assertNotNull($fy->getAdapter());
-    }
-
-    /**
-     * @test
-     *
-     * @throws \RoussKS\FinancialYear\Exceptions\Exception
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
-     * @throws \Exception
-     */
-    public function assertAdapterThrowsExceptionIfNotInstantiated(): void
+    public function assertAdapterThrowsExceptionOnClassInstantiationWithoutConfig(): void
     {
         $this->expectException(\RoussKS\FinancialYear\Exceptions\Exception::class);
         $this->expectExceptionMessage('The adapter has not been set yet');
@@ -45,7 +31,7 @@ class FinancialYearTest extends BaseTestCase
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \Exception
      */
-    public function assertAdapterThrowsExceptionIfReInstantiated(): void
+    public function assertAdapterThrowsExceptionIfReInstantiatedFromMethod(): void
     {
         $this->expectException(\RoussKS\FinancialYear\Exceptions\Exception::class);
         $this->expectExceptionMessage('The adapter has already been instantiated');
@@ -60,6 +46,27 @@ class FinancialYearTest extends BaseTestCase
         $fy = new \RoussKS\FinancialYear\FinancialYear($dateTime, $config);
 
         $fy->instantiateFinancialYearAdapter($config);
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \Exception
+     */
+    public function assertAdapterInstantiationMethodThrowsExceptionOnUnsupportedAdapterType(): void
+    {
+        $this->expectException(\RoussKS\FinancialYear\Exceptions\ConfigException::class);
+
+        $fakeDateTimeInterfaceClass = new MockDateTimeInterfaceClass();
+
+        $config = [
+            'fyType' => 'calendar',
+            'fyStartDate' => $fakeDateTimeInterfaceClass,
+        ];
+
+        new \RoussKS\FinancialYear\FinancialYear($fakeDateTimeInterfaceClass, $config);
     }
 
     /**
@@ -82,6 +89,7 @@ class FinancialYearTest extends BaseTestCase
 
         $fy->instantiateFinancialYearAdapter($config);
 
+        // The return object is type-hinted, so no need to test that it is Financial Year Adapter Interface.
         $this->assertNotNull($fy->getAdapter());
     }
 
