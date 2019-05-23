@@ -74,7 +74,7 @@ abstract class AbstractAdapter
     }
 
     /**
-     * Get the financial year's type.
+     * Get the financial year type.
      *
      * @return string
      */
@@ -84,6 +84,7 @@ abstract class AbstractAdapter
     }
 
     /**
+     * Get the number of weeks for business type financial year or null for calendar type.
      *
      * @return int|null
      */
@@ -96,6 +97,7 @@ abstract class AbstractAdapter
      * Set the number of weeks for the Financial Year.
      *
      * Only applies to business financial year type and will be set either 52 or 53.
+     * Throw ConfigException for calendar type.
      *
      * @param  bool $fiftyThreeWeeks
      *
@@ -151,7 +153,7 @@ abstract class AbstractAdapter
     }
 
     /**
-     * Validate fyType is business and week $id is between 1 and the set fyWeeks (52 or 53).
+     * Validate fyType is business and week $id is between 1 and fyWeeks property (52 or 53).
      *
      * @param  int $id
      *
@@ -197,6 +199,8 @@ abstract class AbstractAdapter
 
     /**
      * @param  null $message
+     *
+     * @return void
      *
      * @throws ConfigException
      */

@@ -21,6 +21,8 @@ interface AdapterInterface
     public function getType(): string;
 
     /**
+     * Get the number of weeks for business type financial year or null for calendar type.
+     *
      * @return int|null
      */
     public function getFyWeeks(): ?int;
@@ -29,6 +31,7 @@ interface AdapterInterface
      * Set the number of weeks for the Financial Year.
      *
      * Only applies to business financial year type and will be set either 52 or 53.
+     * Throw ConfigException for calendar type.
      *
      * @param  bool $fiftyThreeWeeks
      *
@@ -211,6 +214,8 @@ interface AdapterInterface
     public function getFourthBusinessWeekByPeriodId(int $id): Traversable;
 
     /**
+     * Validate configuration.
+     *
      * @return void
      *
      * @throws ConfigException
