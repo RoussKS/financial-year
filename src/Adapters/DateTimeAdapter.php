@@ -216,7 +216,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
 
-        if ($this->isBusiness($this->type)) {
+        if ($this->isBusinessType($this->type)) {
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
@@ -334,7 +334,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' months'));
         }
 
-        if ($this->isBusiness($this->type)) {
+        if ($this->isBusinessType($this->type)) {
             $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
         }
 
@@ -370,7 +370,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
                                            ->sub(\DateInterval::createFromDateString('1 day'));
         }
 
-        if ($this->isBusiness($this->type)) {
+        if ($this->isBusinessType($this->type)) {
             $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString($id * 4 . ' weeks'))
                                            ->sub(\DateInterval::createFromDateString('1 day'));
         }
