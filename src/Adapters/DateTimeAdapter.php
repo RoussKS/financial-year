@@ -179,7 +179,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $period = new DatePeriod($periodStartDate, DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
 
-        // This case should never happen.
+        // This case can never happen as the financial year type will always be set to either `calendar` or `business`.
+        // Otherwise the library throws an exception on the construct.
         if ($period === null) {
             throw new Exception('A date range period could not be set');
         }

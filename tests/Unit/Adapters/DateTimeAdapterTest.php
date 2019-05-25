@@ -26,10 +26,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function settingSameFyWeeksSetsWeeksWithoutChangingEndDateForBusinessType()
+    public function settingSameFyWeeksSetsWeeksWithoutChangingEndDateForBusinessType(): void
     {
         $fiftyThreeWeeks = $this->faker->boolean;
 
@@ -49,10 +51,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function settingDifferentFyWeeksSetsWeeksWithDifferentEndDateForBusinessType()
+    public function settingDifferentFyWeeksSetsWeeksWithDifferentEndDateForBusinessType(): void
     {
         $fiftyThreeWeeks = $this->faker->boolean;
 
@@ -73,10 +77,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function assertGetFyStartDateReturnsDateTimeImmutableObject()
+    public function assertGetFyStartDateReturnsDateTimeImmutableObject(): void
     {
         $dateTimeAdapter = new DateTimeAdapter(
             $this->fyTypes[array_rand($this->fyTypes,1)],
@@ -92,10 +98,12 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * Invalid date is 29/02 of any available year
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function assertSetFyStartDateThrowsExceptionForSingleInvalidDate()
+    public function assertSetFyStartDateThrowsExceptionForSingleInvalidDate(): void
     {
         $this->expectException(ConfigException::class);
         $this->expectExceptionMessage(
@@ -114,10 +122,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function assertSetFyStartDateSetsNewFyEndDateIfFyStartDateChanges()
+    public function assertSetFyStartDateSetsNewFyEndDateIfFyStartDateChanges(): void
     {
         $dateTimeAdapter = new DateTimeAdapter(
             $this->fyTypes[array_rand($this->fyTypes,1)],
@@ -138,10 +148,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function assertGetFyEndDateReturnsDateTimeImmutableObject()
+    public function assertGetFyEndDateReturnsDateTimeImmutableObject(): void
     {
         $dateTimeAdapter = new DateTimeAdapter(
             $this->fyTypes[array_rand($this->fyTypes,1)],
@@ -155,10 +167,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function assertGetPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear()
+    public function assertGetPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -177,10 +191,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear()
+    public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -199,10 +215,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear()
+    public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -221,10 +239,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function assertGetPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear()
+    public function assertGetPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear(): void
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -243,10 +263,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear()
+    public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear(): void
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -265,10 +287,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYearFiftyTwoWeeks()
+    public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYearFiftyTwoWeeks(): void
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -287,10 +311,12 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
+     * @return void
+     *
      * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
      * @throws \RoussKS\FinancialYear\Exceptions\Exception
      */
-    public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYearFiftyThreeWeeks()
+    public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYearFiftyThreeWeeks(): void
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
