@@ -72,20 +72,6 @@ interface AdapterInterface
     public function getFyEndDate(): DateTimeInterface;
 
     /**
-     * Set the financial year end date.
-     *
-     * Expects either string ISO-8601 format 'YYYY-MM-DD' or a date object,
-     * same object instance as the adapter's that extends the DateTimeInterface.
-     *
-     * @param  string|DateTimeInterface $date
-     *
-     * @return void
-     *
-     * @throws ConfigException
-     */
-    public function setFyEndDate($date): void;
-
-    /**
      * Get the date range of the period with the given id.
      *
      * @param  int $id

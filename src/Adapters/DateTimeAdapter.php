@@ -4,6 +4,7 @@ namespace RoussKS\FinancialYear\Adapters;
 
 use DateInterval;
 use DatePeriod;
+use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
@@ -35,8 +36,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * $fyEndDate, if provided, has priority and overrides $fiftyThreeWeeks for 'business' $fyType.
      *
      * @param  string $fyType
-     * @param  \DateTime|DateTimeImmutable|string $fyStartDate
-     * @param  \DateTime|DateTimeImmutable|string|null $fyEndDate
+     * @param  DateTime|DateTimeImmutable|string $fyStartDate
      * @param  bool $fiftyThreeWeeks
      *
      * @return void
@@ -47,14 +47,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     public function __construct(
         string $fyType,
         $fyStartDate,
-        $fyEndDate = null,
         bool $fiftyThreeWeeks = false
     ) {
         parent::__construct($fyType, $fiftyThreeWeeks);
 
         $this->setFyStartDate($fyStartDate);
 
-        $this->setFyEndDate($fyEndDate);
+        $this->setFyEndDate();
     }
 
     /**
@@ -89,7 +88,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  \DateTime|DateTimeImmutable|string $date
+     * @param  DateTime|DateTimeImmutable|string $date
      *
      * @throws Exception
      */
@@ -120,71 +119,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     public function getFyEndDate(): DateTimeInterface
     {
         return $this->fyEndDate;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param  \DateTime|DateTimeImmutable|string|null $date
-     *
-     * @throws Exception
-     */
-    public function setFyEndDate($date = null): void
-    {
-        // If date param is null, we set end date relative to start date (it is already set from the constructor).
-        // At this point start date's time is set to 00:00:00
-        if ($date === null) {
-            // We will set end date from the start date object which should be present.
-
-            // For calendar type, the end date is 1 year, minus 1 day after the start date.
-            if ($this->isCalendarType($this->type)) {
-                $this->fyEndDate = $this->fyStartDate->add(DateInterval::createFromDateString('1 year'))
-                                                     ->sub(DateInterval::createFromDateString('1 day'));
-
-            }
-
-            // For business type, the end date is the number of weeks , minus 1 day after the start date.
-            if ($this->isBusinessType($this->type)) {
-                // As a financial year would have 52 or 53 weeks, the param handles it.
-                $this->fyEndDate = $this->fyStartDate->add(DateInterval::createFromDateString($this->fyWeeks . ' weeks'))
-                                                     ->sub(DateInterval::createFromDateString('1 day'));
-            }
-
-            // On null param, there is no need for extra logic.
-            // The financial year end date property has been computed according to existing settings.
-            return;
-        }
-
-        // Safe as Immutable.
-        $dateTime = $this->getDateObject($date);
-
-        // If the financial year type is calendar, Check that is correctly set.
-        if ($this->isCalendarType($this->type)) {
-
-            $diff = $this->fyStartDate->diff($dateTime->add(DateInterval::createFromDateString('1 day')));
-
-            // Check that end date + 1 day (start date of next financial year) is exactly 1 year after the start date.
-            if ($diff->y !== 1 && $diff->m !== 0 && $diff->days !== 0) {
-                $this->throwConfigurationException('The provided end date can not be validated against the start date');
-            }
-        }
-
-        // If the financial year type is business, Check that is correctly set.
-        // Set fyWeeks on success.
-        if ($this->isBusinessType($this->type)) {
-
-            $diff = $this->fyStartDate->diff($dateTime->add(DateInterval::createFromDateString('1 day')))->days / 7;
-
-            // Check that end date + 1 day (start date of next financial year) is exactly 52 or 53 weeks after the start date.
-            if ($diff !== 52 || $diff !== 53) {
-                $this->throwConfigurationException('The provided end date can not be validated against the start date');
-            }
-
-            $this->fyWeeks = $diff;
-        }
-
-        // The above conditions cover all types (which is strictly set on instantiation, so we can safely set the fyEndDate.
-        $this->fyEndDate = $dateTime;
     }
 
     /**
@@ -273,7 +207,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  \DateTime|DateTimeImmutable|string $date
+     * @param  DateTime|DateTimeImmutable|string $date
      *
      * @throws Exception
      */
@@ -295,7 +229,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  \DateTime|DateTimeImmutable|string $date
+     * @param  DateTime|DateTimeImmutable|string $date
      *
      * @throws Exception
      */
@@ -489,9 +423,33 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
+     * Set the financial year end date.
+     *
+     * @return void
+     */
+    protected function setFyEndDate(): void
+    {
+        // We will set end date from the start date object which should be present.
+
+        // For calendar type, the end date is 1 year, minus 1 day after the start date.
+        if ($this->isCalendarType($this->type)) {
+            $this->fyEndDate = $this->fyStartDate->add(DateInterval::createFromDateString('1 year'))
+                                                 ->sub(DateInterval::createFromDateString('1 day'));
+
+        }
+
+        // For business type, the end date is the number of weeks , minus 1 day after the start date.
+        if ($this->isBusinessType($this->type)) {
+            // As a financial year would have 52 or 53 weeks, the param handles it.
+            $this->fyEndDate = $this->fyStartDate->add(DateInterval::createFromDateString($this->fyWeeks . ' weeks'))
+                                                 ->sub(DateInterval::createFromDateString('1 day'));
+        }
+    }
+
+    /**
      * Get a date object from the provided param.
      *
-     * @param  \DateTime|DateTimeImmutable|string $date$date
+     * @param  DateTime|DateTimeImmutable|string $date$date
      *
      * @return DateTimeImmutable
      *

@@ -32,9 +32,8 @@ class FinancialYear
      *
      * @param  DateTimeInterface $adapterType
      * @param  array|null $config = [
-     *     'fyType'         => 'string', `calendar` or `business`
+     *     'fyType'         => 'string', `calendar` or `business` as set in the AbstractAdapter Constants.
      *     'fyStartDate'    => 'date', ISO-8601 format or adapter's object
-     *     'fyEndDate'      => 'date', ISO-8601 format or adapter's object
      *     'fiftyThreeWeeks => 'bool', Applicable to business type financial year, if year has 52 or 53 weeks.
      * ]
      *
@@ -59,7 +58,6 @@ class FinancialYear
      * @param  array $config = [
      *     'fyType'         => 'string', `calendar` or `business`
      *     'fyStartDate'    => 'date', ISO-8601 format or adapter's object
-     *     'fyEndDate'      => 'date', ISO-8601 format or adapter's object
      *     'fiftyThreeWeeks => 'bool', Applicable to business type financial year, if year has 52 or 53 weeks.
      * ]
      *
@@ -84,7 +82,6 @@ class FinancialYear
                 $this->adapter = new DateTimeAdapter(
                     $config['fyType'],
                     $config['fyStartDate'],
-                    $config['fyEndDate'] ?? null,
                     $config['fiftyThreeWeeks'] ?? false
                 );
                 break;

@@ -36,7 +36,6 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             $this->faker->dateTime,
-            null,
             $fiftyThreeWeeks
         );
 
@@ -60,7 +59,6 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             $this->faker->dateTime,
-            null,
             $fiftyThreeWeeks
         );
 
@@ -83,7 +81,6 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $this->fyTypes[array_rand($this->fyTypes,1)],
             $this->faker->dateTime,
-            null,
             $this->faker->boolean
         );
 
@@ -108,7 +105,6 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_CALENDAR,
             $this->faker->dateTime,
-            null,
             $this->faker->boolean
         );
 
@@ -126,7 +122,6 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $this->fyTypes[array_rand($this->fyTypes,1)],
             $this->faker->dateTime,
-            null,
             $this->faker->boolean
         );
 
@@ -151,7 +146,6 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $this->fyTypes[array_rand($this->fyTypes,1)],
             $this->faker->dateTime,
-            null,
             $this->faker->boolean
         );
 
