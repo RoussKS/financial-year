@@ -169,7 +169,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
          * Type is set on construct and exception is thrown for invalid values.
          * Hence it is always set within the scope of this method and never null.
          */
-        
+
         // If first period, period start date is the financial year start date.
         // If not the first period, calculate the correct date
         if ($id !== 1) {
@@ -200,15 +200,20 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->validateBusinessWeekId($id);
 
-        // If 1st week, get the start of the financial year.
-        $weekStartDate = $id === 1 ?
-            $this->fyStartDate :
-            $this->fyStartDate->add(DateInterval::createFromDateString($id - 1 . ' weeks'));
+        // Set default values.
+        // Will be used if first or last week.
+        $weekStartDate = $this->fyStartDate;
+        $weekEndDate = $this->fyEndDate;
 
-        // If last week, get the end of the financial year.
-        $weekEndDate = $id === $this->fyWeeks ?
-            $this->fyEndDate :
-            $weekStartDate->add(DateInterval::createFromDateString('6 days'));
+        // If not the first week, calculate period start date.
+        if ($id !== 1) {
+            $weekStartDate = $this->fyStartDate->add(DateInterval::createFromDateString($id - 1 . ' weeks'));
+        }
+
+        // If not last week of the year, calculate period end date from start date.
+        if ($id !== $this->fyWeeks) {
+            $weekEndDate = $weekStartDate->add(DateInterval::createFromDateString('6 days'));
+        }
 
         return new DatePeriod($weekStartDate, DateInterval::createFromDateString('1 day'), $weekEndDate);
     }
