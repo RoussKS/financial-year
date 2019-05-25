@@ -151,4 +151,158 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeAdapter->getFyEndDate());
     }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     */
+    public function assertGetPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear()
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_CALENDAR,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // 2nd Period should be 2019-02-1 - 2019-02-28
+        $period = $dateTimeAdapter->getPeriodById(2);
+
+        $this->assertEquals('2019-02-01 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2019-02-28 00:00:00', $period->getEndDate()->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     */
+    public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear()
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_CALENDAR,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // 2nd Period should be 2019-01-1 - 2019-01-31
+        $period = $dateTimeAdapter->getPeriodById(1);
+
+        $this->assertEquals('2019-01-01 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2019-01-31 00:00:00', $period->getEndDate()->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     */
+    public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear()
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_CALENDAR,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // 2nd Period should be 2019-12-01 - 2019-12-31
+        $period = $dateTimeAdapter->getPeriodById(12);
+
+        $this->assertEquals('2019-12-01 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2019-12-31 00:00:00', $period->getEndDate()->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     */
+    public function assertGetPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear()
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // 3rd Period should be 2019-01-29 - 2019-02-26
+        $period = $dateTimeAdapter->getPeriodById(2);
+
+        $this->assertEquals('2019-01-29 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2019-02-25 00:00:00', $period->getEndDate()->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     */
+    public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear()
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // 3rd Period should be 2019-01-01 - 2019-01-28
+        $period = $dateTimeAdapter->getPeriodById(1);
+
+        $this->assertEquals('2019-01-01 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2019-01-28 00:00:00', $period->getEndDate()->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     */
+    public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYearFiftyTwoWeeks()
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            false
+        );
+
+        // 3rd Period should be 2019-12-02 - 2019-12-30
+        $period = $dateTimeAdapter->getPeriodById(12);
+
+        $this->assertEquals('2019-12-02 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2019-12-30 00:00:00', $period->getEndDate()->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     */
+    public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYearFiftyThreeWeeks()
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            true
+        );
+
+        // 3rd Period should be 2019-12-02 - 2020-01-06
+        $period = $dateTimeAdapter->getPeriodById(12);
+
+        $this->assertEquals('2019-12-02 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2020-01-06 00:00:00', $period->getEndDate()->format('Y-m-d H:i:s'));
+    }
 }

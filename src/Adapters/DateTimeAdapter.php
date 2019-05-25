@@ -142,7 +142,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
-                $this->fyStartDate->add(DateInterval::createFromDateString($id-1 . ' months'));
+                $this->fyStartDate->add(DateInterval::createFromDateString($id - 1 . ' months'));
 
             // If last period details requested, the end date is the financial year end date.
             // Else, it's the end of the month.
@@ -158,7 +158,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
-                $this->fyStartDate->add(DateInterval::createFromDateString(($id-1) * 4 . ' weeks'));
+                $this->fyStartDate->add(DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
 
             // If last period details requested, the end date is the financial year end date.
             // This way we also overcome the potential issue of a 53rd week.
@@ -194,7 +194,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // If 1st week, get the start of the financial year.
         $weekStartDate = $id === 1 ?
             $this->fyStartDate :
-            $this->fyStartDate->add(DateInterval::createFromDateString($id-1 . ' weeks'));
+            $this->fyStartDate->add(DateInterval::createFromDateString($id - 1 . ' weeks'));
 
         // If last week, get the end of the financial year.
         $weekEndDate = $id === $this->fyWeeks ?
@@ -269,11 +269,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->isCalendarType($this->type)) {
-            $periodStart = $this->fyStartDate->add(DateInterval::createFromDateString($id-1 . ' months'));
+            $periodStart = $this->fyStartDate->add(DateInterval::createFromDateString($id - 1 . ' months'));
         }
 
         if ($this->isBusinessType($this->type)) {
-            $periodStart = $this->fyStartDate->add(DateInterval::createFromDateString(($id-1) * 4 . ' weeks'));
+            $periodStart = $this->fyStartDate->add(DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
         }
 
         if ($periodStart === null) {
@@ -338,7 +338,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $this->fyStartDate;
         }
 
-        return $this->fyStartDate->add(DateInterval::createFromDateString($id-1 . ' weeks'));
+        return $this->fyStartDate->add(DateInterval::createFromDateString($id - 1 . ' weeks'));
     }
 
     /**
