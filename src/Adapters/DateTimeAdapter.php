@@ -2,8 +2,13 @@
 
 namespace RoussKS\FinancialYear\Adapters;
 
+use DateInterval;
+use DatePeriod;
+use DateTimeImmutable;
+use DateTimeInterface;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
+use Traversable;
 
 /**
  * Implementation of PHP DateTime FinancialYear Adapter
@@ -15,12 +20,12 @@ use RoussKS\FinancialYear\Exceptions\Exception;
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {
     /**
-     * @var \DateTimeInterface|\DateTimeImmutable
+     * @var DateTimeInterface|DateTimeImmutable
      */
     protected $fyStartDate;
 
     /**
-     * @var \DateTimeInterface|\DateTimeImmutable
+     * @var DateTimeInterface|DateTimeImmutable
      */
     protected $fyEndDate;
 
@@ -30,8 +35,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * $fyEndDate, if provided, has priority and overrides $fiftyThreeWeeks for 'business' $fyType.
      *
      * @param  string $fyType
-     * @param  \DateTime|\DateTimeImmutable|string $fyStartDate
-     * @param  \DateTime|\DateTimeImmutable|string|null $fyEndDate
+     * @param  \DateTime|DateTimeImmutable|string $fyStartDate
+     * @param  \DateTime|DateTimeImmutable|string|null $fyEndDate
      * @param  bool $fiftyThreeWeeks
      *
      * @return void
@@ -74,9 +79,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \DateTimeInterface|\DateTimeImmutable
+     * @return DateTimeInterface|DateTimeImmutable
      */
-    public function getFyStartDate(): \DateTimeInterface
+    public function getFyStartDate(): DateTimeInterface
     {
         return $this->fyStartDate;
     }
@@ -84,7 +89,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  \DateTime|\DateTimeImmutable|string $date
+     * @param  \DateTime|DateTimeImmutable|string $date
      *
      * @throws Exception
      */
@@ -110,20 +115,19 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \DateTimeInterface|\DateTimeImmutable
+     * @return DateTimeInterface|DateTimeImmutable
      */
-    public function getFyEndDate(): \DateTimeInterface
+    public function getFyEndDate(): DateTimeInterface
     {
         return $this->fyEndDate;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
-     * @param  \DateTime|\DateTimeImmutable|string|null $date
+     * @param  \DateTime|DateTimeImmutable|string|null $date
      *
      * @throws Exception
-     * @throws \Exception
      */
     public function setFyEndDate($date = null): void
     {
@@ -134,16 +138,16 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
             // For calendar type, the end date is 1 year, minus 1 day after the start date.
             if ($this->isCalendarType($this->type)) {
-                $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString('1 year'))
-                                                     ->sub(\DateInterval::createFromDateString('1 day'));
+                $this->fyEndDate = $this->fyStartDate->add(DateInterval::createFromDateString('1 year'))
+                                                     ->sub(DateInterval::createFromDateString('1 day'));
 
             }
 
             // For business type, the end date is the number of weeks , minus 1 day after the start date.
             if ($this->isBusinessType($this->type)) {
                 // As a financial year would have 52 or 53 weeks, the param handles it.
-                $this->fyEndDate = $this->fyStartDate->add(\DateInterval::createFromDateString($this->fyWeeks . ' weeks'))
-                                                     ->sub(\DateInterval::createFromDateString('1 day'));
+                $this->fyEndDate = $this->fyStartDate->add(DateInterval::createFromDateString($this->fyWeeks . ' weeks'))
+                                                     ->sub(DateInterval::createFromDateString('1 day'));
             }
 
             // On null param, there is no need for extra logic.
@@ -157,7 +161,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // If the financial year type is calendar, Check that is correctly set.
         if ($this->isCalendarType($this->type)) {
 
-            $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('1 day')));
+            $diff = $this->fyStartDate->diff($dateTime->add(DateInterval::createFromDateString('1 day')));
 
             // Check that end date + 1 day (start date of next financial year) is exactly 1 year after the start date.
             if ($diff->y !== 1 && $diff->m !== 0 && $diff->days !== 0) {
@@ -169,7 +173,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // Set fyWeeks on success.
         if ($this->isBusinessType($this->type)) {
 
-            $diff = $this->fyStartDate->diff($dateTime->add(\DateInterval::createFromDateString('1 day')))->days / 7;
+            $diff = $this->fyStartDate->diff($dateTime->add(DateInterval::createFromDateString('1 day')))->days / 7;
 
             // Check that end date + 1 day (start date of next financial year) is exactly 52 or 53 weeks after the start date.
             if ($diff !== 52 || $diff !== 53) {
@@ -186,12 +190,12 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
+     * @return Traversable|DatePeriod|DateTimeInterface[]
      *
      * @throws Exception
      * @throws \Exception
      */
-    public function getPeriodById(int $id): \Traversable
+    public function getPeriodById(int $id): Traversable
     {
         $this->validate();
 
@@ -204,32 +208,32 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
-                $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' months'));
+                $this->fyStartDate->add(DateInterval::createFromDateString($id-1 . ' months'));
 
             // If last period details requested, the end date is the financial year end date.
             // Else, it's the end of the month.
             $periodEndDate = $id === 12 ?
                 $this->fyEndDate :
-                $periodStartDate->add(\DateInterval::createFromDateString('1 month'))
-                                ->sub(\DateInterval::createFromDateString('1 day'));
+                $periodStartDate->add(DateInterval::createFromDateString('1 month'))
+                                ->sub(DateInterval::createFromDateString('1 day'));
 
-            $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('1 day'), $periodEndDate);
+            $period = new DatePeriod($periodStartDate, DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
 
         if ($this->isBusinessType($this->type)) {
             // If 1st period, no need for modification of start date.
             $periodStartDate = $id === 1 ?
                 $this->fyStartDate :
-                $this->fyStartDate->add(\DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
+                $this->fyStartDate->add(DateInterval::createFromDateString(($id-1) * 4 . ' weeks'));
 
             // If last period details requested, the end date is the financial year end date.
             // This way we also overcome the potential issue of a 53rd week.
             $periodEndDate = $id === 12 ?
                 $this->fyEndDate :
-                $periodStartDate->add(\DateInterval::createFromDateString('4 weeks'))
-                                ->sub(\DateInterval::createFromDateString('1 day'));
+                $periodStartDate->add(DateInterval::createFromDateString('4 weeks'))
+                                ->sub(DateInterval::createFromDateString('1 day'));
 
-            $period = new \DatePeriod($periodStartDate, \DateInterval::createFromDateString('1 day'), $periodEndDate);
+            $period = new DatePeriod($periodStartDate, DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
 
         // This case should never happen.
@@ -243,11 +247,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
+     * @return Traversable|DatePeriod|DateTimeInterface[]
      *
      * @throws Exception
      */
-    public function getBusinessWeekById(int $id): \Traversable
+    public function getBusinessWeekById(int $id): Traversable
     {
         $this->validate();
 
@@ -256,20 +260,20 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // If 1st week, get the start of the financial year.
         $weekStartDate = $id === 1 ?
             $this->fyStartDate :
-            $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' weeks'));
+            $this->fyStartDate->add(DateInterval::createFromDateString($id-1 . ' weeks'));
 
         // If last week, get the end of the financial year.
         $weekEndDate = $id === $this->fyWeeks ?
             $this->fyEndDate :
-            $weekStartDate->add(\DateInterval::createFromDateString('6 days'));
+            $weekStartDate->add(DateInterval::createFromDateString('6 days'));
 
-        return new \DatePeriod($weekStartDate, \DateInterval::createFromDateString('1 day'), $weekEndDate);
+        return new DatePeriod($weekStartDate, DateInterval::createFromDateString('1 day'), $weekEndDate);
     }
 
     /**
      * {@inheritdoc}
      *
-     * @param  \DateTime|\DateTimeImmutable|string $date
+     * @param  \DateTime|DateTimeImmutable|string $date
      *
      * @throws Exception
      */
@@ -291,7 +295,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  \DateTime|\DateTimeImmutable|string $date
+     * @param  \DateTime|DateTimeImmutable|string $date
      *
      * @throws Exception
      */
@@ -315,7 +319,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getFirstDateOfPeriodById(int $id): \DateTimeInterface
+    public function getFirstDateOfPeriodById(int $id): DateTimeInterface
     {
         $this->validate();
 
@@ -331,11 +335,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->isCalendarType($this->type)) {
-            $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' months'));
+            $periodStart = $this->fyStartDate->add(DateInterval::createFromDateString($id-1 . ' months'));
         }
 
         if ($this->isBusinessType($this->type)) {
-            $periodStart = $this->fyStartDate->add(\DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
+            $periodStart = $this->fyStartDate->add(DateInterval::createFromDateString(($id-1) * 4 . ' weeks'));
         }
 
         if ($periodStart === null) {
@@ -350,7 +354,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function getLastDateOfPeriodById(int $id): \DateTimeInterface
+    public function getLastDateOfPeriodById(int $id): DateTimeInterface
     {
         $this->validate();
 
@@ -366,13 +370,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // In calendar type, periods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->isCalendarType($this->type)) {
-            $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString($id . ' months'))
-                                           ->sub(\DateInterval::createFromDateString('1 day'));
+            $periodEnd = $this->fyStartDate->add(DateInterval::createFromDateString($id . ' months'))
+                                           ->sub(DateInterval::createFromDateString('1 day'));
         }
 
         if ($this->isBusinessType($this->type)) {
-            $periodEnd = $this->fyStartDate->add(\DateInterval::createFromDateString($id * 4 . ' weeks'))
-                                           ->sub(\DateInterval::createFromDateString('1 day'));
+            $periodEnd = $this->fyStartDate->add(DateInterval::createFromDateString($id * 4 . ' weeks'))
+                                           ->sub(DateInterval::createFromDateString('1 day'));
         }
 
         if ($periodEnd === null) {
@@ -385,11 +389,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \DateTimeInterface|\DateTimeImmutable
+     * @return DateTimeInterface|DateTimeImmutable
      *
      * @throws Exception
      */
-    public function getFirstDateOfBusinessWeekById(int $id): \DateTimeInterface
+    public function getFirstDateOfBusinessWeekById(int $id): DateTimeInterface
     {
         $this->validate();
 
@@ -400,17 +404,17 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $this->fyStartDate;
         }
 
-        return $this->fyStartDate->add(\DateInterval::createFromDateString($id - 1 . ' weeks'));
+        return $this->fyStartDate->add(DateInterval::createFromDateString($id-1 . ' weeks'));
     }
 
     /**
      * {@inheritdoc}
      *
-     * @return \DateTimeInterface|\DateTimeImmutable
+     * @return DateTimeInterface|DateTimeImmutable
      *
      * @throws Exception
      */
-    public function getLastDateOfBusinessWeekById(int $id): \DateTimeInterface
+    public function getLastDateOfBusinessWeekById(int $id): DateTimeInterface
     {
         $this->validate();
 
@@ -421,18 +425,18 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $this->fyEndDate;
         }
 
-        return $this->fyStartDate->add(\DateInterval::createFromDateString($id . ' weeks'))
-                                 ->sub(\DateInterval::createFromDateString('1 day'));
+        return $this->fyStartDate->add(DateInterval::createFromDateString($id . ' weeks'))
+                                 ->sub(DateInterval::createFromDateString('1 day'));
     }
 
     /**
      * {@inheritdoc}
      *
-     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
+     * @return Traversable|DatePeriod|DateTimeInterface[]
      *
      * @throws Exception
      */
-    public function getFirstBusinessWeekByPeriodId(int $id): \Traversable
+    public function getFirstBusinessWeekByPeriodId(int $id): Traversable
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 1);
     }
@@ -440,11 +444,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
+     * @return Traversable|DatePeriod|DateTimeInterface[]
      *
      * @throws Exception
      */
-    public function getSecondBusinessWeekByPeriodId(int $id): \Traversable
+    public function getSecondBusinessWeekByPeriodId(int $id): Traversable
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 2);
     }
@@ -452,11 +456,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \DatePeriod
+     * @return DatePeriod
      *
      * @throws Exception
      */
-    public function getThirdBusinessWeekOfPeriodId(int $id): \Traversable
+    public function getThirdBusinessWeekOfPeriodId(int $id): Traversable
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 3);
     }
@@ -464,22 +468,22 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
+     * @return Traversable|DatePeriod|DateTimeInterface[]
      *
      * @throws Exception
      */
-    public function getFourthBusinessWeekByPeriodId(int $id): \Traversable
+    public function getFourthBusinessWeekByPeriodId(int $id): Traversable
     {
         return $this->getBusinessWeekById($id * 4);
     }
 
     /**
-     * @return \Traversable|\DatePeriod|\DateTimeInterface[]
+     * @return Traversable|DatePeriod|DateTimeInterface[]
      *
      * @throws  Exception
      * @throws  ConfigException
      */
-    public function getFifthThirdBusinessWeekPeriod(): \Traversable
+    public function getFifthThirdBusinessWeekPeriod(): Traversable
     {
         return $this->getBusinessWeekById(53);
     }
@@ -487,13 +491,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * Get a date object from the provided param.
      *
-     * @param  \DateTime|\DateTimeImmutable|string $date$date
+     * @param  \DateTime|DateTimeImmutable|string $date$date
      *
-     * @return \DateTimeImmutable
+     * @return DateTimeImmutable
      *
      * @throws Exception
      */
-    protected function getDateObject($date): \DateTimeImmutable
+    protected function getDateObject($date): DateTimeImmutable
     {
         // Placeholder
         $dateTime = null;
@@ -504,7 +508,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         if ($className === 'DateTime') {
-            $dateTime = \DateTimeImmutable::createFromMutable($date)->setTime(0,0);
+            $dateTime = DateTimeImmutable::createFromMutable($date)->setTime(0,0);
         }
 
         if ($className === 'DateTimeImmutable') {
@@ -512,7 +516,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         if (is_string($date)) {
-            $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', $date)->setTime(0,0);
+            $dateTime = DateTimeImmutable::createFromFormat('Y-m-d', $date)->setTime(0,0);
         }
 
         if (!$dateTime || $dateTime === null) {
