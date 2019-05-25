@@ -4,6 +4,7 @@ namespace RoussKS\FinancialYear\Tests\Unit\Adapters;
 
 use DateTimeImmutable;
 use RoussKS\FinancialYear\Adapters\AbstractAdapter;
+use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
 use RoussKS\FinancialYear\Adapters\DateTimeAdapter;
 
@@ -14,6 +15,14 @@ use RoussKS\FinancialYear\Adapters\DateTimeAdapter;
  */
 class DateTimeAdapterTest extends BaseTestCase
 {
+    /**
+     * @var array
+     */
+    protected $fyTypes = [
+        AbstractAdapter::TYPE_CALENDAR,
+        AbstractAdapter::TYPE_BUSINESS
+    ];
+
     /**
      * @test
      *
@@ -57,6 +66,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $fyEndDate = $dateTimeAdapter->getFyEndDate();
 
+        // Set the opposite of original weeks.
         $dateTimeAdapter->setFyWeeks(!$fiftyThreeWeeks);
 
         $this->assertNotSame($fyEndDate->format('YmdHis'), $dateTimeAdapter->getFyEndDate()->format('YmdHis'));
@@ -70,16 +80,64 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetFyStartDateReturnsDateTimeImmutableObject()
     {
-        $types = [AbstractAdapter::TYPE_CALENDAR, AbstractAdapter::TYPE_BUSINESS];
-
         $dateTimeAdapter = new DateTimeAdapter(
-            AbstractAdapter::TYPE_BUSINESS,
+            $this->fyTypes[array_rand($this->fyTypes,1)],
             $this->faker->dateTime,
             null,
-            array_rand($types,1)
+            $this->faker->boolean
         );
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeAdapter->getFyStartDate());
+    }
+
+    /**
+     * @test
+     *
+     * Invalid date is 29/02 of any available year
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     */
+    public function assertSetFyStartDateThrowsExceptionForSingleInvalidDate()
+    {
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage(
+            'This library does not support 29th of February as the starting date for calendar type financial year'
+        );
+
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_CALENDAR,
+            $this->faker->dateTime,
+            null,
+            $this->faker->boolean
+        );
+
+        $dateTimeAdapter->setFyStartDate('2016-02-29'); //2016-02-29 is an existing date.
+    }
+
+    /**
+     * @test
+     *
+     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     */
+    public function assertSetFyStartDateSetsNewFyEndDateIfFyStartDateChanges()
+    {
+        $dateTimeAdapter = new DateTimeAdapter(
+            $this->fyTypes[array_rand($this->fyTypes,1)],
+            $this->faker->dateTime,
+            null,
+            $this->faker->boolean
+        );
+
+        $originalFyStartDate = $dateTimeAdapter->getFyStartDate();
+
+        $dateTimeAdapter->setFyStartDate($this->faker->dateTime);
+
+        $this->assertNotSame(
+            $originalFyStartDate->format('YmdHis'),
+            $dateTimeAdapter->getFyEndDate()->format('YmdHis')
+        );
     }
 
     /**
@@ -90,13 +148,11 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetFyEndDateReturnsDateTimeImmutableObject()
     {
-        $types = [AbstractAdapter::TYPE_CALENDAR, AbstractAdapter::TYPE_BUSINESS];
-
         $dateTimeAdapter = new DateTimeAdapter(
-            AbstractAdapter::TYPE_BUSINESS,
+            $this->fyTypes[array_rand($this->fyTypes,1)],
             $this->faker->dateTime,
             null,
-            array_rand($types,1)
+            $this->faker->boolean
         );
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeAdapter->getFyEndDate());
