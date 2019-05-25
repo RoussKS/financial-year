@@ -168,10 +168,10 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
                 $periodStartDate = $this->fyStartDate->add(DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
             }
 
-            // If last period, period last date is is the financial year end date.
+            // If last period (13 for business type), period last date is is the financial year end date.
             // This way we also overcome the potential issue of a 53rd week.
             // If not last period, it's the end of the month.
-            if ($id !== 12) {
+            if ($id !== 13) {
                 $periodEndDate = $periodStartDate->add(DateInterval::createFromDateString('4 weeks'))
                                                  ->sub(DateInterval::createFromDateString('1 day'));
             }
@@ -179,7 +179,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $period = new DatePeriod($periodStartDate, DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
 
-        // This case can never happen as the financial year type will always be set to either `calendar` or `business`.
+        // This case can never happen as the financial year type will always be set to either calendar or business.
         // Otherwise the library throws an exception on the construct.
         if ($period === null) {
             throw new Exception('A date range period could not be set');
@@ -225,7 +225,10 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         $dateTime = $this->getDateObject($date);
 
-        for ($id = 1; $id <= 12; $id++) {
+        // 12 periods for calendar type financial year, 13 for business type financial year.
+        $periods = $this->isCalendarType($this->type) ? 12 : 13;
+
+        for ($id = 1; $id <= $periods; $id++) {
             /** @var DatePeriod $interval */
             foreach ($this->getPeriodById($id) as $interval) {
                 if ($dateTime >= $interval->getStartDate() && $dateTime <= $interval->getEndDate()) {
@@ -308,7 +311,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $periodEnd = null;
 
         // If last period, get the end of the financial year, regardless of the type.
-        if ($id === 12) {
+        // However, the 2 types have different periods. Calendar has 12, business has 13.
+        if ($id === $this->isCalendarType($this->type) ? 12 : 13) {
             return $this->fyEndDate;
         }
 

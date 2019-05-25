@@ -137,7 +137,8 @@ abstract class AbstractAdapter
     }
 
     /**
-     * Validate period $id is between 1 and 12.
+     * Validate period $id is between 1 and 12 for calendar type financial year.
+     * Or between 1 and 13 for business type financial year.
      *
      * @param  int $id
      *
@@ -147,6 +148,16 @@ abstract class AbstractAdapter
      */
     protected function validatePeriodId(int $id): void
     {
+        // If business type, allow 13 periods.
+        if ($this->isBusinessType($this->type)) {
+            if ($id < 1 || $id > 13) {
+                throw new Exception('There is no period with id: ' . $id);
+            }
+
+            return;
+        }
+
+        // Otherwise 12 periods.
         if ($id < 1 || $id > 12) {
             throw new Exception('There is no period with id: ' . $id);
         }

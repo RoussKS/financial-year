@@ -205,7 +205,7 @@ class DateTimeAdapterTest extends BaseTestCase
             $this->faker->boolean
         );
 
-        // 2nd Period should be 2019-01-1 - 2019-01-31
+        // 1st Period should be 2019-01-1 - 2019-01-31
         $period = $dateTimeAdapter->getPeriodById(1);
 
         $this->assertEquals('2019-01-01 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
@@ -229,7 +229,7 @@ class DateTimeAdapterTest extends BaseTestCase
             $this->faker->boolean
         );
 
-        // 2nd Period should be 2019-12-01 - 2019-12-31
+        // Last Period, 12th for calendar type, should be 2019-12-01 - 2019-12-31
         $period = $dateTimeAdapter->getPeriodById(12);
 
         $this->assertEquals('2019-12-01 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
@@ -253,7 +253,7 @@ class DateTimeAdapterTest extends BaseTestCase
             $this->faker->boolean
         );
 
-        // 3rd Period should be 2019-01-29 - 2019-02-26
+        // 2nd Period should be 2019-01-29 - 2019-02-26
         $period = $dateTimeAdapter->getPeriodById(2);
 
         $this->assertEquals('2019-01-29 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
@@ -277,7 +277,7 @@ class DateTimeAdapterTest extends BaseTestCase
             $this->faker->boolean
         );
 
-        // 3rd Period should be 2019-01-01 - 2019-01-28
+        // 1st Period should be 2019-01-01 - 2019-01-28
         $period = $dateTimeAdapter->getPeriodById(1);
 
         $this->assertEquals('2019-01-01 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
@@ -301,10 +301,10 @@ class DateTimeAdapterTest extends BaseTestCase
             false
         );
 
-        // 3rd Period should be 2019-12-02 - 2019-12-30
-        $period = $dateTimeAdapter->getPeriodById(12);
+        // Last Period, 13th for business type, should be 2019-12-02 - 2019-12-30 for 52 weeks year.
+        $period = $dateTimeAdapter->getPeriodById(13);
 
-        $this->assertEquals('2019-12-02 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2019-12-03 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
         $this->assertEquals('2019-12-30 00:00:00', $period->getEndDate()->format('Y-m-d H:i:s'));
     }
 
@@ -325,10 +325,10 @@ class DateTimeAdapterTest extends BaseTestCase
             true
         );
 
-        // 3rd Period should be 2019-12-02 - 2020-01-06
-        $period = $dateTimeAdapter->getPeriodById(12);
+        // Last Period, 13th for business type, should be 2019-12-02 - 2020-01-06 for 53 weeks year.
+        $period = $dateTimeAdapter->getPeriodById(13);
 
-        $this->assertEquals('2019-12-02 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2019-12-03 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
         $this->assertEquals('2020-01-06 00:00:00', $period->getEndDate()->format('Y-m-d H:i:s'));
     }
 }
