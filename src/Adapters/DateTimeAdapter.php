@@ -216,8 +216,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $dateTime = $this->getDateObject($date);
 
         for ($id = 1; $id <= 12; $id++) {
+            /** @var DatePeriod $interval */
             foreach ($this->getPeriodById($id) as $interval) {
-                if ($dateTime->format('Y-m-d') === $interval->format('Y-m-d')) {
+                if ($dateTime >= $interval->getStartDate() && $dateTime <= $interval->getEndDate()) {
                     return $id;
                 }
             }
