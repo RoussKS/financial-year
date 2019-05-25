@@ -137,35 +137,44 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $period = null;
 
+        // Set default values for more readable logic within conditions (for first and last periods).
+        // Financial Year start date is the first period's start date.
+        // Financial Year end date is the last period's end date.
+        $periodStartDate = $this->fyStartDate;
+        $periodEndDate = $this->fyEndDate;
+
         // In calendar type, periods are always 12 as the months, regardless of the start date within the month.
         if ($this->isCalendarType($this->type)) {
-            // If 1st period, no need for modification of start date.
-            $periodStartDate = $id === 1 ?
-                $this->fyStartDate :
-                $this->fyStartDate->add(DateInterval::createFromDateString($id - 1 . ' months'));
+            // If first period, period start date is the financial year start date.
+            // If not the first period, calculate the correct date.
+            if ($id !== 1) {
+                $periodStartDate = $this->fyStartDate->add(DateInterval::createFromDateString($id - 1 . ' months'));
+            }
 
-            // If last period details requested, the end date is the financial year end date.
-            // Else, it's the end of the month.
-            $periodEndDate = $id === 12 ?
-                $this->fyEndDate :
-                $periodStartDate->add(DateInterval::createFromDateString('1 month'))
-                                ->sub(DateInterval::createFromDateString('1 day'));
+            // If last period, period last date is is the financial year end date.
+            // If not last period, it's the end of the month.
+            if ($id !== 12) {
+                $periodEndDate = $periodStartDate->add(DateInterval::createFromDateString('1 month'))
+                                                 ->sub(DateInterval::createFromDateString('1 day'));
+            }
 
             $period = new DatePeriod($periodStartDate, DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
 
         if ($this->isBusinessType($this->type)) {
-            // If 1st period, no need for modification of start date.
-            $periodStartDate = $id === 1 ?
-                $this->fyStartDate :
-                $this->fyStartDate->add(DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
+            // If first period, period start date is the financial year start date.
+            // If not the first period, calculate the correct date
+            if ($id !== 1) {
+                $periodStartDate = $this->fyStartDate->add(DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
+            }
 
-            // If last period details requested, the end date is the financial year end date.
+            // If last period, period last date is is the financial year end date.
             // This way we also overcome the potential issue of a 53rd week.
-            $periodEndDate = $id === 12 ?
-                $this->fyEndDate :
-                $periodStartDate->add(DateInterval::createFromDateString('4 weeks'))
-                                ->sub(DateInterval::createFromDateString('1 day'));
+            // If not last period, it's the end of the month.
+            if ($id !== 12) {
+                $periodEndDate = $periodStartDate->add(DateInterval::createFromDateString('4 weeks'))
+                                                 ->sub(DateInterval::createFromDateString('1 day'));
+            }
 
             $period = new DatePeriod($periodStartDate, DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
