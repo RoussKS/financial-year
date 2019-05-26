@@ -225,16 +225,23 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         $dateTime = $this->getDateObject($date);
 
+        // Instantly throw exception for a date that's out of range of the current financial year.
+        // Do this to avoid unnecessary loops.
+        if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
+            throw new Exception('The requested date is out of range of the current financial year');
+        }
+
         for ($id = 1; $id <= $this->fyPeriods; $id++) {
-            /** @var DatePeriod $interval */
-            foreach ($this->getPeriodById($id) as $interval) {
-                if ($dateTime >= $interval->getStartDate() && $dateTime <= $interval->getEndDate()) {
-                    return $id;
-                }
+            /** @var DatePeriod $period */
+            $period = $this->getPeriodById($id);
+
+            if ($dateTime >= $period->getStartDate() && $dateTime <= $period->getEndDate()) {
+                return $id;
             }
         }
 
-        throw new Exception('A period could not be found for the specified date');
+        // We should never reach this stage. However, added for keeping the IDEs happy of non returned value.
+        throw new Exception('A period could not be found for the requested date');
     }
 
     /**

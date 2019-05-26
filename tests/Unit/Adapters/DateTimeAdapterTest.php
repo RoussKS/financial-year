@@ -29,7 +29,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function settingSameFyWeeksSetsWeeksWithoutChangingEndDateForBusinessType(): void
@@ -54,7 +54,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function settingDifferentFyWeeksSetsWeeksWithDifferentEndDateForBusinessType(): void
@@ -80,7 +80,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function assertGetFyStartDateReturnsDateTimeImmutableObject(): void
@@ -101,7 +101,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function assertSetFyStartDateThrowsExceptionForSingleInvalidDate(): void
@@ -125,7 +125,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function assertSetFyStartDateSetsNewFyEndDateIfFyStartDateChanges(): void
@@ -151,7 +151,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function assertGetFyEndDateReturnsDateTimeImmutableObject(): void
@@ -170,7 +170,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function assertGetPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
@@ -194,7 +194,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
@@ -218,7 +218,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
@@ -242,7 +242,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function assertGetPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear(): void
@@ -266,7 +266,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear(): void
@@ -290,7 +290,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYearFiftyTwoWeeks(): void
@@ -314,7 +314,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
+     * @throws ConfigException
      * @throws Exception
      */
     public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYearFiftyThreeWeeks(): void
@@ -379,8 +379,8 @@ class DateTimeAdapterTest extends BaseTestCase
         // Build an array of integers of the financial year weeks.
         $fyWeeksArray = [];
 
-        for ($i = 0; $i < $dateTimeAdapter->getFyWeeks(); $i++) {
-            $fyWeeksArray[] = $i++;
+        for ($i = 1; $i <= $dateTimeAdapter->getFyWeeks(); $i++) {
+            $fyWeeksArray[] = $i;
         }
 
         // Get a random week id that's not equal to the available weeks.
@@ -488,5 +488,52 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $this->assertEquals('2019-12-31 00:00:00', $lastWeek->getStartDate()->format('Y-m-d H:i:s'));
         $this->assertEquals('2020-01-06 00:00:00', $lastWeek->getEndDate()->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetPeriodIdByDateThrowsExceptionOnDateBeforeFinancialYear(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The requested date is out of range of the current financial year');
+
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            $this->fyTypes[array_rand($this->fyTypes,1)],
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        $dateTimeAdapter->getPeriodIdByDate('2018-12-31');
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetPeriodIdByDateThrowsExceptionOnDateAfterFinancialYear(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The requested date is out of range of the current financial year');
+
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            $this->fyTypes[array_rand($this->fyTypes,1)],
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // 2020-01-07 is out of range even if the type is business and weeks 53, if start date is 2019-01-01
+        $dateTimeAdapter->getPeriodIdByDate('2020-01-07');
     }
 }
