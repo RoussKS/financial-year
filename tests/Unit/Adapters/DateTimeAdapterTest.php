@@ -636,21 +636,16 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetFirstDateOfPeriodByIdReturnsFinancialYearStartDateForFirstPeriod(): void
     {
-        $randomDateTime = $this->faker->dateTime;
-
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
             $this->fyTypes[array_rand($this->fyTypes,1)],
-            $randomDateTime,
+            $this->faker->dateTime,
             $this->faker->boolean
         );
 
-        // Now set random datetime to start of day for checking with resulting start date.
-        $randomDateTime->setTime(0, 0);
-
-        $this->assertEquals(
-            $randomDateTime->format('Y-m-d H:i:s'),
-            $dateTimeAdapter->getFirstDateOfPeriodById(1)->format('Y-m-d H:i:s')
+        $this->assertSame(
+            $dateTimeAdapter->getFyStartDate(),
+            $dateTimeAdapter->getFirstDateOfPeriodById(1)
         );
     }
 
@@ -697,6 +692,75 @@ class DateTimeAdapterTest extends BaseTestCase
         $this->assertEquals(
             '2019-12-03 00:00:00',
             $dateTimeAdapter->getFirstDateOfPeriodById(13)->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetLastDateOfPeriodByIdReturnsFinancialYearEndDateForLastPeriod(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            $this->fyTypes[array_rand($this->fyTypes,1)],
+            $this->faker->dateTime,
+            $this->faker->boolean
+        );
+
+        $this->assertSame(
+            $dateTimeAdapter->getFyEndDate(),
+            $dateTimeAdapter->getLastDateOfPeriodById($dateTimeAdapter->getFyPeriods())
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetLastDateOfPeriodByIdReturnsCorrectDateForCalendarType(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_CALENDAR,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        $this->assertEquals(
+            '2019-04-30 00:00:00',
+            $dateTimeAdapter->getLastDateOfPeriodById(4)->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetLastDateOfPeriodByIdReturnsCorrectDateForBusinessType(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        $this->assertEquals(
+            '2019-12-02 00:00:00',
+            $dateTimeAdapter->getLastDateOfPeriodById(12)->format('Y-m-d H:i:s')
         );
     }
 }
