@@ -536,4 +536,25 @@ class DateTimeAdapterTest extends BaseTestCase
         // 2020-01-07 is out of range even if the type is business and weeks 53, if start date is 2019-01-01
         $dateTimeAdapter->getPeriodIdByDate('2020-01-07');
     }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetPeriodIdByDateReturnsCorrectIdForDate(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            $this->fyTypes[array_rand($this->fyTypes,1)],
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // 2019-02-02 belongs to 2nd period for both types
+        $this->assertEquals(2, $dateTimeAdapter->getPeriodIdByDate('2019-02-02'));
+    }
 }
