@@ -328,7 +328,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // regardless of the start date within the month.
         if ($this->isCalendarType($this->type)) {
             return $this->fyStartDate->add(DateInterval::createFromDateString($id . ' months'))
-                                           ->sub(DateInterval::createFromDateString('1 day'));
+                                     ->sub(DateInterval::createFromDateString('1 day'));
         }
 
         // Otherwise calculate for business type.

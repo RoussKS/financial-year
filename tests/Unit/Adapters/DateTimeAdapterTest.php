@@ -653,4 +653,50 @@ class DateTimeAdapterTest extends BaseTestCase
             $dateTimeAdapter->getFirstDateOfPeriodById(1)->format('Y-m-d H:i:s')
         );
     }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetFirstDateOfPeriodByIdReturnsCorrectDateForCalendarType(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_CALENDAR,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        $this->assertEquals(
+            '2019-04-01 00:00:00',
+            $dateTimeAdapter->getFirstDateOfPeriodById(4)->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetFirstDateOfPeriodByIdReturnsCorrectDateForBusinessType(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        $this->assertEquals(
+            '2019-12-03 00:00:00',
+            $dateTimeAdapter->getFirstDateOfPeriodById(13)->format('Y-m-d H:i:s')
+        );
+    }
 }
