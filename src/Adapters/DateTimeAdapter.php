@@ -124,6 +124,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
+     * First check for calendar type and the return the corresponding value.
+     * Otherwise it is business type as the only other available.
+     *
      * @return Traversable|DatePeriod|DateTimeInterface[]
      *
      * @throws Exception
@@ -135,7 +138,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->validatePeriodId($id);
 
-        // Set default values for more readable logic within conditions (for first and last periods).
+        // Set default values for more readable logic within conditions (for first and last fyPeriods).
         // Financial Year start date is the first period's start date.
         // Financial Year end date is the last period's end date.
         $periodStartDate = $this->fyStartDate;
@@ -144,7 +147,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         /*
          * Calendar Type
          *
-         * In calendar type, periods are always 12 as the months, regardless of the start date within the month.
+         * In calendar type, fyPeriods are always 12 as the months, regardless of the start date within the month.
          */
         if ($this->isCalendarType($this->type)) {
             // If first period, period start date is the financial year start date.
@@ -155,20 +158,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
             // If last period, period last date is is the financial year end date.
             // If not last period, it's the end of the month.
-            if ($id !== 12) {
+            if ($id !== $this->fyPeriods) {
                 $periodEndDate = $periodStartDate->add(DateInterval::createFromDateString('1 month'))
                                                  ->sub(DateInterval::createFromDateString('1 day'));
             }
 
             return new DatePeriod($periodStartDate, DateInterval::createFromDateString('1 day'), $periodEndDate);
         }
-
-        /*
-         * Business Type
-         *
-         * Type is set on construct and exception is thrown for invalid values.
-         * Hence it is always set within the scope of this method and never null.
-         */
 
         // If first period, period start date is the financial year start date.
         // If not the first period, calculate the correct date
@@ -179,7 +175,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // If last period (13 for business type), period last date is is the financial year end date.
         // This way we also overcome the potential issue of a 53rd week.
         // If not last period, it's the end of the month.
-        if ($id !== 13) {
+        if ($id !== $this->fyPeriods) {
             $periodEndDate = $periodStartDate->add(DateInterval::createFromDateString('4 weeks'))
                                              ->sub(DateInterval::createFromDateString('1 day'));
         }
@@ -229,10 +225,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         $dateTime = $this->getDateObject($date);
 
-        // 12 periods for calendar type financial year, 13 for business type financial year.
-        $periods = $this->isCalendarType($this->type) ? 12 : 13;
-
-        for ($id = 1; $id <= $periods; $id++) {
+        for ($id = 1; $id <= $this->fyPeriods; $id++) {
             /** @var DatePeriod $interval */
             foreach ($this->getPeriodById($id) as $interval) {
                 if ($dateTime >= $interval->getStartDate() && $dateTime <= $interval->getEndDate()) {
@@ -284,7 +277,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $this->fyStartDate;
         }
 
-        // In calendar type, periods are always 12 as the months,
+        // In calendar type, fyPeriods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->isCalendarType($this->type)) {
             $periodStart = $this->fyStartDate->add(DateInterval::createFromDateString($id - 1 . ' months'));
@@ -315,12 +308,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $periodEnd = null;
 
         // If last period, get the end of the financial year, regardless of the type.
-        // However, the 2 types have different periods. Calendar has 12, business has 13.
-        if ($id === $this->isCalendarType($this->type) ? 12 : 13) {
+        if ($id === $this->fyPeriods) {
             return $this->fyEndDate;
         }
 
-        // In calendar type, periods are always 12 as the months,
+        // In calendar type, fyPeriods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->isCalendarType($this->type)) {
             $periodEnd = $this->fyStartDate->add(DateInterval::createFromDateString($id . ' months'))
@@ -442,27 +434,50 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
+     * First check if calendar type and return value.
+     * If not calendar type, it is business type (as the only other option available supported and always set).
+     * So we can safely return the relevant value.
+     *
+     * {@inheritdoc}
+     *
+     * @return DateTimeImmutable|DateTimeImmutable
+     */
+    public function getNextFyStartDate(): DateTimeInterface
+    {
+        // For calendar type, the next year's start date is + 1 year.
+        if ($this->isCalendarType($this->type)) {
+            return $this->fyStartDate->add(DateInterval::createFromDateString('1 year'));
+        }
+
+        // For business type, the next year's start date is + number of weeks.
+        // As a financial year would have 52 or 53 weeks, the param handles it.
+        return $this->fyStartDate->add(DateInterval::createFromDateString($this->fyWeeks . ' weeks'));
+    }
+
+    /**
      * Set the financial year end date.
+     *
+     * First check for calendar type and return.
+     * If not calendar, it can only be business type.
      *
      * @return void
      */
     protected function setFyEndDate(): void
     {
         // We will set end date from the start date object which should be present.
+        // Both types calculate end date relative to next financial year start date.
+        $nextFinancialYearStartDate = $this->getNextFyStartDate();
 
         // For calendar type, the end date is 1 year, minus 1 day after the start date.
         if ($this->isCalendarType($this->type)) {
-            $this->fyEndDate = $this->fyStartDate->add(DateInterval::createFromDateString('1 year'))
-                                                 ->sub(DateInterval::createFromDateString('1 day'));
+            $this->fyEndDate = $nextFinancialYearStartDate->sub(DateInterval::createFromDateString('1 day'));
 
+            return;
         }
 
         // For business type, the end date is the number of weeks , minus 1 day after the start date.
-        if ($this->isBusinessType($this->type)) {
-            // As a financial year would have 52 or 53 weeks, the param handles it.
-            $this->fyEndDate = $this->fyStartDate->add(DateInterval::createFromDateString($this->fyWeeks . ' weeks'))
-                                                 ->sub(DateInterval::createFromDateString('1 day'));
-        }
+        // As a financial year would have 52 or 53 weeks, the param handles it.
+        $this->fyEndDate = $nextFinancialYearStartDate->sub(DateInterval::createFromDateString('1 day'));
     }
 
     /**
@@ -478,24 +493,26 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         // Placeholder
         $dateTime = null;
-        $className = null;
 
+        // First check if we have received the an object relevant to the adapter.
         if (is_object($date)) {
             $className = get_class($date);
+
+            if ($className === 'DateTime') {
+                return DateTimeImmutable::createFromMutable($date)->setTime(0,0);
+            }
+
+            if ($className === 'DateTimeImmutable') {
+                return $date->setTime(0,0);
+            }
         }
 
-        if ($className === 'DateTime') {
-            $dateTime = DateTimeImmutable::createFromMutable($date)->setTime(0,0);
-        }
-
-        if ($className === 'DateTimeImmutable') {
-            $dateTime = $date->setTime(0,0);
-        }
-
+        // Then if a string was passed as param.
         if (is_string($date)) {
             $dateTime = DateTimeImmutable::createFromFormat('Y-m-d', $date)->setTime(0,0);
         }
 
+        // Validation that the datetime object was created.
         if (!$dateTime || $dateTime === null) {
             throw new Exception('Invalid date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object');
         }

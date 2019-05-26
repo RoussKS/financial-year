@@ -331,4 +331,27 @@ class DateTimeAdapterTest extends BaseTestCase
         $this->assertEquals('2019-12-03 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
         $this->assertEquals('2020-01-06 00:00:00', $period->getEndDate()->format('Y-m-d H:i:s'));
     }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     */
+    public function assertGetBusinessWeekByIdThrowsExceptionOnNonBusinessTypeFinancialYearType(): void
+    {
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage('Week id is not applicable for non business type financial year');
+
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_CALENDAR,
+            '2019-01-01',
+            true
+        );
+
+        $dateTimeAdapter->getBusinessWeekById(1);
+    }
 }
