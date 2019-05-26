@@ -182,7 +182,7 @@ class DateTimeAdapterTest extends BaseTestCase
             $this->faker->boolean
         );
 
-        // 2nd Period should be 2019-02-1 - 2019-02-28
+        // 2nd Period should be 2019-02-01 - 2019-02-28
         $period = $dateTimeAdapter->getPeriodById(2);
 
         $this->assertEquals('2019-02-01 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
@@ -206,7 +206,7 @@ class DateTimeAdapterTest extends BaseTestCase
             $this->faker->boolean
         );
 
-        // 1st Period should be 2019-01-1 - 2019-01-31
+        // 1st Period should be 2019-01-01 - 2019-01-31
         $period = $dateTimeAdapter->getPeriodById(1);
 
         $this->assertEquals('2019-01-01 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
@@ -302,7 +302,7 @@ class DateTimeAdapterTest extends BaseTestCase
             false
         );
 
-        // Last Period, 13th for business type, should be 2019-12-02 - 2019-12-30 for 52 weeks year.
+        // Last Period, 13th for business type, should be 2019-12-03 - 2019-12-30 for 52 weeks year.
         $period = $dateTimeAdapter->getPeriodById(13);
 
         $this->assertEquals('2019-12-03 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
@@ -326,7 +326,7 @@ class DateTimeAdapterTest extends BaseTestCase
             true
         );
 
-        // Last Period, 13th for business type, should be 2019-12-02 - 2020-01-06 for 53 weeks year.
+        // Last Period, 13th for business type, should be 2019-12-03 - 2020-01-06 for 53 weeks year.
         $period = $dateTimeAdapter->getPeriodById(13);
 
         $this->assertEquals('2019-12-03 00:00:00', $period->getStartDate()->format('Y-m-d H:i:s'));
@@ -643,10 +643,7 @@ class DateTimeAdapterTest extends BaseTestCase
             $this->faker->boolean
         );
 
-        $this->assertSame(
-            $dateTimeAdapter->getFyStartDate(),
-            $dateTimeAdapter->getFirstDateOfPeriodById(1)
-        );
+        $this->assertSame($dateTimeAdapter->getFyStartDate(), $dateTimeAdapter->getFirstDateOfPeriodById(1));
     }
 
     /**
@@ -761,6 +758,100 @@ class DateTimeAdapterTest extends BaseTestCase
         $this->assertEquals(
             '2019-12-02 00:00:00',
             $dateTimeAdapter->getLastDateOfPeriodById(12)->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetFirstDateOfBusinessWeekByIdReturnsFinancialYearStartDateForFirstWeek(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        $this->assertSame($dateTimeAdapter->getFyStartDate(), $dateTimeAdapter->getFirstDateOfBusinessWeekById(1));
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetFirstDateOfBusinessWeekByIdReturnsCorrectDate(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // Test start of week 49 (start of period 13).
+        // Expect 2019-12-03.
+        $this->assertEquals(
+            '2019-12-03 00:00:00',
+            $dateTimeAdapter->getFirstDateOfBusinessWeekById(49)->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetLastDateOfBusinessWeekByIdReturnsFinancialYearEndDateForLastWeekWeek(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // Use the weeks that are already set in the adapter.
+        $this->assertSame(
+            $dateTimeAdapter->getFyEndDate(),
+            $dateTimeAdapter->getLastDateOfBusinessWeekById($dateTimeAdapter->getFyWeeks())
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetLastDateOfBusinessWeekByIdReturnsCorrectDate(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // Test end of week 49.
+        // Expect 2019-12-09.
+        $this->assertEquals(
+            '2019-12-09 00:00:00',
+            $dateTimeAdapter->getLastDateOfBusinessWeekById(49)->format('Y-m-d H:i:s')
         );
     }
 }
