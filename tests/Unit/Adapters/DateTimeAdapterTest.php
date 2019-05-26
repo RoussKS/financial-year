@@ -625,4 +625,32 @@ class DateTimeAdapterTest extends BaseTestCase
         // 2019-01-31 belongs to 5th week
         $this->assertEquals(5, $dateTimeAdapter->getBusinessWeekIdIdByDate('2019-01-31'));
     }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetFirstDateOfPeriodByIdReturnsFinancialYearStartDateForFirstPeriod(): void
+    {
+        $randomDateTime = $this->faker->dateTime;
+
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            $this->fyTypes[array_rand($this->fyTypes,1)],
+            $randomDateTime,
+            $this->faker->boolean
+        );
+
+        // Now set random datetime to start of day for checking with resulting start date.
+        $randomDateTime->setTime(0, 0);
+
+        $this->assertEquals(
+            $randomDateTime->format('Y-m-d H:i:s'),
+            $dateTimeAdapter->getFirstDateOfPeriodById(1)->format('Y-m-d H:i:s')
+        );
+    }
 }
