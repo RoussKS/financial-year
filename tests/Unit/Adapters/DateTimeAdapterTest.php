@@ -854,4 +854,204 @@ class DateTimeAdapterTest extends BaseTestCase
             $dateTimeAdapter->getLastDateOfBusinessWeekById(49)->format('Y-m-d H:i:s')
         );
     }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetFirstBusinessWeekByPeriodIdReturnsCorrectWeek(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // Test first week of period 13. That is week 49. 2019-12-03 - 2019-12-09.
+        $firstBusinessWeekOfPeriod = $dateTimeAdapter->getFirstBusinessWeekByPeriodId(13);
+
+        $this->assertEquals(
+            '2019-12-03 00:00:00',
+            $firstBusinessWeekOfPeriod->getStartDate()->format('Y-m-d H:i:s')
+        );
+
+        $this->assertEquals(
+            '2019-12-09 00:00:00',
+            $firstBusinessWeekOfPeriod->getEndDate()->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetSecondBusinessWeekByPeriodIdReturnsCorrectWeek(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // Test second week of period 12. That is week 46. 2019-11-12 - 2019-11-18.
+        $secondBusinessWeekOfPeriod = $dateTimeAdapter->getSecondBusinessWeekByPeriodId(12);
+
+        $this->assertEquals(
+            '2019-11-12 00:00:00',
+            $secondBusinessWeekOfPeriod->getStartDate()->format('Y-m-d H:i:s')
+        );
+
+        $this->assertEquals(
+            '2019-11-18 00:00:00',
+            $secondBusinessWeekOfPeriod->getEndDate()->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetThirdBusinessWeekByPeriodIdReturnsCorrectWeek(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // Test third week of period 11. That is week 43. 2019-10-22 - 2019-10-28.
+        $thirdBusinessWeekOfPeriod = $dateTimeAdapter->getThirdBusinessWeekOfPeriodId(11);
+
+        $this->assertEquals(
+            '2019-10-22 00:00:00',
+            $thirdBusinessWeekOfPeriod->getStartDate()->format('Y-m-d H:i:s')
+        );
+
+        $this->assertEquals(
+            '2019-10-28 00:00:00',
+            $thirdBusinessWeekOfPeriod->getEndDate()->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetFourthBusinessWeekByPeriodIdReturnsCorrectWeek(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // Test fourth week of period 11. That is week 44. 2019-10-29 - 2019-11-04.
+        $fourthBusinessWeekOfPeriod = $dateTimeAdapter->getFourthBusinessWeekByPeriodId(11);
+
+        $this->assertEquals(
+            '2019-10-29 00:00:00',
+            $fourthBusinessWeekOfPeriod->getStartDate()->format('Y-m-d H:i:s')
+        );
+
+        $this->assertEquals(
+            '2019-11-04 00:00:00',
+            $fourthBusinessWeekOfPeriod->getEndDate()->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetFiftyThirdBusinessWeekByPeriodIdReturnsCorrectWeek(): void
+    {
+        // Week 53 is only available for the relevant year and is the last week of the year.
+
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            true
+        );
+
+        // Expect fifty third week range: 2019-12-31 - 2020-01-06
+        $fiftyThreeWeek = $dateTimeAdapter->getFiftyThirdWeek();
+
+        $this->assertEquals(
+            '2019-12-31 00:00:00',
+            $fiftyThreeWeek->getStartDate()->format('Y-m-d H:i:s')
+        );
+
+        $this->assertEquals(
+            '2020-01-06 00:00:00',
+            $fiftyThreeWeek->getEndDate()->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     *
+     * Random test just to check the allowed Immutable object.
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetDateObjectAcceptsImmutableParameter(): void
+    {
+        $dateTimeAdapter = new DateTimeAdapter(
+            $this->fyTypes[array_rand($this->fyTypes,1)],
+            DateTimeImmutable::createFromMutable($this->faker->dateTime),
+            $this->faker->boolean
+        );
+
+        $this->assertNotNull($dateTimeAdapter->getFyStartDate());
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetDateObjectThrowsExceptionForInvalidString(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(
+            'Invalid date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object'
+        );
+
+        new DateTimeAdapter(
+            $this->fyTypes[array_rand($this->fyTypes,1)],
+            $this->faker->text,
+            $this->faker->boolean
+        );
+    }
 }

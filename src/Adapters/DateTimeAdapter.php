@@ -433,7 +433,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @throws  Exception
      * @throws  ConfigException
      */
-    public function getFifthThirdBusinessWeekPeriod(): Traversable
+    public function getFiftyThirdWeek(): Traversable
     {
         return $this->getBusinessWeekById(53);
     }
@@ -514,7 +514,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // Then if a string was passed as param.
         if (is_string($date)) {
-            $dateTime = DateTimeImmutable::createFromFormat('Y-m-d', $date)->setTime(0,0);
+            $dateTime = DateTimeImmutable::createFromFormat('Y-m-d', $date);
         }
 
         // Validation that the datetime object was created.
@@ -522,7 +522,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             throw new Exception('Invalid date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object');
         }
 
-        // Set date object to start of the day.
-        return $dateTime;
+        // Set date object to start of the day and return.
+        return $dateTime->setTime(0,0);
     }
 }
