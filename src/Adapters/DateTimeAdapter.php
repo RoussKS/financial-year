@@ -279,6 +279,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
+     * First check for calendar type.
+     * Otherwise, it will be business type as no other is supported.
+     *
      * @throws Exception
      */
     public function getFirstDateOfPeriodById(int $id): DateTimeInterface
@@ -286,8 +289,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $this->validate();
 
         $this->validatePeriodId($id);
-
-        $periodStart = null;
 
         // If 1st period, get the start of the financial year, regardless of the type.
         if ($id === 1) {
@@ -297,22 +298,18 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // In calendar type, fyPeriods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->isCalendarType($this->type)) {
-            $periodStart = $this->fyStartDate->add(DateInterval::createFromDateString($id - 1 . ' months'));
+            return $this->fyStartDate->add(DateInterval::createFromDateString($id - 1 . ' months'));
         }
 
-        if ($this->isBusinessType($this->type)) {
-            $periodStart = $this->fyStartDate->add(DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
-        }
-
-        if ($periodStart === null) {
-            throw new Exception('Could not calculate period start date');
-        }
-
-        return $periodStart;
+        // Otherwise return business type calculation.
+        return $this->fyStartDate->add(DateInterval::createFromDateString(($id - 1) * 4 . ' weeks'));
     }
 
     /**
      * {@inheritdoc}
+     *
+     * First check for calendar type.
+     * Otherwise, it will be business type as no other is supported.
      *
      * @throws Exception
      */
@@ -322,8 +319,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->validatePeriodId($id);
 
-        $periodEnd = null;
-
         // If last period, get the end of the financial year, regardless of the type.
         if ($id === $this->fyPeriods) {
             return $this->fyEndDate;
@@ -332,20 +327,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // In calendar type, fyPeriods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->isCalendarType($this->type)) {
-            $periodEnd = $this->fyStartDate->add(DateInterval::createFromDateString($id . ' months'))
+            return $this->fyStartDate->add(DateInterval::createFromDateString($id . ' months'))
                                            ->sub(DateInterval::createFromDateString('1 day'));
         }
 
-        if ($this->isBusinessType($this->type)) {
-            $periodEnd = $this->fyStartDate->add(DateInterval::createFromDateString($id * 4 . ' weeks'))
-                                           ->sub(DateInterval::createFromDateString('1 day'));
-        }
-
-        if ($periodEnd === null) {
-            throw new Exception('Could not calculate period end date');
-        }
-
-        return $periodEnd;
+        // Otherwise calculate for business type.
+        return $this->fyStartDate->add(DateInterval::createFromDateString($id * 4 . ' weeks'))
+                                 ->sub(DateInterval::createFromDateString('1 day'));
     }
 
     /**
