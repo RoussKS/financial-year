@@ -28,6 +28,13 @@ interface AdapterInterface
     public function getFyWeeks(): ?int;
 
     /**
+     * Get the number of periods of the financial year.
+     *
+     * @return int
+     */
+    public function getFyPeriods(): int;
+
+    /**
      * Set the number of weeks for the Financial Year.
      *
      * Only applies to business financial year type and will be set either 52 or 53.
@@ -198,6 +205,13 @@ interface AdapterInterface
      * @throws ConfigException
      */
     public function getFourthBusinessWeekByPeriodId(int $id): Traversable;
+
+    /**
+     * Get the start date of the next financial year.
+     *
+     * @return DateTimeInterface
+     */
+    public function getNextFyStartDate(): DateTimeInterface;
 
     /**
      * Validate configuration.

@@ -46,6 +46,13 @@ abstract class AbstractAdapter
     protected $fyWeeks;
 
     /**
+     * The number of fyPeriods for the selected financial year type.
+     *
+     * @var int
+     */
+    protected $fyPeriods;
+
+    /**
      * AbstractAdapter constructor.
      *
      * @param  string $type
@@ -57,14 +64,18 @@ abstract class AbstractAdapter
      */
     public function __construct(string $type, bool $fiftyThreeWeeks)
     {
+        // Calendar Type has 12 periods.
         if ($this->isCalendarType($type)) {
             $this->type = $type;
+            $this->fyPeriods = 12;
 
             return;
         }
 
+        // Business Type has 13 periods.
         if ($this->isBusinessType($type)) {
             $this->type = $type;
+            $this->fyPeriods = 13;
             $this->setFyWeeks($fiftyThreeWeeks);
 
             return;
@@ -91,6 +102,16 @@ abstract class AbstractAdapter
     public function getFyWeeks(): ?int
     {
         return $this->fyWeeks;
+    }
+
+    /**
+     * Get the number of periods of the financial year.
+     *
+     * @return int
+     */
+    public function getFyPeriods(): int
+    {
+        return $this->fyPeriods;
     }
 
     /**
@@ -148,17 +169,7 @@ abstract class AbstractAdapter
      */
     protected function validatePeriodId(int $id): void
     {
-        // If business type, allow 13 periods.
-        if ($this->isBusinessType($this->type)) {
-            if ($id < 1 || $id > 13) {
-                throw new Exception('There is no period with id: ' . $id);
-            }
-
-            return;
-        }
-
-        // Otherwise 12 periods.
-        if ($id < 1 || $id > 12) {
+        if ($id < 1 || $id > $this->fyPeriods) {
             throw new Exception('There is no period with id: ' . $id);
         }
     }
