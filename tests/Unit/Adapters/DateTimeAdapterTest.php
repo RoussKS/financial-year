@@ -554,7 +554,75 @@ class DateTimeAdapterTest extends BaseTestCase
             $this->faker->boolean
         );
 
-        // 2019-02-02 belongs to 2nd period for both types
-        $this->assertEquals(2, $dateTimeAdapter->getPeriodIdByDate('2019-02-02'));
+        // 2019-02-07 belongs to 2nd period for both types
+        $this->assertEquals(2, $dateTimeAdapter->getPeriodIdByDate('2019-02-07'));
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetBusinessWeekIdByDateThrowsExceptionOnDateBeforeFinancialYear(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The requested date is out of range of the current financial year');
+
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        $dateTimeAdapter->getBusinessWeekIdIdByDate('2018-12-31');
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetBusinessWeekIdByDateThrowsExceptionOnDateAfterFinancialYear(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The requested date is out of range of the current financial year');
+
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // 2020-01-07 is out of range even if the type is business and weeks 53, if start date is 2019-01-01
+        $dateTimeAdapter->getBusinessWeekIdIdByDate('2020-01-07');
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    public function assertGetBusinessWeekIdByDateReturnsCorrectIdForDate(): void
+    {
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_BUSINESS,
+            '2019-01-01',
+            $this->faker->boolean
+        );
+
+        // 2019-01-31 belongs to 5th week
+        $this->assertEquals(5, $dateTimeAdapter->getBusinessWeekIdIdByDate('2019-01-31'));
     }
 }

@@ -226,7 +226,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $dateTime = $this->getDateObject($date);
 
         // Instantly throw exception for a date that's out of range of the current financial year.
-        // Do this to avoid the insensive loop.
+        // Do this to avoid the resource intensive loop.
         if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
             throw new Exception('The requested date is out of range of the current financial year');
         }
@@ -256,14 +256,23 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         $dateTime = $this->getDateObject($date);
 
+        // Instantly throw exception for a date that's out of range of the current financial year.
+        // Do this to avoid the resource intensive loop.
+        if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
+            throw new Exception('The requested date is out of range of the current financial year');
+        }
+
         for ($id = 1; $id <= $this->fyWeeks; $id++) {
-            foreach ($this->getBusinessWeekById($id) as $interval) {
-                if ($dateTime->format('Y-m-d') === $interval->format('Y-m-d')) {
-                    return $id;
-                }
+            /** @var DatePeriod $week */
+            $week = $this->getBusinessWeekById($id);
+
+            if ($dateTime >= $week->getStartDate() && $dateTime <= $week->getEndDate()) {
+                return $id;
             }
         }
 
+        // We can never reach this stage.
+        // However, added for keeping the IDEs happy of non returned value.
         throw new Exception('A business week could not be found for the specified date');
     }
 
