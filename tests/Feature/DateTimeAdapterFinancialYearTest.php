@@ -19,7 +19,7 @@ class DateTimeAdapterFinancialYearTest extends BaseTestCase
      * @throws ConfigException
      * @throws \Exception
      */
-    public function assertExceptionOnInvalidPeriodIdForCalendarTypeFinancialYear()
+    public function assertExceptionOnInvalidPeriodIdForCalendarTypeFinancialYear(): void
     {
         $startDate = new DateTime('2019-01-01');
 
