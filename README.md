@@ -27,7 +27,6 @@ An organisation financial year can be based on the following 2 methods:
      This is a business domain decision, hence the library does not calculate when a year should be 52 or 53 years.
      It needs to be set by the user.
      
-
 ### Basic Use
 ```php
 $startDate = new \DateTime('2019-01-01');
@@ -43,6 +42,9 @@ $fy = (new \RoussKS\FinancialYear\FinancialYear($startDate, $config))->getAdapte
 echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31 
 ```
 
+### Notes
+Even though an adapter can be instantiated directly, we advise to instantiate the library from the main class.
+
 ### Limitations
 Unfortunately, the library does not support a start date of February 29th (29/02/YYYY) for *`calendar`* financial year type.
 
@@ -53,7 +55,6 @@ This is allowed for a *`business`* type financial year.
 ### Roadmap
 1.1 Introduce [Carbon Adapter](https://github.com/briannesbitt/carbon) to work directly with Carbon datetime instances.
 1.2 Introduce [Chronos Adapter](https://github.com/cakephp/chronos) to work directly with Chronos datetime instances
-
 
 ### Versioning
 The current library will be using [Semantic Versioning](https://semver.org/)
