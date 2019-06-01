@@ -56,6 +56,9 @@ This was a conscious decision as we do not expect anyone to select that date to 
 
 This is allowed for a *`business`* type financial year. 
 
+### Contribute
+Do you want to make a change? Pull requests are welcome with fully tested code.
+
 ### Roadmap
 v1.1 Introduce [Carbon Adapter](https://github.com/briannesbitt/carbon) to work directly with Carbon datetime instances.
 v1.2 Introduce [Chronos Adapter](https://github.com/cakephp/chronos) to work directly with Chronos datetime instances
