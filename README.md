@@ -2,14 +2,17 @@
 
 [![Build Status](https://travis-ci.com/RoussKS/financial-year.svg?branch=master)](https://travis-ci.com/RoussKS/financial-year)
 
-## v0.9.1
-v1.0.0 will be released when all testing is completed and a test suite is added.
+## v1.0.0
+v1.0.0 is now released.
 
-### Purpose
+### Introduction / Background / Purpose
+In my first working environment as a software/web developer in UK, I stumbled upon the need to do different calculations for financial year needs.
+The business also happened to have a non-standard calendar financial year (types explained below).
+Hence, everytime we needed to get any sort of report (transactions, conversion rate, sales etc) we used a predefined list provided by our business analyst. 
 
-This library aims to solve a business problem in a consistent manner.
+This library aims to solve this business problem in a consistent manner.
 
-The calculation of week, period, year and end dates of those for a business.
+The calculation of week, period, year and end dates of those for the business.
 
 According to [wikipedia](https://en.wikipedia.org/wiki/Fiscal_year)
 
