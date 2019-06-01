@@ -3,4 +3,5 @@
 
 # PHPUnit report
 /tests/report/
-clover.xml
+/clover.xml
+/phpunit.xml
