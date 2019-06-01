@@ -1,5 +1,6 @@
 # \RoussKS\FinancialYear - Financial Year PHP Library
 
+[![Latest Version](https://img.shields.io/github/release/RoussKS/financial-year.svg?style=flat-square)](https://github.com/RoussKS/financial-year/releases)
 [![Build Status](https://travis-ci.com/RoussKS/financial-year.svg?branch=master)](https://travis-ci.com/RoussKS/financial-year)
 
 ## v1.0.0
