@@ -5,6 +5,7 @@ namespace RoussKS\FinancialYear\Tests\Feature;
 use DateTime;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
+use RoussKS\FinancialYear\FinancialYear;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
 
 class DateTimeAdapterFinancialYearTest extends BaseTestCase
@@ -28,7 +29,9 @@ class DateTimeAdapterFinancialYearTest extends BaseTestCase
         ];
 
         /** \RoussKS\FinancialYear\Interfaces\AdapterInterface $fy */
-        $fy = (new \RoussKS\FinancialYear\FinancialYear($startDate, $config))->getAdapter();
+        $fy = (new FinancialYear($startDate, $config))->getAdapter();
+
+        $fyPeriodsArray = [];
 
         for ($i = 1; $i <= $fy->getFyPeriods(); $i++) {
             $fyPeriodsArray[] = $i;
@@ -54,7 +57,7 @@ class DateTimeAdapterFinancialYearTest extends BaseTestCase
      * @throws ConfigException
      * @throws \Exception
      */
-    public function assertExceptionOnInvalidPeriodIdForBusinessTypeFinancialYear()
+    public function assertExceptionOnInvalidPeriodIdForBusinessTypeFinancialYear(): void
     {
         $startDate = new DateTime('2019-01-01');
 
@@ -64,7 +67,9 @@ class DateTimeAdapterFinancialYearTest extends BaseTestCase
         ];
 
         /** \RoussKS\FinancialYear\Interfaces\AdapterInterface $fy */
-        $fy = (new \RoussKS\FinancialYear\FinancialYear($startDate, $config))->getAdapter();
+        $fy = (new FinancialYear($startDate, $config))->getAdapter();
+
+        $fyPeriodsArray = [];
 
         for ($i = 1; $i <= $fy->getFyPeriods(); $i++) {
             $fyPeriodsArray[] = $i;
