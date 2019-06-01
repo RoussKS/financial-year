@@ -2,6 +2,7 @@
 
 [![Latest Version](https://img.shields.io/github/release/RoussKS/financial-year.svg?style=flat-square)](https://github.com/RoussKS/financial-year/releases)
 [![Build Status](https://travis-ci.com/RoussKS/financial-year.svg?branch=master)](https://travis-ci.com/RoussKS/financial-year)
+[![codecov](https://codecov.io/gh/RoussKS/financial-year/branch/master/graph/badge.svg)](https://codecov.io/gh/RoussKS/financial-year)
 
 ## v1.0.0
 v1.0.0 is now released.
