@@ -21,6 +21,11 @@ An organisation financial year can be based on the following 2 methods:
 2. Ending on the same day of the week every year.
    - This is the *`business`* type for this library.
      >The "fiscal year end" (FYE) is the date that marks the end of the fiscal year. Some companies—such as Cisco Systems[1]—end their fiscal year on the same day of the week each year, e.g. the day that is closest to a particular date (for example, the Friday closest to 31 December). Under such a system, some fiscal years will have 52 weeks and others 53 weeks.
+   - A financial year of this type, always has 364 days a year and is divided in 13 periods (each period has 4 weeks, 28 days).
+   - The current library will accommodate the 52-53 weeks methodology of financial year, 
+     where a 53rd week is added at the end of a financial year in order to cover for missing days from the previous 364 day years.
+     This is a business domain decision, hence the library does not calculate when a year should be 52 or 53 years.
+     It needs to be set by the user.
      
 
 ### Basic Use
@@ -44,6 +49,11 @@ Unfortunately, the library does not support a start date of February 29th (29/02
 This was a conscious decision as we do not expect anyone to select that date to open a business and use a year/calendar financial year.
 
 This is allowed for a *`business`* type financial year. 
+
+### Roadmap
+1.1 Introduce [Carbon Adapter](https://github.com/briannesbitt/carbon) to work directly with Carbon datetime instances.
+1.2 Introduce [Chronos Adapter](https://github.com/cakephp/chronos) to work directly with Chronos datetime instances
+
 
 ### Versioning
 The current library will be using [Semantic Versioning](https://semver.org/)
