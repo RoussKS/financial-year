@@ -48,7 +48,7 @@ class FinancialYear
 
         // If a config is provided, instantiate the relevant adapter.
         if ($config !== null) {
-            $this->instantiateFinancialYearAdapter($config);
+            $this->makeFinancialYearAdapter($config);
         }
     }
 
@@ -66,7 +66,7 @@ class FinancialYear
      * @throws ConfigException
      * @throws Exception
      */
-    public function instantiateFinancialYearAdapter(array $config): void
+    public function makeFinancialYearAdapter(array $config): void
     {
         // Throw exception for improper use (multiple instantiations).
         if ($this->adapter !== null) {

@@ -18,7 +18,7 @@ class FinancialYearTest extends BaseTestCase
      * @throws ConfigException
      * @throws Exception
      */
-    public function assertAdapterThrowsExceptionOnClassInstantiationWithoutConfig(): void
+    public function assertAdapterThrowsExceptionOnInstantiationWithoutConfig(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('The adapter has not been set yet');
@@ -36,7 +36,7 @@ class FinancialYearTest extends BaseTestCase
      * @throws ConfigException
      * @throws Exception
      */
-    public function assertAdapterThrowsExceptionIfReInstantiatedFromMethod(): void
+    public function assertAdapterThrowsExceptionIfRemade(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('The adapter has already been instantiated');
@@ -50,7 +50,7 @@ class FinancialYearTest extends BaseTestCase
 
         $fy = new FinancialYear($dateTime, $config);
 
-        $fy->instantiateFinancialYearAdapter($config);
+        $fy->makeFinancialYearAdapter($config);
     }
 
     /**
@@ -61,7 +61,7 @@ class FinancialYearTest extends BaseTestCase
      * @throws ConfigException
      * @throws Exception
      */
-    public function assertAdapterInstantiationMethodThrowsExceptionOnUnsupportedAdapterType(): void
+    public function assertMakeAdapterThrowsExceptionOnUnsupportedAdapterType(): void
     {
         $this->expectException(ConfigException::class);
 
@@ -83,7 +83,7 @@ class FinancialYearTest extends BaseTestCase
      * @throws ConfigException
      * @throws Exception
      */
-    public function assertAdapterNotNullIfInstantiatedOnMethod(): void
+    public function assertAdapterNotNullOnMake(): void
     {
         $dateTime = $this->faker->dateTime();
 
@@ -95,7 +95,7 @@ class FinancialYearTest extends BaseTestCase
         $fy = new FinancialYear($dateTime);
 
 
-        $fy->instantiateFinancialYearAdapter($config);
+        $fy->makeFinancialYearAdapter($config);
 
         // The return object is type-hinted, so no need to test that it is Financial Year Adapter Interface.
         $this->assertNotNull($fy->getAdapter());
