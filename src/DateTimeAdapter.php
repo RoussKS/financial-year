@@ -1,6 +1,6 @@
 <?php
 
-namespace RoussKS\FinancialYear\Adapters;
+namespace RoussKS\FinancialYear;
 
 use DateInterval;
 use DatePeriod;
@@ -33,8 +33,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * DateTimeAdapter constructor.
      *
-     * $fyEndDate, if provided, has priority and overrides $fiftyThreeWeeks for 'business' $fyType.
-     *
      * @param  string $fyType
      * @param  DateTime|DateTimeImmutable|string $fyStartDate
      * @param  bool $fiftyThreeWeeks
@@ -44,11 +42,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @throws Exception
      * @throws ConfigException
      */
-    public function __construct(
-        string $fyType,
-        $fyStartDate,
-        bool $fiftyThreeWeeks = false
-    ) {
+    public function __construct(string $fyType, $fyStartDate, bool $fiftyThreeWeeks = false)
+    {
         parent::__construct($fyType, $fiftyThreeWeeks);
 
         $this->setFyStartDate($fyStartDate);
@@ -134,7 +129,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getPeriodById(int $id): Traversable
     {
-        $this->validate();
+        $this->validateConfiguration();
 
         $this->validatePeriodId($id);
 
@@ -192,7 +187,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getBusinessWeekById(int $id): Traversable
     {
-        $this->validate();
+        $this->validateConfiguration();
 
         $this->validateBusinessWeekId($id);
 
@@ -286,7 +281,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getFirstDateOfPeriodById(int $id): DateTimeInterface
     {
-        $this->validate();
+        $this->validateConfiguration();
 
         $this->validatePeriodId($id);
 
@@ -315,7 +310,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getLastDateOfPeriodById(int $id): DateTimeInterface
     {
-        $this->validate();
+        $this->validateConfiguration();
 
         $this->validatePeriodId($id);
 
@@ -345,7 +340,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getFirstDateOfBusinessWeekById(int $id): DateTimeInterface
     {
-        $this->validate();
+        $this->validateConfiguration();
 
         $this->validateBusinessWeekId($id);
 
@@ -366,7 +361,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getLastDateOfBusinessWeekById(int $id): DateTimeInterface
     {
-        $this->validate();
+        $this->validateConfiguration();
 
         $this->validateBusinessWeekId($id);
 
@@ -496,29 +491,28 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     protected function getDateObject($date): DateTimeImmutable
     {
-        // Placeholder
-        $dateTime = null;
-
-        // First check if we have received the an object relevant to the adapter.
+        // Get classname of date param if object, else false if not an object
         if (is_object($date)) {
             $className = get_class($date);
-
-            if ($className === 'DateTime') {
-                return DateTimeImmutable::createFromMutable($date)->setTime(0,0);
-            }
-
-            if ($className === 'DateTimeImmutable') {
-                return $date->setTime(0,0);
-            }
         }
 
-        // Then if a string was passed as param.
+        // First check if we have received the object relevant to the adapter.
+        // If we did, return the required DateTimeImmutable.
+        if (isset($className) && $className === 'DateTime') {
+            return DateTimeImmutable::createFromMutable($date)->setTime(0,0);
+        }
+
+        if (isset($className) && $className === 'DateTimeImmutable') {
+            return $date->setTime(0,0);
+        }
+
+        // Then if a string was passed as param, create the DateTimeImmutable.
         if (is_string($date)) {
             $dateTime = DateTimeImmutable::createFromFormat('Y-m-d', $date);
         }
 
         // Validation that the datetime object was created.
-        if (!$dateTime || $dateTime === null) {
+        if (!isset($dateTime) || !$dateTime) {
             throw new Exception('Invalid date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object');
         }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace RoussKS\FinancialYear\Adapters;
+namespace RoussKS\FinancialYear;
 
 use DateTimeInterface;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
@@ -9,7 +9,7 @@ use Traversable;
 /**
  * Interface AdapterInterface
  *
- * @package RoussKS\FinancialYear\Interfaces
+ * @package RoussKS\FinancialYear
  */
 interface AdapterInterface
 {
@@ -220,5 +220,5 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function validate(): void;
+    public function validateConfiguration(): void;
 }
