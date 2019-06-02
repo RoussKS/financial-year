@@ -27,7 +27,7 @@ An organisation financial year can be based on the following 2 methods:
    - A financial year of this type, always has 364 days a year and is divided in 13 periods (each period has 4 weeks, 28 days).
    - The current library will accommodate the 52-53 weeks methodology of financial year, 
      where a 53rd week is added at the end of a financial year in order to cover for missing days from the previous 364 day years.
-     This is a business domain decision, hence the library does not calculate when a year should be 52 or 53 years.
+     This is a business domain decision, hence the library does not calculate when a year should be 52 or 53 weeks.
      It needs to be set by the user.
 
 ## Version
@@ -46,6 +46,7 @@ composer require roussks/financial-year
 require_once __DIR__ . '/vendor/autoload.php';
 
 // DateTimeAdapter
+// If instantiating with string, it must be of ISO-8601 format 'YYYY-MM-DD'
 $startDate = new \DateTime('2019-01-01');
 
 $fy = new \RoussKS\FinancialYear\DateTimeAdapter('calendar', $startDate);
@@ -60,13 +61,12 @@ This was a conscious decision as we do not expect anyone to select that date to 
 
 This is allowed for a *`business`* type financial year. 
 
-### Contribute
-Do you want to make a change? Pull requests are welcome with fully tested code.
-
 ### Roadmap
-Introduce new extending library for [CarbonAdapter](https://github.com/briannesbitt/carbon) to work directly with Carbon datetime instances.
+- Introduce Laravel Package
 
-Introduce new extending library for [ChronosAdapter](https://github.com/cakephp/chronos) to work directly with Chronos datetime instances.
+- Introduce new extending library for [CarbonAdapter](https://github.com/briannesbitt/carbon) to work directly with Carbon datetime instances.
+
+- Introduce new extending library for [ChronosAdapter](https://github.com/cakephp/chronos) to work directly with Chronos datetime instances.
 
 ### Versioning
 The current library will be using [Semantic Versioning](https://semver.org/)
