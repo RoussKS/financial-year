@@ -4,9 +4,6 @@
 [![Build Status](https://travis-ci.com/RoussKS/financial-year.svg?branch=master)](https://travis-ci.com/RoussKS/financial-year)
 [![codecov](https://codecov.io/gh/RoussKS/financial-year/branch/master/graph/badge.svg)](https://codecov.io/gh/RoussKS/financial-year)
 
-## v1.0.0
-v1.0.0 is now released.
-
 ### Introduction / Background / Purpose
 In my first working environment as a software/web developer in UK, I stumbled upon the need to do different calculations for financial year needs.
 The business also happened to have a non-standard calendar financial year (types explained below).
@@ -31,7 +28,18 @@ An organisation financial year can be based on the following 2 methods:
      where a 53rd week is added at the end of a financial year in order to cover for missing days from the previous 364 day years.
      This is a business domain decision, hence the library does not calculate when a year should be 52 or 53 years.
      It needs to be set by the user.
-     
+
+## v1.0.0
+v1.0.0 is now released.
+
+### Requirements
+- PHP Version > 7.1
+
+### Installation
+```console
+composer require roussks/financial-year
+```
+
 ### Basic Use
 ```php
 // DateTimeAdapter
