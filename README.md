@@ -46,6 +46,7 @@ composer require roussks/financial-year
 require_once __DIR__ . '/vendor/autoload.php';
 
 // DateTimeAdapter
+// If instantiating with string, it must be of ISO-8601 format 'YYYY-MM-DD'
 $startDate = new \DateTime('2019-01-01');
 
 $fy = new \RoussKS\FinancialYear\DateTimeAdapter('calendar', $startDate);
@@ -59,9 +60,6 @@ Unfortunately, the library does not support a start date of February 29th (29/02
 This was a conscious decision as we do not expect anyone to select that date to open a business and use a year/calendar financial year.
 
 This is allowed for a *`business`* type financial year. 
-
-### Contribute
-Do you want to make a change? Pull requests are welcome with fully tested code.
 
 ### Roadmap
 - Introduce Laravel Package

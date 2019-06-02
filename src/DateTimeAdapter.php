@@ -34,7 +34,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * DateTimeAdapter constructor.
      *
      * @param  string $fyType
-     * @param  DateTime|DateTimeImmutable|string $fyStartDate
+     * @param  DateTime|DateTimeImmutable|string $fyStartDate, string must be of ISO-8601 format 'YYYY-MM-DD'
      * @param  bool $fiftyThreeWeeks
      *
      * @return void
@@ -440,7 +440,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * {@inheritdoc}
      *
-     * @return DateTimeImmutable|DateTimeImmutable
+     * @return DateTimeImmutable|DateTimeInterface
      */
     public function getNextFyStartDate(): DateTimeInterface
     {
@@ -457,27 +457,15 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * Set the financial year end date.
      *
-     * First check for calendar type and return.
-     * If not calendar, it can only be business type.
+     * We will set end date from the start date object which should be present.
+     * Both types calculate end date relative to next financial year start date.
+     * As that is automatically calculated for us, regardless of type, we just subtract 1 day.
      *
      * @return void
      */
     protected function setFyEndDate(): void
     {
-        // We will set end date from the start date object which should be present.
-        // Both types calculate end date relative to next financial year start date.
-        $nextFinancialYearStartDate = $this->getNextFyStartDate();
-
-        // For calendar type, the end date is 1 year, minus 1 day after the start date.
-        if ($this->isCalendarType($this->type)) {
-            $this->fyEndDate = $nextFinancialYearStartDate->sub(DateInterval::createFromDateString('1 day'));
-
-            return;
-        }
-
-        // For business type, the end date is the number of weeks , minus 1 day after the start date.
-        // As a financial year would have 52 or 53 weeks, the param handles it.
-        $this->fyEndDate = $nextFinancialYearStartDate->sub(DateInterval::createFromDateString('1 day'));
+        $this->fyEndDate = $this->getNextFyStartDate()->sub(DateInterval::createFromDateString('1 day'));
     }
 
     /**
