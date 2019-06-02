@@ -54,6 +54,7 @@ Do you want to make a change? Pull requests are welcome with fully tested code.
 
 ### Roadmap
 Introduce new extending library for [CarbonAdapter](https://github.com/briannesbitt/carbon) to work directly with Carbon datetime instances.
+
 Introduce new extending library for [ChronosAdapter](https://github.com/cakephp/chronos) to work directly with Chronos datetime instances.
 
 ### Versioning
