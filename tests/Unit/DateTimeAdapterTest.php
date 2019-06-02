@@ -1,13 +1,14 @@
 <?php
 
-namespace RoussKS\FinancialYear\Tests\Unit\Adapters;
+namespace RoussKS\FinancialYear\Tests\Unit;
 
+use DateTime;
 use DateTimeImmutable;
-use RoussKS\FinancialYear\Adapters\AbstractAdapter;
+use RoussKS\FinancialYear\AbstractAdapter;
+use RoussKS\FinancialYear\DateTimeAdapter;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
-use RoussKS\FinancialYear\Adapters\DateTimeAdapter;
 
 /**
  * Class DateTimeAdapterTest
@@ -1053,5 +1054,69 @@ class DateTimeAdapterTest extends BaseTestCase
             $this->faker->text,
             $this->faker->boolean
         );
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws Exception
+     * @throws ConfigException
+     * @throws \Exception
+     */
+    public function assertExceptionOnInvalidPeriodIdForCalendarTypeFinancialYear(): void
+    {
+        $startDate = new DateTime('2019-01-01');
+
+        $fy = new DateTimeAdapter('calendar', $startDate);
+
+        $fyPeriodsArray = [];
+
+        for ($i = 1; $i <= $fy->getFyPeriods(); $i++) {
+            $fyPeriodsArray[] = $i;
+        }
+
+        do {
+            $randomPeriodId = random_int(-1000, 1000);
+        } while(in_array($randomPeriodId, $fyPeriodsArray, true));
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('There is no period with id: ' . $randomPeriodId);
+
+        // A Calendar Type Financial Year has 12 periods only.
+        $fy->getPeriodById($randomPeriodId);
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws Exception
+     * @throws ConfigException
+     * @throws \Exception
+     */
+    public function assertExceptionOnInvalidPeriodIdForBusinessTypeFinancialYear(): void
+    {
+        $startDate = new DateTime('2019-01-01');
+
+        $fy = new DateTimeAdapter('business', $startDate);
+
+        $fyPeriodsArray = [];
+
+        for ($i = 1; $i <= $fy->getFyPeriods(); $i++) {
+            $fyPeriodsArray[] = $i;
+        }
+
+        do {
+            $randomPeriodId = random_int(-1000, 1000);
+        } while(in_array($randomPeriodId, $fyPeriodsArray, true));
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('There is no period with id: ' . $randomPeriodId);
+
+        // A Calendar Type Financial Year has 12 periods only.
+        $fy->getPeriodById($randomPeriodId);
     }
 }

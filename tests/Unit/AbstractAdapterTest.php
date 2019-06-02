@@ -3,8 +3,8 @@
 namespace RoussKS\FinancialYear\Tests\Unit\Adapters;
 
 use ReflectionException;
-use RoussKS\FinancialYear\Adapters\AbstractAdapter;
-use RoussKS\FinancialYear\Adapters\AdapterInterface;
+use RoussKS\FinancialYear\AbstractAdapter;
+use RoussKS\FinancialYear\AdapterInterface;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 
@@ -178,6 +178,42 @@ class AbstractAdapterTest extends BaseTestCase
      *
      * @return void
      *
+     * @throws ReflectionException
+     */
+    public function assertFyPeriodsReturnsCorrectIntegerForCalendarTypeFinancialYear(): void
+    {
+        /** @var  $fy AdapterInterface */
+        $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
+            'calendar', true
+        ]);
+
+        // Calendar type has 12 periods
+        $this->assertSame(12, $fy->getFyPeriods());
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ReflectionException
+     */
+    public function assertFyPeriodsReturnsCorrectIntegerForBusinessTypeFinancialYear(): void
+    {
+        /** @var  $fy AdapterInterface */
+        $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
+            'business', true
+        ]);
+
+        // Business type has 13 periods
+        $this->assertSame(13, $fy->getFyPeriods());
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
      * @throws ConfigException
      * @throws ReflectionException
      */
@@ -191,6 +227,6 @@ class AbstractAdapterTest extends BaseTestCase
             'calendar', true
         ]);
 
-        $fy->validate();
+        $fy->validateConfiguration();
     }
 }

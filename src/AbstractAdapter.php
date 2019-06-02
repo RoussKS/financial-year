@@ -1,15 +1,15 @@
 <?php
 
-namespace RoussKS\FinancialYear\Adapters;
+namespace RoussKS\FinancialYear;
 
 use DateTimeInterface;
-use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
+use RoussKS\FinancialYear\Exceptions\Exception;
 
 /**
  * Class AbstractAdapter
  *
- * @package RoussKS\FinancialYear\Adapters
+ * @package RoussKS\FinancialYear
  */
 abstract class AbstractAdapter
 {
@@ -62,7 +62,7 @@ abstract class AbstractAdapter
      *
      * @throws ConfigException
      */
-    public function __construct(string $type, bool $fiftyThreeWeeks)
+    public function __construct(string $type, bool $fiftyThreeWeeks = false)
     {
         // Calendar Type has 12 periods.
         if ($this->isCalendarType($type)) {
@@ -146,13 +146,9 @@ abstract class AbstractAdapter
      *
      * @throws ConfigException
      */
-    public function validate(): void
+    public function validateConfiguration(): void
     {
-        if (
-            $this->type === null ||
-            $this->fyStartDate === null ||
-            $this->fyEndDate === null
-        ) {
+        if ($this->type === null || $this->fyStartDate === null || $this->fyEndDate === null) {
             $this->throwConfigurationException();
         }
     }

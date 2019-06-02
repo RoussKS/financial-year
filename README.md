@@ -1,15 +1,20 @@
 # \RoussKS\FinancialYear - Financial Year PHP Library
 
+[![Latest Version](https://img.shields.io/github/release/RoussKS/financial-year.svg?style=flat-square)](https://github.com/RoussKS/financial-year/releases)
 [![Build Status](https://travis-ci.com/RoussKS/financial-year.svg?branch=master)](https://travis-ci.com/RoussKS/financial-year)
+[![codecov](https://codecov.io/gh/RoussKS/financial-year/branch/master/graph/badge.svg)](https://codecov.io/gh/RoussKS/financial-year)
 
-## v0.9.1
-v1.0.0 will be released when all testing is completed and a test suite is added.
+## v1.0.0
+v1.0.0 is now released.
 
-### Purpose
+### Introduction / Background / Purpose
+In my first working environment as a software/web developer in UK, I stumbled upon the need to do different calculations for financial year needs.
+The business also happened to have a non-standard calendar financial year (types explained below).
+Hence, each time we needed to get any sort of report (transactions, conversion rate, sales etc) we used a predefined list provided by our business analyst. 
 
-This library aims to solve a business problem in a consistent manner.
+This library aims to solve this business problem in a consistent manner.
 
-The calculation of week, period, year and end dates of those for a business.
+The calculation of week, period, year and end dates of those for the business.
 
 According to [wikipedia](https://en.wikipedia.org/wiki/Fiscal_year)
 
@@ -29,21 +34,13 @@ An organisation financial year can be based on the following 2 methods:
      
 ### Basic Use
 ```php
+// DateTimeAdapter
 $startDate = new \DateTime('2019-01-01');
 
-$config = [
-    'fyType' => 'calendar',
-    'fyStartDate' => $startDate,
-];
-
-/** \RoussKS\FinancialYear\Interfaces\AdapterInterface $fy */
-$fy = (new \RoussKS\FinancialYear\FinancialYear($startDate, $config))->getAdapter();
+$fy = new \RoussKS\FinancialYear\DateTimeAdapter('calendar', $startDate);
 
 echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31 
 ```
-
-### Notes
-Even though an adapter can be instantiated directly, we advise to instantiate the library from the main class.
 
 ### Limitations
 Unfortunately, the library does not support a start date of February 29th (29/02/YYYY) for *`calendar`* financial year type.
@@ -52,9 +49,12 @@ This was a conscious decision as we do not expect anyone to select that date to 
 
 This is allowed for a *`business`* type financial year. 
 
+### Contribute
+Do you want to make a change? Pull requests are welcome with fully tested code.
+
 ### Roadmap
-1.1 Introduce [Carbon Adapter](https://github.com/briannesbitt/carbon) to work directly with Carbon datetime instances.
-1.2 Introduce [Chronos Adapter](https://github.com/cakephp/chronos) to work directly with Chronos datetime instances
+Introduce new extending library for [CarbonAdapter](https://github.com/briannesbitt/carbon) to work directly with Carbon datetime instances.
+Introduce new extending library for [ChronosAdapter](https://github.com/cakephp/chronos) to work directly with Chronos datetime instances.
 
 ### Versioning
 The current library will be using [Semantic Versioning](https://semver.org/)
