@@ -43,6 +43,8 @@ composer require roussks/financial-year
 
 ### Basic Use
 ```php
+require_once __DIR__ . '/vendor/autoload.php';
+
 // DateTimeAdapter
 $startDate = new \DateTime('2019-01-01');
 
