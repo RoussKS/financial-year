@@ -29,7 +29,7 @@ An organisation financial year can be based on the following 2 methods:
      This is a business domain decision, hence the library does not calculate when a year should be 52 or 53 years.
      It needs to be set by the user.
 
-## v1.0.0
+## Version
 v1.0.0 is now released.
 
 ### Requirements
