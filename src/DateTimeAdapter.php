@@ -136,10 +136,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getPeriodById(int $id): Traversable
     {
-        $this->validateConfiguration();
-
-        $this->validatePeriodId($id);
-
         return new DatePeriod(
             $this->getFirstDateOfPeriodById($id),
             DateInterval::createFromDateString('1 day'),
