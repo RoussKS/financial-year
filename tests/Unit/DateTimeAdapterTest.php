@@ -117,16 +117,10 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $randomDateTime = $this->faker->dateTime;
 
-        // Build an array from the random date to implode for building an ISO-8601 date string.
-        $randomDateTimeArray = [
-            $randomDateTime->format('Y'),
-            $randomDateTime->format('m'),
-            $disallowedDates[array_rand($disallowedDates, 1)]
-        ];
-
+        // Random Year, random disallowed date. Fix to May as we know it includes all 3 dates.
         new DateTimeAdapter(
             AbstractAdapter::TYPE_CALENDAR,
-            implode('-', $randomDateTimeArray),
+            $randomDateTime->format('Y') . '-05-' . $disallowedDates[array_rand($disallowedDates, 1)],
             $this->faker->boolean
         );
     }
@@ -1163,7 +1157,7 @@ class DateTimeAdapterTest extends BaseTestCase
             $randomDateExcludingDisallowed = random_int(1, 31);
         } while (in_array($randomDateExcludingDisallowed, $disallowedFyCalendarTypeDates, false));
 
-        $randomDateString = $this->faker->year . '-' . $this->faker->month . '-' . (string) $randomDateExcludingDisallowed;
+        $randomDateString = $this->faker->year . '-' . $this->faker->month . '-' . $randomDateExcludingDisallowed;
 
         return DateTime::createFromFormat('Y-m-d', $randomDateString);
     }
