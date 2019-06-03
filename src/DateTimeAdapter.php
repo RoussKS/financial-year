@@ -21,12 +21,12 @@ use Traversable;
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {
     /**
-     * @var DateTimeInterface|DateTimeImmutable
+     * @var DateTimeImmutable
      */
     protected $fyStartDate;
 
     /**
-     * @var DateTimeInterface|DateTimeImmutable
+     * @var DateTimeImmutable
      */
     protected $fyEndDate;
 
@@ -73,7 +73,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return DateTimeInterface|DateTimeImmutable
+     * @return DateTimeImmutable
      */
     public function getFyStartDate(): DateTimeInterface
     {
@@ -109,7 +109,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return DateTimeInterface|DateTimeImmutable
+     * @return DateTimeImmutable
      */
     public function getFyEndDate(): DateTimeInterface
     {
@@ -122,7 +122,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * First check for calendar type and the return the corresponding value.
      * Otherwise it is business type as the only other available.
      *
-     * @return Traversable|DatePeriod|DateTimeInterface[]
+     * @return DatePeriod|DateTimeImmutable[]
      *
      * @throws Exception
      * @throws \Exception
@@ -181,7 +181,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return Traversable|DatePeriod|DateTimeInterface[]
+     * @return DatePeriod|DateTimeImmutable[]
      *
      * @throws Exception
      */
@@ -227,7 +227,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         for ($id = 1; $id <= $this->fyPeriods; $id++) {
-            /** @var DatePeriod $period */
             $period = $this->getPeriodById($id);
 
             if ($dateTime >= $period->getStartDate() && $dateTime <= $period->getEndDate()) {
@@ -258,7 +257,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         for ($id = 1; $id <= $this->fyWeeks; $id++) {
-            /** @var DatePeriod $week */
             $week = $this->getBusinessWeekById($id);
 
             if ($dateTime >= $week->getStartDate() && $dateTime <= $week->getEndDate()) {
@@ -276,6 +274,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * First check for calendar type.
      * Otherwise, it will be business type as no other is supported.
+     *
+     * @return DateTimeImmutable
      *
      * @throws Exception
      */
@@ -306,6 +306,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * First check for calendar type.
      * Otherwise, it will be business type as no other is supported.
      *
+     * @return DateTimeImmutable
+     *
      * @throws Exception
      */
     public function getLastDateOfPeriodById(int $id): DateTimeInterface
@@ -334,7 +336,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return DateTimeInterface|DateTimeImmutable
+     * @return DateTimeImmutable
      *
      * @throws Exception
      */
@@ -355,7 +357,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return DateTimeInterface|DateTimeImmutable
+     * @return DateTimeImmutable
      *
      * @throws Exception
      */
@@ -377,7 +379,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return Traversable|DatePeriod|DateTimeInterface[]
+     * @return DatePeriod|DateTimeImmutable[]
      *
      * @throws Exception
      */
@@ -389,7 +391,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return Traversable|DatePeriod|DateTimeInterface[]
+     * @return DatePeriod|DateTimeImmutable[]
      *
      * @throws Exception
      */
@@ -401,7 +403,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return DatePeriod
+     * @return DatePeriod|DateTimeImmutable[]
      *
      * @throws Exception
      */
@@ -413,7 +415,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return Traversable|DatePeriod|DateTimeInterface[]
+     * @return DatePeriod||DateTimeImmutable[]
      *
      * @throws Exception
      */
@@ -423,7 +425,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * @return Traversable|DatePeriod|DateTimeInterface[]
+     * @return DatePeriod||DateTimeImmutable[]
      *
      * @throws  Exception
      * @throws  ConfigException
@@ -440,7 +442,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * {@inheritdoc}
      *
-     * @return DateTimeImmutable|DateTimeInterface
+     * @return DateTimeImmutable
      */
     public function getNextFyStartDate(): DateTimeInterface
     {
