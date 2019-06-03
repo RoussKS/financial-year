@@ -384,7 +384,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @return DatePeriod||DateTimeImmutable[]
+     * @return DatePeriod|DateTimeImmutable[]
      *
      * @throws Exception
      */
@@ -394,7 +394,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * @return DatePeriod||DateTimeImmutable[]
+     * @return DatePeriod|DateTimeImmutable[]
      *
      * @throws  Exception
      * @throws  ConfigException
@@ -458,11 +458,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // First check if we have received the object relevant to the adapter.
         // If we did, return the required DateTimeImmutable.
         if (isset($className) && $className === 'DateTime') {
-            return DateTimeImmutable::createFromMutable($date)->setTime(0,0);
+            return DateTimeImmutable::createFromMutable($date)->setTime(0, 0);
         }
 
         if (isset($className) && $className === 'DateTimeImmutable') {
-            return $date->setTime(0,0);
+            return $date->setTime(0, 0);
         }
 
         // Then if a string was passed as param, create the DateTimeImmutable.
@@ -476,6 +476,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         // Set date object to start of the day and return.
-        return $dateTime->setTime(0,0);
+        return $dateTime->setTime(0, 0);
     }
 }
