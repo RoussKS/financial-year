@@ -6,7 +6,7 @@
 [![GitHub license](https://img.shields.io/github/license/RoussKS/financial-year.svg)](https://github.com/RoussKS/financial-year/blob/master/LICENSE)
 
 ### Introduction / Background / Purpose
-In my first working environment as a software/web developer in UK, I stumbled upon the need to do different calculations for financial year needs.
+In my first working environment as a software/web developer, I stumbled upon the need to do different calculations for financial/accounting year purposes.
 The business also happened to have a non-standard calendar financial year (types explained below).
 Hence, each time we needed to get any sort of report (transactions, conversion rate, sales etc) we used a predefined list provided by our business analyst. 
 
