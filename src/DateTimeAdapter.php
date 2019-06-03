@@ -94,8 +94,15 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->fyStartDate = $this->getDateObject($date);
 
-        if ($this->fyStartDate->format('md') === '0229' && $this->isCalendarType($this->type)) {
-            $this->throwConfigurationException('This library does not support 29th of February as the starting date for calendar type financial year');
+        $disallowedFyCalendarTypeDates = ['29', '30', '31'];
+
+        if (
+            $this->isCalendarType($this->type) &&
+            in_array($this->fyStartDate->format('d'), $disallowedFyCalendarTypeDates, true)
+        ) {
+            $this->throwConfigurationException(
+                'This library does not support start dates for 29, 30, 31 of each month for calendar type financial year'
+            );
         }
 
         // If this method was not called on instantiation,

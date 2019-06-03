@@ -30,9 +30,6 @@ An organisation financial year can be based on the following 2 methods:
      This is a business domain decision, hence the library does not calculate when a year should be 52 or 53 weeks.
      It needs to be set by the user.
 
-## Version
-v1.0.0 is now released.
-
 ### Requirements
 - PHP Version > 7.1
 
@@ -55,11 +52,15 @@ echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31
 ```
 
 ### Limitations
-Unfortunately, the library does not support a start date of February 29th (29/02/YYYY) for *`calendar`* financial year type.
+Unfortunately, the library does not support a start date of 29, 30, 31 of any month for *`calendar`* financial year type.
 
-This was a conscious decision as we do not expect anyone to select that date to open a business and use a year/calendar financial year.
+We do not expect much use for these dates for a calendar type financial year, as they would cause a considerable problem for accounting.
 
-This is allowed for a *`business`* type financial year. 
+e.g. if a year starts on 31/1, does the first period end on 28/2? And the following period starts 1/3 effectively skipping a month?
+
+If upon library usage, a user has encountered such a real business issue and can provide a mitigation logic, we can work on implementing it. 
+
+_Important_: This is allowed for a *`business`* type financial year. 
 
 ### Roadmap
 - Introduce Laravel Package

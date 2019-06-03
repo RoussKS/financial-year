@@ -20,10 +20,7 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @var array
      */
-    protected $fyTypes = [
-        AbstractAdapter::TYPE_CALENDAR,
-        AbstractAdapter::TYPE_BUSINESS
-    ];
+    protected $fyTypes = [AbstractAdapter::TYPE_CALENDAR, AbstractAdapter::TYPE_BUSINESS];
 
     /**
      * @test
@@ -86,9 +83,13 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetFyStartDateReturnsDateTimeImmutableObject(): void
     {
+        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->fyTypes[array_rand($this->fyTypes,1)],
-            $this->faker->dateTime,
+            $type,
+            $type === 'business' ?
+                $this->faker->dateTime :
+                $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             $this->faker->boolean
         );
 
@@ -105,20 +106,29 @@ class DateTimeAdapterTest extends BaseTestCase
      * @throws ConfigException
      * @throws Exception
      */
-    public function assertSetFyStartDateThrowsExceptionForSingleInvalidDate(): void
+    public function assertSetFyStartDateThrowsExceptionForInvalidDates(): void
     {
         $this->expectException(ConfigException::class);
         $this->expectExceptionMessage(
-            'This library does not support 29th of February as the starting date for calendar type financial year'
+            'This library does not support start dates for 29, 30, 31 of each month for calendar type financial year'
         );
 
-        $dateTimeAdapter = new DateTimeAdapter(
+        $disallowedDates = ['29', '30', '31'];
+
+        $randomDateTime = $this->faker->dateTime;
+
+        // Build an array from the random date to implode for building an ISO-8601 date string.
+        $randomDateTimeArray = [
+            $randomDateTime->format('Y'),
+            $randomDateTime->format('m'),
+            $disallowedDates[array_rand($disallowedDates, 1)]
+        ];
+
+        new DateTimeAdapter(
             AbstractAdapter::TYPE_CALENDAR,
-            $this->faker->dateTime,
+            implode('-', $randomDateTimeArray),
             $this->faker->boolean
         );
-
-        $dateTimeAdapter->setFyStartDate('2016-02-29'); //2016-02-29 is an existing date.
     }
 
     /**
@@ -131,9 +141,13 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertSetFyStartDateSetsNewFyEndDateIfFyStartDateChanges(): void
     {
+        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->fyTypes[array_rand($this->fyTypes,1)],
-            $this->faker->dateTime,
+            $type,
+            $type === 'business' ?
+                $this->faker->dateTime :
+                $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             $this->faker->boolean
         );
 
@@ -157,9 +171,13 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetFyEndDateReturnsDateTimeImmutableObject(): void
     {
+        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->fyTypes[array_rand($this->fyTypes,1)],
-            $this->faker->dateTime,
+            $type,
+            $type === 'business' ?
+                $this->faker->dateTime :
+                $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             $this->faker->boolean
         );
 
@@ -387,7 +405,7 @@ class DateTimeAdapterTest extends BaseTestCase
         // Get a random week id that's not equal to the available weeks.
         do {
             $randomWeekId = random_int(-1000, 1000);
-        } while(in_array($randomWeekId, $fyWeeksArray, true));
+        } while (in_array($randomWeekId, $fyWeeksArray, true));
 
         // Set the expected message after we have set the financial year weeks
         $this->expectExceptionMessage('There is no week with id: ' . $randomWeekId);
@@ -637,10 +655,13 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetFirstDateOfPeriodByIdReturnsFinancialYearStartDateForFirstPeriod(): void
     {
-        // Financial Year starts at 2019-01-01
+        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->fyTypes[array_rand($this->fyTypes,1)],
-            $this->faker->dateTime,
+            $type,
+            $type === 'business' ?
+                $this->faker->dateTime :
+                $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             $this->faker->boolean
         );
 
@@ -703,10 +724,13 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetLastDateOfPeriodByIdReturnsFinancialYearEndDateForLastPeriod(): void
     {
-        // Financial Year starts at 2019-01-01
+        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->fyTypes[array_rand($this->fyTypes,1)],
-            $this->faker->dateTime,
+            $type,
+            $type === 'business' ?
+                $this->faker->dateTime :
+                $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             $this->faker->boolean
         );
 
@@ -1025,9 +1049,13 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetDateObjectAcceptsImmutableParameter(): void
     {
+        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->fyTypes[array_rand($this->fyTypes,1)],
-            DateTimeImmutable::createFromMutable($this->faker->dateTime),
+            $type,
+            $type === 'business' ?
+                DateTimeImmutable::createFromMutable($this->faker->dateTime) :
+                DateTimeImmutable::createFromMutable($this->getRandomDateExcludingDisallowedFyCalendarTypeDates()),
             $this->faker->boolean
         );
 
@@ -1079,7 +1107,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         do {
             $randomPeriodId = random_int(-1000, 1000);
-        } while(in_array($randomPeriodId, $fyPeriodsArray, true));
+        } while (in_array($randomPeriodId, $fyPeriodsArray, true));
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('There is no period with id: ' . $randomPeriodId);
@@ -1111,12 +1139,32 @@ class DateTimeAdapterTest extends BaseTestCase
 
         do {
             $randomPeriodId = random_int(-1000, 1000);
-        } while(in_array($randomPeriodId, $fyPeriodsArray, true));
+        } while (in_array($randomPeriodId, $fyPeriodsArray, true));
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('There is no period with id: ' . $randomPeriodId);
 
         // A Calendar Type Financial Year has 12 periods only.
         $fy->getPeriodById($randomPeriodId);
+    }
+
+    /**
+     * Generate a random date excluding the ones disallowed for calendar type financial year.
+     *
+     * @return bool|DateTime
+     *
+     * @throws \Exception
+     */
+    protected function getRandomDateExcludingDisallowedFyCalendarTypeDates()
+    {
+        $disallowedFyCalendarTypeDates = ['29', '30', '31'];
+
+        do {
+            $randomDateExcludingDisallowed = random_int(1, 31);
+        } while (in_array($randomDateExcludingDisallowed, $disallowedFyCalendarTypeDates, false));
+
+        $randomDateString = $this->faker->year . '-' . $this->faker->month . '-' . (string) $randomDateExcludingDisallowed;
+
+        return DateTime::createFromFormat('Y-m-d', $randomDateString);
     }
 }
