@@ -1145,19 +1145,14 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * Generate a random date excluding the ones disallowed for calendar type financial year.
      *
-     * @return bool|DateTime
+     * The generated date string is valid formatted so bool (false) would never be returned.
      *
-     * @throws \Exception
+     * @return bool|DateTime
      */
     protected function getRandomDateExcludingDisallowedFyCalendarTypeDates()
     {
-        $disallowedFyCalendarTypeDates = ['29', '30', '31'];
-
-        do {
-            $randomDateExcludingDisallowed = random_int(1, 31);
-        } while (in_array($randomDateExcludingDisallowed, $disallowedFyCalendarTypeDates, false));
-
-        $randomDateString = $this->faker->year . '-' . $this->faker->month . '-' . $randomDateExcludingDisallowed;
+        // Get a random date string with date (day) number that does not include the disallowed dates (29, 30, 31)
+        $randomDateString = $this->faker->year . '-' . $this->faker->month . '-' . $this->faker->numberBetween(1, 28);
 
         return DateTime::createFromFormat('Y-m-d', $randomDateString);
     }
