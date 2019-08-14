@@ -83,7 +83,7 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetFyStartDateReturnsDateTimeImmutableObject(): void
     {
-        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+        $type = $this->faker->randomElement($this->fyTypes);
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
@@ -120,7 +120,7 @@ class DateTimeAdapterTest extends BaseTestCase
         // Random Year, random disallowed date. Fix to May as we know it includes all 3 dates.
         new DateTimeAdapter(
             AbstractAdapter::TYPE_CALENDAR,
-            $randomDateTime->format('Y') . '-05-' . $disallowedDates[array_rand($disallowedDates, 1)],
+            $randomDateTime->format('Y') . '-05-' . $this->faker->randomElement($disallowedDates),
             $this->faker->boolean
         );
     }
@@ -135,7 +135,7 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertSetFyStartDateSetsNewFyEndDateIfFyStartDateChanges(): void
     {
-        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+        $type = $this->faker->randomElement($this->fyTypes);
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
@@ -165,7 +165,7 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetFyEndDateReturnsDateTimeImmutableObject(): void
     {
-        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+        $type = $this->faker->randomElement($this->fyTypes);
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
@@ -518,7 +518,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->fyTypes[array_rand($this->fyTypes,1)],
+            $this->faker->randomElement($this->fyTypes),
             '2019-01-01',
             $this->faker->boolean
         );
@@ -541,7 +541,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->fyTypes[array_rand($this->fyTypes,1)],
+            $this->faker->randomElement($this->fyTypes),
             '2019-01-01',
             $this->faker->boolean
         );
@@ -562,7 +562,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->fyTypes[array_rand($this->fyTypes,1)],
+            $this->faker->randomElement($this->fyTypes),
             '2019-01-01',
             $this->faker->boolean
         );
@@ -649,7 +649,7 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetFirstDateOfPeriodByIdReturnsFinancialYearStartDateForFirstPeriod(): void
     {
-        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+        $type = $this->faker->randomElement($this->fyTypes);
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
@@ -718,7 +718,7 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetLastDateOfPeriodByIdReturnsFinancialYearEndDateForLastPeriod(): void
     {
-        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+        $type = $this->faker->randomElement($this->fyTypes);
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
@@ -1043,7 +1043,7 @@ class DateTimeAdapterTest extends BaseTestCase
      */
     public function assertGetDateObjectAcceptsImmutableParameter(): void
     {
-        $type = $this->fyTypes[array_rand($this->fyTypes,1)];
+        $type = $this->faker->randomElement($this->fyTypes);
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
@@ -1072,7 +1072,7 @@ class DateTimeAdapterTest extends BaseTestCase
         );
 
         new DateTimeAdapter(
-            $this->fyTypes[array_rand($this->fyTypes,1)],
+            $this->faker->randomElement($this->fyTypes),
             $this->faker->text,
             $this->faker->boolean
         );
