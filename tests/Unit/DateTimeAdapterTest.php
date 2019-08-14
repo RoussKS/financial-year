@@ -147,7 +147,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $originalFyStartDate = $dateTimeAdapter->getFyStartDate();
 
-        $dateTimeAdapter->setFyStartDate($this->faker->dateTime);
+        $dateTimeAdapter->setFyStartDate($this->getRandomDateExcludingDisallowedFyCalendarTypeDates());
 
         $this->assertNotSame(
             $originalFyStartDate->format('YmdHis'),
