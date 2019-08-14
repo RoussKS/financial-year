@@ -147,7 +147,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $originalFyStartDate = $dateTimeAdapter->getFyStartDate();
 
-        $dateTimeAdapter->setFyStartDate($this->faker->dateTime);
+        $dateTimeAdapter->setFyStartDate($this->getRandomDateExcludingDisallowedFyCalendarTypeDates());
 
         $this->assertNotSame(
             $originalFyStartDate->format('YmdHis'),
@@ -1147,13 +1147,21 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * The generated date string is valid formatted so bool (false) would never be returned.
      *
-     * @return bool|DateTime
+     * @return DateTime
      */
-    protected function getRandomDateExcludingDisallowedFyCalendarTypeDates()
+    protected function getRandomDateExcludingDisallowedFyCalendarTypeDates(): DateTime
     {
         // Get a random date string with date (day) number that does not include the disallowed dates (29, 30, 31)
         $randomDateString = $this->faker->year . '-' . $this->faker->month . '-' . $this->faker->numberBetween(1, 28);
 
-        return DateTime::createFromFormat('Y-m-d', $randomDateString);
+        /**
+         * Type hinting that it is a valid DateTime object.
+         * The random string is well formatted, so it will never return false.
+         *
+         * @var DateTime $dateTime
+         */
+        $dateTime =  DateTime::createFromFormat('Y-m-d', $randomDateString);
+
+        return $dateTime;
     }
 }
