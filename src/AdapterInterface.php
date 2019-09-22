@@ -207,6 +207,15 @@ interface AdapterInterface
     public function getFourthBusinessWeekByPeriodId(int $id): Traversable;
 
     /**
+     * Get the date range of the 53rd business week (if business type financial year & if exists, otherwise Exception).
+     *
+     * @return Traversable
+     *
+     * @throws ConfigException
+     */
+    public function getFiftyThirdBusinessWeek(): Traversable;
+
+    /**
      * Get the start date of the next financial year.
      *
      * @return DateTimeInterface
