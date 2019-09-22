@@ -99,7 +99,7 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * Invalid date is 29/02 of any available year
+     * Invalid dates are 29, 30, 31 of any month.
      *
      * @return void
      *
@@ -113,14 +113,12 @@ class DateTimeAdapterTest extends BaseTestCase
             'This library does not support start dates for 29, 30, 31 of each month for calendar type financial year'
         );
 
-        $disallowedDates = ['29', '30', '31'];
-
         $randomDateTime = $this->faker->dateTime;
 
         // Random Year, random disallowed date. Fix to May as we know it includes all 3 dates.
         new DateTimeAdapter(
             AbstractAdapter::TYPE_CALENDAR,
-            $randomDateTime->format('Y') . '-05-' . $this->faker->randomElement($disallowedDates),
+            $randomDateTime->format('Y') . '-05-' . $this->faker->randomElement([29, 30, 31]),
             $this->faker->boolean
         );
     }
