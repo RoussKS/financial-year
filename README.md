@@ -34,7 +34,7 @@ An organisation financial year can be based on the following 2 methods:
 Available methods can be followed through the [RoussKS\FinancialYear\AdapterInterface](https://github.com/RoussKS/financial-year/blob/master/src/AdapterInterface.php) until a full-fledged readme is provided.
 
 ### Requirements
-- PHP Version ^7.1 -- >=7.1 up until 7.x.x according to [Composer docs version constraints](https://getcomposer.org/doc/articles/versions.md#caret-version-range-)
+- PHP Version ^7.1 ( 7.1 =< PHP Version =< 7.x.x according to [Composer docs version constraints](https://getcomposer.org/doc/articles/versions.md#caret-version-range-) )
 
 ### Installation
 ```console
