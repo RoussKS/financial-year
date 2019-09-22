@@ -2,6 +2,7 @@
 
 namespace RoussKS\FinancialYear\Tests;
 
+use Faker\Factory;
 use PHPUnit\Framework\TestCase;
 
 class BaseTestCase extends TestCase
@@ -22,6 +23,6 @@ class BaseTestCase extends TestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        $this->faker = \Faker\Factory::create();
+        $this->faker = Factory::create();
     }
 }
