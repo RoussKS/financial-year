@@ -374,12 +374,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
+     * {@inheritdoc}
+     *
      * @return DatePeriod|DateTimeImmutable[]
      *
-     * @throws  Exception
-     * @throws  ConfigException
+     * @throws Exception
      */
-    public function getFiftyThirdWeek(): Traversable
+    public function getFiftyThirdBusinessWeek(): Traversable
     {
         return $this->getBusinessWeekById(53);
     }
@@ -436,6 +437,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         // First check if we have received the object relevant to the adapter.
+        // This can be either a DateTime or DateTimeImmutable object.
         // If we did, return the required DateTimeImmutable.
         if (isset($className) && $className === 'DateTime') {
             return DateTimeImmutable::createFromMutable($date)->setTime(0, 0);

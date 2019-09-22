@@ -1018,7 +1018,7 @@ class DateTimeAdapterTest extends BaseTestCase
         );
 
         // Expect fifty third week range: 2019-12-31 - 2020-01-06
-        $fiftyThreeWeek = $dateTimeAdapter->getFiftyThirdWeek();
+        $fiftyThreeWeek = $dateTimeAdapter->getFiftyThirdBusinessWeek();
 
         $this->assertEquals(
             '2019-12-31 00:00:00',
