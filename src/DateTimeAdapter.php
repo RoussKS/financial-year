@@ -431,19 +431,14 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     protected function getDateObject($date): DateTimeImmutable
     {
-        // Get classname of date param if object, else false if not an object
-        if (is_object($date)) {
-            $className = get_class($date);
-        }
-
         // First check if we have received the object relevant to the adapter.
         // This can be either a DateTime or DateTimeImmutable object.
         // If we did, return the required DateTimeImmutable.
-        if (isset($className) && $className === 'DateTime') {
+        if ($date instanceof DateTime) {
             return DateTimeImmutable::createFromMutable($date)->setTime(0, 0);
         }
 
-        if (isset($className) && $className === 'DateTimeImmutable') {
+        if ($date instanceof DateTimeImmutable) {
             return $date->setTime(0, 0);
         }
 
