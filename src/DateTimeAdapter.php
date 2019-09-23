@@ -94,16 +94,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->fyStartDate = $this->getDateObject($date);
 
-        $disallowedFyCalendarTypeDates = ['29', '30', '31'];
-
-        if (
-            $this->isCalendarType($this->type) &&
-            in_array($this->fyStartDate->format('d'), $disallowedFyCalendarTypeDates, true)
-        ) {
-            $this->throwConfigurationException(
-                'This library does not support 29, 30, 31 as start dates of a month for calendar type financial year.'
-            );
-        }
+        $this->validateStartDate();
 
         // If this method was not called on instantiation,
         // recalculate financial year end date from current settings,
@@ -170,11 +161,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         $dateTime = $this->getDateObject($date);
 
-        // Instantly throw exception for a date that's out of range of the current financial year.
-        // Do this to avoid the resource intensive loop.
-        if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
-            throw new Exception('The requested date is out of range of the current financial year.');
-        }
+        $this->validateDateBelongsToCurrentFinancialYear($dateTime);
 
         for ($id = 1; $id <= $this->fyPeriods; $id++) {
             // If the date is between the start and the end date of the period, get the period's id.
@@ -199,11 +186,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         $dateTime = $this->getDateObject($date);
 
-        // Instantly throw exception for a date that's out of range of the current financial year.
-        // Do this to avoid the resource intensive loop.
-        if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
-            throw new Exception('The requested date is out of range of the current financial year.');
-        }
+        $this->validateDateBelongsToCurrentFinancialYear($dateTime);
 
         for ($id = 1; $id <= $this->fyWeeks; $id++) {
 
@@ -404,6 +387,43 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // For business type, the next year's start date is + number of weeks.
         // As a financial year would have 52 or 53 weeks, the param handles it.
         return $this->fyStartDate->modify('+' . $this->fyWeeks . ' weeks');
+    }
+
+    /**
+     * Validate that the start date is not disallowed.
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     */
+    protected function validateStartDate(): void
+    {
+        $disallowedFyCalendarTypeDates = ['29', '30', '31'];
+
+        if (
+            $this->isCalendarType($this->type) &&
+            in_array($this->fyStartDate->format('d'), $disallowedFyCalendarTypeDates, true)
+        ) {
+            $this->throwConfigurationException(
+                'This library does not support 29, 30, 31 as start dates of a month for calendar type financial year.'
+            );
+        }
+    }
+
+    /**
+     * Validate that a date belongs to the set financial year.
+     *
+     * @param  DateTimeImmutable $dateTime
+     *
+     * @return void
+     *
+     * @throws Exception
+     */
+    protected function validateDateBelongsToCurrentFinancialYear(DateTimeImmutable $dateTime): void
+    {
+        if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
+            throw new Exception('The requested date is out of range of the current financial year.');
+        }
     }
 
     /**
