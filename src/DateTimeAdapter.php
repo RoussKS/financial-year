@@ -421,9 +421,10 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * Get a date object from the provided param.
+     * Get a DateTimeImmutable object from the provided parameter.
+     * As we set it to the start of the day (0, 0), setTime will not return false for valid input.
      *
-     * @param  DateTime|DateTimeImmutable|string $date$date
+     * @param  DateTime|DateTimeImmutable|string $date
      *
      * @return DateTimeImmutable
      *
@@ -446,18 +447,17 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $dateTime = DateTimeImmutable::createFromFormat('Y-m-d', $date);
         }
 
-        // If we have a DateTimeImmutable object created, set it to the start of the day.
-        if (isset($dateTime) && $dateTime !== false) {
-            $startOfDay = $dateTime->setTime(0, 0);
-        }
-
         // Validation that the datetime object was created and set to the start of the day..
-        if (!isset($startOfDay) || !$startOfDay) {
+        if (!isset($dateTime) || !$dateTime) {
             throw new Exception(
                 'Invalid date format. Not a valid ISO-8601 date string or DateTime/DateTimeImmutable object.'
             );
         }
 
-        return $startOfDay;
+        /** @var DateTimeImmutable $dateTime */
+        $dateTime = $dateTime->setTime(0, 0);
+
+        // We have set a valid hour and minutes, so false is not a possible result of the above method.
+        return $dateTime;
     }
 }
