@@ -101,7 +101,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             in_array($this->fyStartDate->format('d'), $disallowedFyCalendarTypeDates, true)
         ) {
             $this->throwConfigurationException(
-                'This library does not support start dates for 29, 30, 31 of each month for calendar type financial year'
+                'This library does not support 29, 30, 31 as start dates of a month for calendar type financial year.'
             );
         }
 
@@ -173,7 +173,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // Instantly throw exception for a date that's out of range of the current financial year.
         // Do this to avoid the resource intensive loop.
         if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
-            throw new Exception('The requested date is out of range of the current financial year');
+            throw new Exception('The requested date is out of range of the current financial year.');
         }
 
         for ($id = 1; $id <= $this->fyPeriods; $id++) {
@@ -185,7 +185,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // We can never reach this stage.
         // However, added for keeping the IDEs happy of non returned value.
-        throw new Exception('A period could not be found for the requested date');
+        throw new Exception('A period could not be found for the requested date.');
     }
 
     /**
@@ -202,7 +202,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // Instantly throw exception for a date that's out of range of the current financial year.
         // Do this to avoid the resource intensive loop.
         if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
-            throw new Exception('The requested date is out of range of the current financial year');
+            throw new Exception('The requested date is out of range of the current financial year.');
         }
 
         for ($id = 1; $id <= $this->fyWeeks; $id++) {
@@ -217,7 +217,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // We can never reach this stage.
         // However, added for keeping the IDEs happy of non returned value.
-        throw new Exception('A business week could not be found for the specified date');
+        throw new Exception('A business week could not be found for the specified date.');
     }
 
     /**
@@ -433,13 +433,12 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         // First check if we have received the object relevant to the adapter.
         // This can be either a DateTime or DateTimeImmutable object.
-        // If we did, return the required DateTimeImmutable.
         if ($date instanceof DateTime) {
-            return DateTimeImmutable::createFromMutable($date)->setTime(0, 0);
+            $dateTime = DateTimeImmutable::createFromMutable($date);
         }
 
         if ($date instanceof DateTimeImmutable) {
-            return $date->setTime(0, 0);
+            $dateTime = $date;
         }
 
         // Then if a string was passed as param, create the DateTimeImmutable.
@@ -447,12 +446,18 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             $dateTime = DateTimeImmutable::createFromFormat('Y-m-d', $date);
         }
 
-        // Validation that the datetime object was created.
-        if (!isset($dateTime) || !$dateTime) {
-            throw new Exception('Invalid date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object');
+        // If we have a DateTimeImmutable object created, set it to the start of the day.
+        if (isset($dateTime) && $dateTime !== false) {
+            $startOfDay = $dateTime->setTime(0, 0);
         }
 
-        // Set date object to start of the day and return.
-        return $dateTime->setTime(0, 0);
+        // Validation that the datetime object was created and set to the start of the day..
+        if (!isset($startOfDay) || !$startOfDay) {
+            throw new Exception(
+                'Invalid date format. Not a valid ISO-8601 date string or DateTime/DateTimeImmutable object.'
+            );
+        }
+
+        return $startOfDay;
     }
 }

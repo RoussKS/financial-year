@@ -110,7 +110,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         $this->expectException(ConfigException::class);
         $this->expectExceptionMessage(
-            'This library does not support start dates for 29, 30, 31 of each month for calendar type financial year'
+            'This library does not support 29, 30, 31 as start dates of a month for calendar type financial year.'
         );
 
         $randomDateTime = $this->faker->dateTime;
@@ -355,7 +355,7 @@ class DateTimeAdapterTest extends BaseTestCase
     public function assertGetBusinessWeekByIdThrowsExceptionOnNonBusinessTypeFinancialYearType(): void
     {
         $this->expectException(ConfigException::class);
-        $this->expectExceptionMessage('Week id is not applicable for non business type financial year');
+        $this->expectExceptionMessage('Week id is not applicable for non business type financial year.');
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -400,7 +400,7 @@ class DateTimeAdapterTest extends BaseTestCase
         } while (in_array($randomWeekId, $fyWeeksArray, true));
 
         // Set the expected message after we have set the financial year weeks
-        $this->expectExceptionMessage('There is no week with id: ' . $randomWeekId);
+        $this->expectExceptionMessage('There is no week with id: ' . $randomWeekId . '.');
 
         $dateTimeAdapter->getBusinessWeekById($randomWeekId);
     }
@@ -512,7 +512,7 @@ class DateTimeAdapterTest extends BaseTestCase
     public function assertGetPeriodIdByDateThrowsExceptionOnDateBeforeFinancialYear(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('The requested date is out of range of the current financial year');
+        $this->expectExceptionMessage('The requested date is out of range of the current financial year.');
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -535,7 +535,7 @@ class DateTimeAdapterTest extends BaseTestCase
     public function assertGetPeriodIdByDateThrowsExceptionOnDateAfterFinancialYear(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('The requested date is out of range of the current financial year');
+        $this->expectExceptionMessage('The requested date is out of range of the current financial year.');
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -580,7 +580,7 @@ class DateTimeAdapterTest extends BaseTestCase
     public function assertGetBusinessWeekIdByDateThrowsExceptionOnDateBeforeFinancialYear(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('The requested date is out of range of the current financial year');
+        $this->expectExceptionMessage('The requested date is out of range of the current financial year.');
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -603,7 +603,7 @@ class DateTimeAdapterTest extends BaseTestCase
     public function assertGetBusinessWeekIdByDateThrowsExceptionOnDateAfterFinancialYear(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('The requested date is out of range of the current financial year');
+        $this->expectExceptionMessage('The requested date is out of range of the current financial year.');
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -1066,7 +1066,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage(
-            'Invalid date format. Needs to be ISO-8601 string or DateTime/DateTimeImmutable object'
+            'Invalid date format. Not a valid ISO-8601 date string or DateTime/DateTimeImmutable object.'
         );
 
         new DateTimeAdapter(
@@ -1134,7 +1134,7 @@ class DateTimeAdapterTest extends BaseTestCase
         } while (in_array($randomPeriodId, $fyPeriodsArray, true));
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('There is no period with id: ' . $randomPeriodId);
+        $this->expectExceptionMessage('There is no period with id: ' . $randomPeriodId . '.');
 
         // A Calendar Type Financial Year has 12 periods only.
         $fy->getPeriodById($randomPeriodId);
