@@ -81,7 +81,7 @@ abstract class AbstractAdapter
             return;
         }
 
-        $this->throwConfigurationException('Invalid Financial Year Type');
+        $this->throwConfigurationException('Invalid Financial Year Type.');
     }
 
     /**
@@ -129,7 +129,9 @@ abstract class AbstractAdapter
     public function setFyWeeks($fiftyThreeWeeks = false): void
     {
         if (!$this->isBusinessType($this->type)) {
-            $this->throwConfigurationException('Can not set the financial year weeks property for non business year type');
+            $this->throwConfigurationException(
+                'Can not set the financial year weeks property for non business year type.'
+            );
         }
 
         $this->fyWeeks = 53;
@@ -166,7 +168,7 @@ abstract class AbstractAdapter
     protected function validatePeriodId(int $id): void
     {
         if ($id < 1 || $id > $this->fyPeriods) {
-            throw new Exception('There is no period with id: ' . $id);
+            throw new Exception('There is no period with id: ' . $id . '.');
         }
     }
 
@@ -183,11 +185,11 @@ abstract class AbstractAdapter
     protected function validateBusinessWeekId(int $id): void
     {
         if (!$this->isBusinessType($this->type)) {
-            $this->throwConfigurationException('Week id is not applicable for non business type financial year');
+            $this->throwConfigurationException('Week id is not applicable for non business type financial year.');
         }
 
         if ($id < 1 || $id > $this->fyWeeks) {
-            throw new Exception('There is no week with id: ' . $id);
+            throw new Exception('There is no week with id: ' . $id . '.');
         }
     }
 
@@ -225,7 +227,7 @@ abstract class AbstractAdapter
     protected function throwConfigurationException(string $message = null): void
     {
         if ($message === null) {
-            $message = 'Invalid configuration of financial year adapter';
+            $message = 'Invalid configuration of financial year adapter.';
         }
 
         throw new ConfigException($message);

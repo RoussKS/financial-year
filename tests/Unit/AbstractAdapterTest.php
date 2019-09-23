@@ -2,7 +2,6 @@
 
 namespace RoussKS\FinancialYear\Tests\Unit\Adapters;
 
-use ReflectionException;
 use RoussKS\FinancialYear\AbstractAdapter;
 use RoussKS\FinancialYear\AdapterInterface;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
@@ -19,13 +18,11 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
-     *
-     * @throws ReflectionException
      */
     public function assertConstructorThrowsExceptionOnInvalidFinancialYearType(): void
     {
         $this->expectException(ConfigException::class);
-        $this->expectExceptionMessage('Invalid Financial Year Type');
+        $this->expectExceptionMessage('Invalid Financial Year Type.');
 
         $this->getMockForAbstractClass(AbstractAdapter::class, [
             'test', $this->faker->boolean
@@ -36,8 +33,6 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
-     *
-     * @throws ReflectionException
      */
     public function assertGetTypeReturnsString(): void
     {
@@ -53,8 +48,6 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
-     *
-     * @throws ReflectionException
      */
     public function assertFinancialYearCalendarType(): void
     {
@@ -70,8 +63,6 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
-     *
-     * @throws ReflectionException
      */
     public function assertFinancialYearBusinessType(): void
     {
@@ -87,8 +78,6 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
-     *
-     * @throws ReflectionException
      */
     public function assertFyWeeksReturnsNullForFinancialYearCalendarType(): void
     {
@@ -106,8 +95,6 @@ class AbstractAdapterTest extends BaseTestCase
      * Assert both true and false scenarios.
      *
      * @return void
-     *
-     * @throws ReflectionException
      */
     public function assertFyWeeksReturnsIntForFinancialYearBusinessType(): void
     {
@@ -132,8 +119,6 @@ class AbstractAdapterTest extends BaseTestCase
      * Assert both true (53 weeks) and false (52 weeks) scenarios.
      *
      * @return void
-     *
-     * @throws ReflectionException
      */
     public function assertFyWeeksReturnsCorrectWeeksForFinancialYearBusinessType(): void
     {
@@ -158,12 +143,11 @@ class AbstractAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws ReflectionException
      */
     public function assertFyWeeksSetterThrowsExceptionForFinancialYearCalendarType(): void
     {
         $this->expectException(ConfigException::class);
-        $this->expectExceptionMessage('Can not set the financial year weeks property for non business year type');
+        $this->expectExceptionMessage('Can not set the financial year weeks property for non business year type.');
 
         /** @var  $fy AdapterInterface */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
@@ -177,8 +161,6 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
-     *
-     * @throws ReflectionException
      */
     public function assertFyPeriodsReturnsCorrectIntegerForCalendarTypeFinancialYear(): void
     {
@@ -195,8 +177,6 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
-     *
-     * @throws ReflectionException
      */
     public function assertFyPeriodsReturnsCorrectIntegerForBusinessTypeFinancialYear(): void
     {
@@ -215,12 +195,11 @@ class AbstractAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws ReflectionException
      */
     public function assertValidationThrowsExceptionForMissingDates(): void
     {
         $this->expectException(ConfigException::class);
-        $this->expectExceptionMessage('Invalid configuration of financial year adapter');
+        $this->expectExceptionMessage('Invalid configuration of financial year adapter.');
 
         /** @var  $fy AdapterInterface */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
