@@ -441,8 +441,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * Get a DateTimeImmutable object from the provided parameter.
-     * As we set it to the start of the day (0, 0), setTime will not return false for valid input.
+     * Get & validate a DateTimeImmutable object for the given parameter.
+     * If the object is generated, we set it to the start of the day (0, 0) with setTime.
+     * setTime will not return false for valid input of hours and minutes.
      *
      * @param  DateTime|DateTimeImmutable|string $date
      *
@@ -452,23 +453,10 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     protected function getDateObject($date): DateTimeImmutable
     {
-        // First check if we have received the object relevant to the adapter.
-        // This can be either a DateTime or DateTimeImmutable object.
-        if ($date instanceof DateTime) {
-            $dateTime = DateTimeImmutable::createFromMutable($date);
-        }
-
-        if ($date instanceof DateTimeImmutable) {
-            $dateTime = $date;
-        }
-
-        // Then if a string was passed as param, create the DateTimeImmutable.
-        if (is_string($date)) {
-            $dateTime = DateTimeImmutable::createFromFormat('Y-m-d', $date);
-        }
+        $dateTime = $this->generateDateTimeImmutableObject($date);
 
         // Validation that the datetime object was created and set to the start of the day..
-        if (!isset($dateTime) || !$dateTime) {
+        if (!$dateTime) {
             throw new Exception(
                 'Invalid date format. Not a valid ISO-8601 date string or DateTime/DateTimeImmutable object.'
             );
@@ -479,5 +467,31 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // We have set a valid hour and minutes, so false is not a possible result of the above method.
         return $dateTime;
+    }
+
+    /**
+     * Generate and return a DateTimeImmutable object for the given $date parameter.
+     *
+     * First check if we have received an object relevant to the adapter and return it.
+     * This can be either a DateTime or DateTimeImmutable object.
+     *
+     * Otherwise, create the object regardless of the type with createFromFormat.
+     * It will return false if it fails.
+     *
+     * @param  DateTime|DateTimeImmutable|string $date
+     *
+     * @return DateTimeImmutable|false
+     */
+    protected function generateDateTimeImmutableObject($date)
+    {
+        if ($date instanceof DateTime) {
+            return DateTimeImmutable::createFromMutable($date);
+        }
+
+        if ($date instanceof DateTimeImmutable) {
+            return $date;
+        }
+
+        return DateTimeImmutable::createFromFormat('Y-m-d', $date);
     }
 }
