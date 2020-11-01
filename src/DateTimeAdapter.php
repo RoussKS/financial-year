@@ -227,7 +227,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // In calendar type, fyPeriods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->isCalendarType($this->type)) {
-            return $this->fyStartDate->modify('+' . $id - 1 . ' months');
+            return $this->fyStartDate->modify('+' . ($id - 1) . ' months');
         }
 
         // Otherwise return business type calculation.
@@ -284,7 +284,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $this->fyStartDate;
         }
 
-        return $this->fyStartDate->modify('+' . $id - 1 . ' weeks');
+        return $this->fyStartDate->modify('+' . ($id - 1) . ' weeks');
     }
 
     /**
@@ -455,7 +455,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         $dateTime = $this->generateDateTimeImmutableObject($date);
 
-        // Validation that the datetime object was created and set to the start of the day..
+        // Validation that the datetime object was created and set to the start of the day.
         if (!$dateTime) {
             throw new Exception(
                 'Invalid date format. Not a valid ISO-8601 date string or DateTime/DateTimeImmutable object.'
