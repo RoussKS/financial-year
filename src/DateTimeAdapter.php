@@ -455,7 +455,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         $dateTime = $this->generateDateTimeImmutableObject($date);
 
-        // Validation that the datetime object was created and set to the start of the day..
+        // Validation that the datetime object was created and set to the start of the day.
         if (!$dateTime) {
             throw new Exception(
                 'Invalid date format. Not a valid ISO-8601 date string or DateTime/DateTimeImmutable object.'
