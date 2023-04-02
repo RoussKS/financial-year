@@ -2,7 +2,15 @@
 /vendor/
 composer.lock
 
+# Docker files
+docker-compose.yml
+.docker/Dockerfile
+
 # PHPUnit report
 /tests/report/
 /clover.xml
 /phpunit.xml
+
+# IDE & System
+.idea/
+.DS_Store

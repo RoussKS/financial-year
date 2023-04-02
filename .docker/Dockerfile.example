@@ -1,0 +1,28 @@
+# Uncomment the php version that you want to test.
+# FROM php:7.3-cli
+# FROM php:7.4-cli
+# FROM php:8.0-cli
+# FROM php:8.1-cli
+# FROM php:8.2-cli
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y \
+    git \
+    curl \
+    zip \
+    unzip
+
+# Clear cache
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install composer (get latest v2, change to `--1` if you want to install the latest v1).
+RUN curl -sS https://getcomposer.org/installer | php -- --2 --install-dir=/usr/local/bin --filename=composer
+
+COPY . /usr/src/php-ansible
+WORKDIR /usr/src/php-ansible
+
+CMD [ "php"]
+
