@@ -21,8 +21,8 @@ RUN apt-get clean && \
 # Install composer (get latest v2, change to `--1` if you want to install the latest v1).
 RUN curl -sS https://getcomposer.org/installer | php -- --2 --install-dir=/usr/local/bin --filename=composer
 
-COPY . /usr/src/php-ansible
-WORKDIR /usr/src/php-ansible
+COPY . /usr/src/financial-year
+WORKDIR /usr/src/financial-year
 
 CMD [ "php"]
 

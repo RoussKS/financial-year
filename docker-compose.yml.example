@@ -12,9 +12,9 @@ services:
     environment:
       SERVICE_NAME: app
       SERVICE_TAGS: dev
-    working_dir: /usr/src/php-ansible
+    working_dir: /usr/src/financial-year
     volumes:
-      - ./:/usr/src/php-ansible
+      - ./:/usr/src/financial-year
     networks:
       - app-network
 
