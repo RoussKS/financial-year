@@ -26,7 +26,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "${{ matrix.php }}"
-          extensions: json
       - name: Update composer to v2
         run: composer self-update --2
       - name: Install Dependencies via Composer
