@@ -1,0 +1,35 @@
+# Workflow name
+name: PHP Unit Tests
+
+# Triggers
+on:
+  push:
+    branches:
+      - 'master'
+  pull_request:
+    branches:
+      - 'master'
+      - 'develop'
+
+# Jobs/Pipelines
+jobs:
+  php-unit:
+    name: 'PHP Unit'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [7.1, 7.2, 7.3, 7.4]
+    steps:
+      - name: 'Checkout Code'
+        uses: actions/checkout@v3
+      - name: 'Setup PHP'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ matrix.php }}"
+      - name: Update composer to v2
+        run: composer self-update --2
+      - name: Install Dependencies via Composer
+        run: composer install --no-ansi --no-interaction --no-progress --no-scripts --prefer-dist
+      - name: Run PHPUnit
+        run: ./vendor/bin/phpunit --coverage-clover=coverage.xml
+# ToDo: Add Code Coverage
