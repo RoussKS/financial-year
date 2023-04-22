@@ -6,16 +6,16 @@
 # FROM php:8.2-cli
 
 # Install dependencies
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y \
+RUN apt update && \
+    apt upgrade -y && \
+    apt install -y \
     git \
     curl \
     zip \
     unzip
 
 # Clear cache
-RUN apt-get clean && \
+RUN apt clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Install composer (get latest v2, change to `--1` if you want to install the latest v1).
