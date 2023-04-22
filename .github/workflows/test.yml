@@ -30,6 +30,6 @@ jobs:
       - name: Update composer to v2
         run: composer self-update --2
       - name: Install Dependencies via Composer
-        run: composer install --no-ansi --no-interaction --no-progress --no-scripts --no-suggest --prefer-dist
+        run: composer install --no-ansi --no-interaction --no-progress --no-scripts --prefer-dist
       - name: Run PHPUnit
         run: ./vendor/phpunit/phpunit/phpunit
