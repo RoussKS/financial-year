@@ -32,4 +32,5 @@ jobs:
       - name: Install Dependencies via Composer
         run: composer install --no-ansi --no-interaction --no-progress --no-scripts --prefer-dist
       - name: Run PHPUnit
-        run: ./vendor/phpunit/phpunit/phpunit
+        run: ./vendor/bin/phpunit --coverage-clover=coverage.xml
+# ToDo: Add Code Coverage
