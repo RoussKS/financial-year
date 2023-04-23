@@ -18,6 +18,7 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
+     * @throws \Exception
      */
     public function assertConstructorThrowsExceptionOnInvalidFinancialYearType(): void
     {
@@ -25,7 +26,8 @@ class AbstractAdapterTest extends BaseTestCase
         $this->expectExceptionMessage('Invalid Financial Year Type.');
 
         $this->getMockForAbstractClass(AbstractAdapter::class, [
-            'test', $this->faker->boolean
+            'test',
+            (bool) random_int(0, 1)
         ]);
     }
 
@@ -33,12 +35,14 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
+     * @throws \Exception
      */
     public function assertGetTypeReturnsString(): void
     {
         /** @var  $fy AdapterInterface */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
-            'calendar', $this->faker->boolean
+            'calendar',
+            (bool) random_int(0, 1)
         ]);
 
         $this->assertIsString($fy->getType());
@@ -48,12 +52,14 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
+     * @throws \Exception
      */
     public function assertFinancialYearCalendarType(): void
     {
         /** @var  $fy AdapterInterface */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
-            'calendar', $this->faker->boolean
+            'calendar',
+            (bool) random_int(0, 1)
         ]);
 
         $this->assertEquals(AbstractAdapter::TYPE_CALENDAR, $fy->getType());
@@ -63,12 +69,14 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
+     * @throws \Exception
      */
     public function assertFinancialYearBusinessType(): void
     {
         /** @var  $fy AdapterInterface */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
-            'business', $this->faker->boolean
+            'business',
+            (bool) random_int(0, 1)
         ]);
 
         $this->assertEquals(AbstractAdapter::TYPE_BUSINESS, $fy->getType());
@@ -78,12 +86,14 @@ class AbstractAdapterTest extends BaseTestCase
      * @test
      *
      * @return void
+     * @throws \Exception
      */
     public function assertFyWeeksReturnsNullForFinancialYearCalendarType(): void
     {
         /** @var  $fy AdapterInterface */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
-            'calendar', $this->faker->boolean
+            'calendar',
+            (bool) random_int(0, 1)
         ]);
 
         $this->assertNull($fy->getFyWeeks());
@@ -154,7 +164,7 @@ class AbstractAdapterTest extends BaseTestCase
             'calendar', true
         ]);
 
-        $fy->setFyWeeks($this->faker->boolean);
+        $fy->setFyWeeks((bool) random_int(0, 1));
     }
 
     /**

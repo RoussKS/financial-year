@@ -34,7 +34,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * DateTimeAdapter constructor.
      *
      * @param  string $fyType
-     * @param  DateTime|DateTimeImmutable|string $fyStartDate, string must be of ISO-8601 format 'YYYY-MM-DD'
+     * @param  DateTime|DateTimeImmutable|DateTimeInterface|string $fyStartDate, string must be of ISO-8601 format 'YYYY-MM-DD'
      * @param  bool $fiftyThreeWeeks
      *
      * @return void
@@ -64,7 +64,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         parent::setFyWeeks($fiftyThreeWeeks);
 
-        // Reset the financial year end date according to the weeks setting.
+        // Reset the financial year's end date according to the weeks setting.
         if ($originalFyWeeks !== null && $originalFyWeeks !== $this->fyWeeks) {
             $this->setFyEndDate();
         }
@@ -94,19 +94,10 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->fyStartDate = $this->getDateObject($date);
 
-        $disallowedFyCalendarTypeDates = ['29', '30', '31'];
-
-        if (
-            $this->isCalendarType($this->type) &&
-            in_array($this->fyStartDate->format('d'), $disallowedFyCalendarTypeDates, true)
-        ) {
-            $this->throwConfigurationException(
-                'This library does not support 29, 30, 31 as start dates of a month for calendar type financial year.'
-            );
-        }
+        $this->validateStartDate();
 
         // If this method was not called on instantiation,
-        // recalculate financial year end date from current settings,
+        // recalculate financial year's end date from current settings,
         // even if the new start date is the same as the previous one (why re-setting the same date?).
         if ($originalFyStartDate !== null) {
             $this->setFyEndDate();
@@ -170,11 +161,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         $dateTime = $this->getDateObject($date);
 
-        // Instantly throw exception for a date that's out of range of the current financial year.
-        // Do this to avoid the resource intensive loop.
-        if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
-            throw new Exception('The requested date is out of range of the current financial year.');
-        }
+        $this->validateDateBelongsToCurrentFinancialYear($dateTime);
 
         for ($id = 1; $id <= $this->fyPeriods; $id++) {
             // If the date is between the start and the end date of the period, get the period's id.
@@ -199,11 +186,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         $dateTime = $this->getDateObject($date);
 
-        // Instantly throw exception for a date that's out of range of the current financial year.
-        // Do this to avoid the resource intensive loop.
-        if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
-            throw new Exception('The requested date is out of range of the current financial year.');
-        }
+        $this->validateDateBelongsToCurrentFinancialYear($dateTime);
 
         for ($id = 1; $id <= $this->fyWeeks; $id++) {
 
@@ -244,7 +227,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         // In calendar type, fyPeriods are always 12 as the months,
         // regardless of the start date within the month.
         if ($this->isCalendarType($this->type)) {
-            return $this->fyStartDate->modify('+' . $id - 1 . ' months');
+            return $this->fyStartDate->modify('+' . ($id - 1) . ' months');
         }
 
         // Otherwise return business type calculation.
@@ -301,7 +284,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $this->fyStartDate;
         }
 
-        return $this->fyStartDate->modify('+' . $id - 1 . ' weeks');
+        return $this->fyStartDate->modify('+' . ($id - 1) . ' weeks');
     }
 
     /**
@@ -407,6 +390,43 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
+     * Validate that the start date is not disallowed.
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     */
+    protected function validateStartDate(): void
+    {
+        $disallowedFyCalendarTypeDates = ['29', '30', '31'];
+
+        if (
+            $this->isCalendarType($this->type) &&
+            in_array($this->fyStartDate->format('d'), $disallowedFyCalendarTypeDates, true)
+        ) {
+            $this->throwConfigurationException(
+                'This library does not support 29, 30, 31 as start dates of a month for calendar type financial year.'
+            );
+        }
+    }
+
+    /**
+     * Validate that a date belongs to the set financial year.
+     *
+     * @param  DateTimeImmutable $dateTime
+     *
+     * @return void
+     *
+     * @throws Exception
+     */
+    protected function validateDateBelongsToCurrentFinancialYear(DateTimeImmutable $dateTime): void
+    {
+        if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
+            throw new Exception('The requested date is out of range of the current financial year.');
+        }
+    }
+
+    /**
      * Set the financial year end date.
      *
      * We will set end date from the start date object which should be present.
@@ -421,8 +441,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * Get a DateTimeImmutable object from the provided parameter.
-     * As we set it to the start of the day (0, 0), setTime will not return false for valid input.
+     * Get & validate a DateTimeImmutable object for the given parameter.
+     * If the object is generated, we set it to the start of the day (0, 0) with setTime.
+     * setTime will not return false for valid input of hours and minutes.
      *
      * @param  DateTime|DateTimeImmutable|string $date
      *
@@ -432,23 +453,10 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     protected function getDateObject($date): DateTimeImmutable
     {
-        // First check if we have received the object relevant to the adapter.
-        // This can be either a DateTime or DateTimeImmutable object.
-        if ($date instanceof DateTime) {
-            $dateTime = DateTimeImmutable::createFromMutable($date);
-        }
+        $dateTime = $this->generateDateTimeImmutableObject($date);
 
-        if ($date instanceof DateTimeImmutable) {
-            $dateTime = $date;
-        }
-
-        // Then if a string was passed as param, create the DateTimeImmutable.
-        if (is_string($date)) {
-            $dateTime = DateTimeImmutable::createFromFormat('Y-m-d', $date);
-        }
-
-        // Validation that the datetime object was created and set to the start of the day..
-        if (!isset($dateTime) || !$dateTime) {
+        // Validation that the datetime object was created and set to the start of the day.
+        if (!$dateTime) {
             throw new Exception(
                 'Invalid date format. Not a valid ISO-8601 date string or DateTime/DateTimeImmutable object.'
             );
@@ -459,5 +467,31 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // We have set a valid hour and minutes, so false is not a possible result of the above method.
         return $dateTime;
+    }
+
+    /**
+     * Generate and return a DateTimeImmutable object for the given $date parameter.
+     *
+     * First check if we have received an object relevant to the adapter and return it.
+     * This can be either a DateTime or DateTimeImmutable object.
+     *
+     * Otherwise, create the object regardless of the type with createFromFormat.
+     * It will return false if it fails.
+     *
+     * @param  DateTime|DateTimeImmutable|string $date
+     *
+     * @return DateTimeImmutable|false
+     */
+    protected function generateDateTimeImmutableObject($date)
+    {
+        if ($date instanceof DateTime) {
+            return DateTimeImmutable::createFromMutable($date);
+        }
+
+        if ($date instanceof DateTimeImmutable) {
+            return $date;
+        }
+
+        return DateTimeImmutable::createFromFormat('Y-m-d', $date);
     }
 }
