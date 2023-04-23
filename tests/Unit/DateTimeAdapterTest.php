@@ -1108,7 +1108,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         new DateTimeAdapter(
             $this->fyTypes[array_rand($this->fyTypes)],
-            $this->faker->text,
+            bin2hex(random_bytes(20)),
             (bool) random_int(0, 1)
         );
     }
