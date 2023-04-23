@@ -29,10 +29,11 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function settingSameFyWeeksSetsWeeksWithoutChangingEndDateForBusinessType(): void
     {
-        $fiftyThreeWeeks = $this->faker->boolean;
+        $fiftyThreeWeeks = (bool) random_int(0, 1);
 
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
@@ -54,10 +55,11 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function settingDifferentFyWeeksSetsWeeksWithDifferentEndDateForBusinessType(): void
     {
-        $fiftyThreeWeeks = $this->faker->boolean;
+        $fiftyThreeWeeks = (bool) random_int(0, 1);
 
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
@@ -80,17 +82,18 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetFyStartDateReturnsDateTimeImmutableObject(): void
     {
-        $type = $this->faker->randomElement($this->fyTypes);
+        $type = $this->fyTypes[array_rand($this->fyTypes)];
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
                 $this->faker->dateTime :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeAdapter->getFyStartDate());
@@ -105,6 +108,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertSetFyStartDateThrowsExceptionForInvalidDates(): void
     {
@@ -115,11 +119,13 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $randomDateTime = $this->faker->dateTime;
 
+        $datesArray = [29, 30, 31];
+
         // Random Year, random disallowed date. Fix to May as we know it includes all 3 dates.
         new DateTimeAdapter(
             AbstractAdapter::TYPE_CALENDAR,
-            $randomDateTime->format('Y') . '-05-' . $this->faker->randomElement([29, 30, 31]),
-            $this->faker->boolean
+            $randomDateTime->format('Y') . '-05-' . $datesArray[array_rand($datesArray)],
+            (bool) random_int(0, 1)
         );
     }
 
@@ -130,17 +136,18 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertSetFyStartDateSetsNewFyEndDateIfFyStartDateChanges(): void
     {
-        $type = $this->faker->randomElement($this->fyTypes);
+        $type = $this->fyTypes[array_rand($this->fyTypes)];
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
                 $this->faker->dateTime :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $originalFyStartDate = $dateTimeAdapter->getFyStartDate();
@@ -160,17 +167,18 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetFyEndDateReturnsDateTimeImmutableObject(): void
     {
-        $type = $this->faker->randomElement($this->fyTypes);
+        $type = $this->fyTypes[array_rand($this->fyTypes)];
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
                 $this->faker->dateTime :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeAdapter->getFyEndDate());
@@ -183,6 +191,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
     {
@@ -190,7 +199,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_CALENDAR,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // 2nd Period should be 2019-02-01 - 2019-02-28
@@ -207,6 +216,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
     {
@@ -214,7 +224,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_CALENDAR,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // 1st Period should be 2019-01-01 - 2019-01-31
@@ -231,6 +241,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
     {
@@ -238,7 +249,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_CALENDAR,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // Last Period, 12th for calendar type, should be 2019-12-01 - 2019-12-31
@@ -255,6 +266,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear(): void
     {
@@ -262,7 +274,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // 2nd Period should be 2019-01-29 - 2019-02-26
@@ -279,6 +291,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear(): void
     {
@@ -286,7 +299,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // 1st Period should be 2019-01-01 - 2019-01-28
@@ -384,7 +397,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // Build an array of integers of the financial year weeks.
@@ -412,6 +425,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetBusinessWeekByIdReturnsCorrectWeekPeriodForBusinessTypeFinancialYear(): void
     {
@@ -419,7 +433,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // 2nd week should be 2019-01-08 - 2019-01-14.
@@ -436,6 +450,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetBusinessWeekByIdReturnsCorrectWeekPeriodForFirstWeekOfBusinessTypeFinancialYear(): void
     {
@@ -443,7 +458,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // First week should be 2019-01-01 - 2019-01-07.
@@ -508,6 +523,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetPeriodIdByDateThrowsExceptionOnDateBeforeFinancialYear(): void
     {
@@ -516,9 +532,9 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->faker->randomElement($this->fyTypes),
+            $this->fyTypes[array_rand($this->fyTypes)],
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $dateTimeAdapter->getPeriodIdByDate('2018-12-31');
@@ -531,6 +547,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetPeriodIdByDateThrowsExceptionOnDateAfterFinancialYear(): void
     {
@@ -539,9 +556,9 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->faker->randomElement($this->fyTypes),
+            $this->fyTypes[array_rand($this->fyTypes)],
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // 2020-01-07 is out of range even if the type is business and weeks 53, if start date is 2019-01-01
@@ -555,14 +572,15 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetPeriodIdByDateReturnsCorrectIdForDate(): void
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            $this->faker->randomElement($this->fyTypes),
+            $this->fyTypes[array_rand($this->fyTypes)],
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // 2019-02-07 belongs to 2nd period for both types
@@ -576,6 +594,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetBusinessWeekIdByDateThrowsExceptionOnDateBeforeFinancialYear(): void
     {
@@ -586,7 +605,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $dateTimeAdapter->getBusinessWeekIdIdByDate('2018-12-31');
@@ -599,6 +618,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetBusinessWeekIdByDateThrowsExceptionOnDateAfterFinancialYear(): void
     {
@@ -609,7 +629,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // 2020-01-07 is out of range even if the type is business and weeks 53, if start date is 2019-01-01
@@ -623,6 +643,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetBusinessWeekIdByDateReturnsCorrectIdForDate(): void
     {
@@ -630,7 +651,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // 2019-01-31 belongs to 5th week
@@ -644,17 +665,18 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetFirstDateOfPeriodByIdReturnsFinancialYearStartDateForFirstPeriod(): void
     {
-        $type = $this->faker->randomElement($this->fyTypes);
+        $type = $this->fyTypes[array_rand($this->fyTypes)];
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
                 $this->faker->dateTime :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $this->assertSame($dateTimeAdapter->getFyStartDate(), $dateTimeAdapter->getFirstDateOfPeriodById(1));
@@ -667,6 +689,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetFirstDateOfPeriodByIdReturnsCorrectDateForCalendarType(): void
     {
@@ -674,7 +697,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_CALENDAR,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $this->assertEquals(
@@ -690,6 +713,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetFirstDateOfPeriodByIdReturnsCorrectDateForBusinessType(): void
     {
@@ -697,7 +721,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $this->assertEquals(
@@ -713,17 +737,18 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetLastDateOfPeriodByIdReturnsFinancialYearEndDateForLastPeriod(): void
     {
-        $type = $this->faker->randomElement($this->fyTypes);
+        $type = $this->fyTypes[array_rand($this->fyTypes)];
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
                 $this->faker->dateTime :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $this->assertSame(
@@ -739,6 +764,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetLastDateOfPeriodByIdReturnsCorrectDateForCalendarType(): void
     {
@@ -746,7 +772,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_CALENDAR,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $this->assertEquals(
@@ -762,6 +788,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetLastDateOfPeriodByIdReturnsCorrectDateForBusinessType(): void
     {
@@ -769,7 +796,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $this->assertEquals(
@@ -785,6 +812,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetFirstDateOfBusinessWeekByIdReturnsFinancialYearStartDateForFirstWeek(): void
     {
@@ -792,7 +820,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $this->assertSame($dateTimeAdapter->getFyStartDate(), $dateTimeAdapter->getFirstDateOfBusinessWeekById(1));
@@ -805,6 +833,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetFirstDateOfBusinessWeekByIdReturnsCorrectDate(): void
     {
@@ -812,7 +841,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // Test start of week 49 (start of period 13).
@@ -830,6 +859,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetLastDateOfBusinessWeekByIdReturnsFinancialYearEndDateForLastWeekWeek(): void
     {
@@ -837,7 +867,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // Use the weeks that are already set in the adapter.
@@ -854,6 +884,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetLastDateOfBusinessWeekByIdReturnsCorrectDate(): void
     {
@@ -861,7 +892,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // Test end of week 49.
@@ -879,6 +910,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetFirstBusinessWeekByPeriodIdReturnsCorrectWeek(): void
     {
@@ -886,7 +918,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // Test first week of period 13. That is week 49. 2019-12-03 - 2019-12-09.
@@ -910,6 +942,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetSecondBusinessWeekByPeriodIdReturnsCorrectWeek(): void
     {
@@ -917,7 +950,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // Test second week of period 12. That is week 46. 2019-11-12 - 2019-11-18.
@@ -941,6 +974,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetThirdBusinessWeekByPeriodIdReturnsCorrectWeek(): void
     {
@@ -948,7 +982,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // Test third week of period 11. That is week 43. 2019-10-22 - 2019-10-28.
@@ -972,6 +1006,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetFourthBusinessWeekByPeriodIdReturnsCorrectWeek(): void
     {
@@ -979,7 +1014,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
             '2019-01-01',
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         // Test fourth week of period 11. That is week 44. 2019-10-29 - 2019-11-04.
@@ -1038,17 +1073,18 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetDateObjectAcceptsImmutableParameter(): void
     {
-        $type = $this->faker->randomElement($this->fyTypes);
+        $type = $this->fyTypes[array_rand($this->fyTypes)];
 
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
                 DateTimeImmutable::createFromMutable($this->faker->dateTime) :
                 DateTimeImmutable::createFromMutable($this->getRandomDateExcludingDisallowedFyCalendarTypeDates()),
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
 
         $this->assertNotNull($dateTimeAdapter->getFyStartDate());
@@ -1061,6 +1097,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \Exception
      */
     public function assertGetDateObjectThrowsExceptionForInvalidString(): void
     {
@@ -1070,9 +1107,9 @@ class DateTimeAdapterTest extends BaseTestCase
         );
 
         new DateTimeAdapter(
-            $this->faker->randomElement($this->fyTypes),
+            $this->fyTypes[array_rand($this->fyTypes)],
             $this->faker->text,
-            $this->faker->boolean
+            (bool) random_int(0, 1)
         );
     }
 
