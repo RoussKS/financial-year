@@ -34,7 +34,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * DateTimeAdapter constructor.
      *
      * @param  string $fyType
-     * @param  DateTime|DateTimeImmutable|string $fyStartDate, string must be of ISO-8601 format 'YYYY-MM-DD'
+     * @param  DateTime|DateTimeImmutable|DateTimeInterface|string $fyStartDate, string must be of ISO-8601 format 'YYYY-MM-DD'
      * @param  bool $fiftyThreeWeeks
      *
      * @return void

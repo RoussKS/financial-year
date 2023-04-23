@@ -2,27 +2,18 @@
 
 namespace RoussKS\FinancialYear\Tests;
 
-use Faker\Factory;
+use DateTimeImmutable;
+use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 
 class BaseTestCase extends TestCase
 {
     /**
-     * @var \Faker\Generator
+     * @return \DateTimeImmutable|\DateTimeInterface
+     * @throws \Exception
      */
-    protected $faker;
-
-    /**
-     * BaseTestCase constructor.
-     *
-     * @param null $name
-     * @param array $data
-     * @param string $dataName
-     */
-    public function __construct($name = null, array $data = [], $dataName = '')
+    protected function getRandomDateTime(): DateTimeInterface
     {
-        parent::__construct($name, $data, $dataName);
-
-        $this->faker = Factory::create();
+        return (new DateTimeImmutable('now'))->setTimestamp(random_int(1, 2147385600));
     }
 }

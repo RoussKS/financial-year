@@ -4,6 +4,7 @@ namespace RoussKS\FinancialYear\Tests\Unit;
 
 use DateTime;
 use DateTimeImmutable;
+use DateTimeInterface;
 use RoussKS\FinancialYear\AbstractAdapter;
 use RoussKS\FinancialYear\DateTimeAdapter;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
@@ -37,7 +38,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
-            $this->faker->dateTime,
+            $this->getRandomDateTime(),
             $fiftyThreeWeeks
         );
 
@@ -63,7 +64,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $dateTimeAdapter = new DateTimeAdapter(
             AbstractAdapter::TYPE_BUSINESS,
-            $this->faker->dateTime,
+            $this->getRandomDateTime(),
             $fiftyThreeWeeks
         );
 
@@ -91,7 +92,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
-                $this->faker->dateTime :
+                $this->getRandomDateTime() :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             (bool) random_int(0, 1)
         );
@@ -117,7 +118,7 @@ class DateTimeAdapterTest extends BaseTestCase
             'This library does not support 29, 30, 31 as start dates of a month for calendar type financial year.'
         );
 
-        $randomDateTime = $this->faker->dateTime;
+        $randomDateTime = $this->getRandomDateTime();
 
         $datesArray = [29, 30, 31];
 
@@ -145,7 +146,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
-                $this->faker->dateTime :
+                $this->getRandomDateTime() :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             (bool) random_int(0, 1)
         );
@@ -176,7 +177,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
-                $this->faker->dateTime :
+                $this->getRandomDateTime() :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             (bool) random_int(0, 1)
         );
@@ -674,7 +675,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
-                $this->faker->dateTime :
+                $this->getRandomDateTime() :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             (bool) random_int(0, 1)
         );
@@ -746,7 +747,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
-                $this->faker->dateTime :
+                $this->getRandomDateTime() :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             (bool) random_int(0, 1)
         );
@@ -1082,8 +1083,8 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business' ?
-                DateTimeImmutable::createFromMutable($this->faker->dateTime) :
-                DateTimeImmutable::createFromMutable($this->getRandomDateExcludingDisallowedFyCalendarTypeDates()),
+                $this->getRandomDateTime() :
+                $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             (bool) random_int(0, 1)
         );
 
@@ -1182,20 +1183,23 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * The generated date string is valid formatted so bool (false) would never be returned.
      *
-     * @return DateTime
+     * @return DateTimeImmutable
+     * @throws \Exception
      */
-    protected function getRandomDateExcludingDisallowedFyCalendarTypeDates(): DateTime
+    protected function getRandomDateExcludingDisallowedFyCalendarTypeDates(): DateTimeInterface
     {
+        $randomDateTime = $this->getRandomDateTime();
+
         // Get a random date string with date (day) number that does not include the disallowed dates (29, 30, 31)
-        $randomDateString = $this->faker->year . '-' . $this->faker->month . '-' . $this->faker->numberBetween(1, 28);
+        $randomDateString = $randomDateTime->format('Y') . '-' . $randomDateTime->format('m') . '-' . random_int(1, 28);
 
         /**
          * Type hinting that it is a valid DateTime object.
          * The random string is well formatted, so it will never return false.
          *
-         * @var DateTime $dateTime
+         * @var DateTimeImmutable $dateTime
          */
-        $dateTime =  DateTime::createFromFormat('Y-m-d', $randomDateString);
+        $dateTime =  DateTimeImmutable::createFromFormat('Y-m-d', $randomDateString);
 
         return $dateTime;
     }

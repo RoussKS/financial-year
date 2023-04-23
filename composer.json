@@ -28,7 +28,6 @@
         "php": "^7.1 || ^8.0"
     },
     "require-dev": {
-        "fzaninotto/faker": "~1.8",
         "phpunit/phpunit": "^7 || ^8"
     }
 }
