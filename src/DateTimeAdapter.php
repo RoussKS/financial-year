@@ -64,7 +64,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         parent::setFyWeeks($fiftyThreeWeeks);
 
-        // Reset the financial year end date according to the weeks setting.
+        // Reset the financial year's end date according to the weeks setting.
         if ($originalFyWeeks !== null && $originalFyWeeks !== $this->fyWeeks) {
             $this->setFyEndDate();
         }
@@ -97,7 +97,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $this->validateStartDate();
 
         // If this method was not called on instantiation,
-        // recalculate financial year end date from current settings,
+        // recalculate financial year's end date from current settings,
         // even if the new start date is the same as the previous one (why re-setting the same date?).
         if ($originalFyStartDate !== null) {
             $this->setFyEndDate();
