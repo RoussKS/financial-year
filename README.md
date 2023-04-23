@@ -22,7 +22,7 @@ An organisation financial year can be based on the following 2 methods:
    - This is the *`calendar`* type for this library.
 2. Ending on the same day of the week every year.
    - This is the *`business`* type for this library.
-     >The "fiscal year end" (FYE) is the date that marks the end of the fiscal year. Some companies—such as Cisco Systems[1]—end their fiscal year on the same day of the week each year, e.g. the day that is closest to a particular date (for example, the Friday closest to 31 December). Under such a system, some fiscal years will have 52 weeks and others 53 weeks.
+     >The "fiscal year's end" (FYE) is the date that marks the end of the fiscal year. Some companies—such as Cisco Systems[1]—end their fiscal year on the same day of the week each year, e.g. the day that is closest to a particular date (for example, the Friday closest to 31 December). Under such a system, some fiscal years will have 52 weeks and others 53 weeks.
    - A financial year of this type, always has 364 days a year and is divided in 13 periods (each period has 4 weeks, 28 days).
    - The current library will accommodate the 52-53 weeks methodology of financial year, 
      where a 53rd week is added at the end of a financial year in order to cover for missing days from the previous 364 day years.
@@ -33,7 +33,7 @@ An organisation financial year can be based on the following 2 methods:
 Available methods can be followed through the [RoussKS\FinancialYear\AdapterInterface](https://github.com/RoussKS/financial-year/blob/master/src/AdapterInterface.php) until a full-fledged readme is provided.
 
 ### Requirements
-- PHP Version ^7.1 ( 7.1 =< PHP Version =< 7.x.x according to [Composer docs version constraints](https://getcomposer.org/doc/articles/versions.md#caret-version-range-) )
+- PHP Version ^7.1 || ^8.0 ( 7.1 =< PHP Version =< 8.x.x according to [Composer docs version constraints](https://getcomposer.org/doc/articles/versions.md#caret-version-range-) )
 
 ### Installation
 ```console
