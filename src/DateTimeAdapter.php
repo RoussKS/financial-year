@@ -58,7 +58,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws Exception
      */
-    public function setFyWeeks($fiftyThreeWeeks = false): void
+    public function setFyWeeks(bool $fiftyThreeWeeks = false): void
     {
         $originalFyWeeks = $this->fyWeeks;
 

@@ -46,7 +46,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function setFyWeeks($fiftyThreeWeeks = false): void;
+    public function setFyWeeks(bool $fiftyThreeWeeks = false): void;
 
     /**
      * Get the financial year start date.
