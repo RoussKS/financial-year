@@ -597,6 +597,30 @@ class DateTimeAdapterTest extends BaseTestCase
      * @throws Exception
      * @throws \Exception
      */
+    public function assertGetBusinessWeekIdByDateThrowsExceptionOnNonBusinessTypeFinancialYear(): void
+    {
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage('Business weeks are set only for a business type financial year.');
+
+        // Financial Year starts at 2019-01-01
+        $dateTimeAdapter = new DateTimeAdapter(
+            AbstractAdapter::TYPE_CALENDAR,
+            '2019-01-01',
+            (bool) random_int(0, 1)
+        );
+
+        $dateTimeAdapter->getBusinessWeekIdIdByDate('2019-01-04');
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @throws ConfigException
+     * @throws Exception
+     * @throws \Exception
+     */
     public function assertGetBusinessWeekIdByDateThrowsExceptionOnDateBeforeFinancialYear(): void
     {
         $this->expectException(Exception::class);

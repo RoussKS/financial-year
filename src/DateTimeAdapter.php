@@ -118,7 +118,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * {@inheritdoc}
      *
      * First check for calendar type and the return the corresponding value.
-     * Otherwise it is business type as the only other available.
+     * Otherwise, it is business type as the only other available.
      *
      * @return DatePeriod|DateTimeImmutable[]
      *
@@ -186,10 +186,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         $dateTime = $this->getDateObject($date);
 
+        if (!$this->isBusinessType($this->getType())) {
+            throw new ConfigException('Business weeks are set only for a business type financial year.');
+        }
+
         $this->validateDateBelongsToCurrentFinancialYear($dateTime);
 
         for ($id = 1; $id <= $this->fyWeeks; $id++) {
-
             if (
                 $dateTime >= $this->getFirstDateOfBusinessWeekById($id) &&
                 $dateTime <= $this->getLastDateOfBusinessWeekById($id)
