@@ -126,7 +126,7 @@ abstract class AbstractAdapter
      *
      * @throws ConfigException
      */
-    public function setFyWeeks($fiftyThreeWeeks = false): void
+    public function setFyWeeks(bool $fiftyThreeWeeks = false): void
     {
         if (!$this->isBusinessType($this->type)) {
             $this->throwConfigurationException(
@@ -134,11 +134,7 @@ abstract class AbstractAdapter
             );
         }
 
-        $this->fyWeeks = 53;
-
-        if (!$fiftyThreeWeeks) {
-            $this->fyWeeks = 52;
-        }
+        $this->fyWeeks = $fiftyThreeWeeks ? 53 : 52;
     }
 
     /**
