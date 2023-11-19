@@ -31,7 +31,6 @@ jobs:
       - name: Install Dependencies via Composer
         run: composer install --no-ansi --no-interaction --no-progress --no-scripts --prefer-dist
       - name: PHPStan Static Analysis
-        uses: php-actions/phpstan@v3
+        uses: docker://oskarstark/phpstan-ga
         with:
-          path: src/ tests/
-          php_version: "${{ matrix.php }}"
+          args: analyse
