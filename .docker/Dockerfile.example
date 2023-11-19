@@ -16,6 +16,10 @@ RUN apt update && \
     zip \
     unzip
 
+# Install Packages via PECL as not provided by PHP Source
+RUN pecl install xdebug \
+	&& docker-php-ext-enable xdebug
+
 # Clear cache
 RUN apt clean && \
     rm -rf /var/lib/apt/lists/*

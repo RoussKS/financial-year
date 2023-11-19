@@ -61,8 +61,6 @@ interface AdapterInterface
      * Expects either string ISO-8601 format 'YYYY-MM-DD'
      * or a date object, same object instance as the adapter's that extends the DateTimeInterface
      *
-     * Throws an exception if FyEndDate is already set.
-     *
      * @param  string|DateTimeInterface $date
      *
      * @return void
@@ -72,7 +70,7 @@ interface AdapterInterface
     public function setFyStartDate($date): void;
 
     /**
-     * Get the financial year end date.
+     * Get the financial year's end date.
      *
      * @return DateTimeInterface
      */

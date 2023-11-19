@@ -128,7 +128,7 @@ abstract class AbstractAdapter
      */
     public function setFyWeeks(bool $fiftyThreeWeeks = false): void
     {
-        if (!$this->isBusinessType($this->type)) {
+        if (!$this->isBusinessType($this->getType())) {
             $this->throwConfigurationException(
                 'Can not set the financial year weeks property for non business year type.'
             );
@@ -163,7 +163,7 @@ abstract class AbstractAdapter
      */
     protected function validatePeriodId(int $id): void
     {
-        if ($id < 1 || $id > $this->fyPeriods) {
+        if ($id < 1 || $id > $this->getFyPeriods()) {
             throw new Exception('There is no period with id: ' . $id . '.');
         }
     }
@@ -180,11 +180,11 @@ abstract class AbstractAdapter
      */
     protected function validateBusinessWeekId(int $id): void
     {
-        if (!$this->isBusinessType($this->type)) {
+        if (!$this->isBusinessType($this->getType())) {
             $this->throwConfigurationException('Week id is not applicable for non business type financial year.');
         }
 
-        if ($id < 1 || $id > $this->fyWeeks) {
+        if ($id < 1 || $id > $this->getFyWeeks()) {
             throw new Exception('There is no week with id: ' . $id . '.');
         }
     }
