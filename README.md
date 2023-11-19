@@ -53,6 +53,34 @@ $fy = new \RoussKS\FinancialYear\DateTimeAdapter('calendar', $startDate);
 echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31 
 ```
 
+### Docker images
+The library provides a sample Dockerfile to assist in development use if you want to contribute.
+This using the official php cli images.
+Copy the `Dockerfile.example` file to Dockerfile, uncommenting the required php version.
+
+However, you are free to use any methodology you want for developing updates & bugfixes.
+
+### Run Tests
+The library has an extensive test suite to cover most scenarios & negative paths.
+
+Be aware that some configurations for phpunit are different between versions, 
+so you might need to copy the `phpunit.xml.dist` file to `phpunit.xml` and make the necessary adjustments.
+
+```shell
+./vendor/phpunit/phpunit/phpunit
+```
+
+```shell
+XDEBUG_MODE=coverage ./vendor/phpunit/phpunit/phpunit
+```
+
+### Run Static Analysis
+The library uses PHPStan as a static analysis tool with the default level set to 5.
+
+```shell
+./vendor/bin/phpstan analyse
+```
+
 ### Limitations
 Unfortunately, the library does not support a start date of 29, 30, 31 of any month for *`calendar`* financial year type.
 
@@ -62,7 +90,7 @@ e.g. if a year starts on 31/1, does the first period end on 28/2? And the follow
 
 If upon library usage, a user has encountered such a real business issue and can provide a mitigation logic, we can work on implementing it. 
 
-_Important_: This is allowed for a *`business`* type financial year. 
+_Important_: This is allowed for a *`business`* type financial year.
 
 ### Future Plans
 - Update Readme or create Wiki page with more examples of all available methods.
