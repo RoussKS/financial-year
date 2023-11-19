@@ -48,7 +48,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->setFyStartDate($fyStartDate);
 
-        $this->setFyEndDate();
+        $this->autoSetFyEndDateByStartDate();
     }
 
     /**
@@ -66,7 +66,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // Reset the financial year's end date according to the weeks setting.
         if ($originalFyWeeks !== null && $originalFyWeeks !== $this->fyWeeks) {
-            $this->setFyEndDate();
+            $this->autoSetFyEndDateByStartDate();
         }
     }
 
@@ -96,11 +96,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->validateStartDate();
 
-        // If this method was not called on instantiation,
+        // If this method execution is not triggered on instantiation (constructor) which performs the same action,
         // recalculate financial year's end date from current settings,
         // even if the new start date is the same as the previous one (why re-setting the same date?).
         if ($originalFyStartDate !== null) {
-            $this->setFyEndDate();
+            $this->autoSetFyEndDateByStartDate();
         }
     }
 
@@ -430,7 +430,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * Set the financial year end date.
+     * Automatically set the financial year's end date by the current start date.
      *
      * We will set end date from the start date object which should be present.
      * Both types calculate end date relative to next financial year start date.
@@ -438,7 +438,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return void
      */
-    protected function setFyEndDate(): void
+    protected function autoSetFyEndDateByStartDate(): void
     {
         $this->fyEndDate = $this->getNextFyStartDate()->modify('-1 day');
     }
