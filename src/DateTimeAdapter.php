@@ -16,7 +16,7 @@ use Traversable;
  *
  * Class DateTimeAdapter
  *
- * @package RoussKS\FinancialYear\Adapters
+ * @package RoussKS\FinancialYear
  */
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace RoussKS\FinancialYear\Tests\Unit\Adapters;
+namespace RoussKS\FinancialYear\Tests\Unit;
 
 use RoussKS\FinancialYear\AbstractAdapter;
 use RoussKS\FinancialYear\AdapterInterface;
@@ -10,7 +10,7 @@ use RoussKS\FinancialYear\Exceptions\ConfigException;
 /**
  * Class AbstractAdapterTest
  *
- * @package RoussKS\FinancialYear\Tests\Unit\Adapters
+ * @package RoussKS\FinancialYear\Tests\Unit
  */
 class AbstractAdapterTest extends BaseTestCase
 {
@@ -39,7 +39,7 @@ class AbstractAdapterTest extends BaseTestCase
      */
     public function assertGetTypeReturnsString(): void
     {
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'calendar',
             (bool) random_int(0, 1)
@@ -56,7 +56,7 @@ class AbstractAdapterTest extends BaseTestCase
      */
     public function assertFinancialYearCalendarType(): void
     {
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'calendar',
             (bool) random_int(0, 1)
@@ -73,7 +73,7 @@ class AbstractAdapterTest extends BaseTestCase
      */
     public function assertFinancialYearBusinessType(): void
     {
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'business',
             (bool) random_int(0, 1)
@@ -90,7 +90,7 @@ class AbstractAdapterTest extends BaseTestCase
      */
     public function assertFyWeeksReturnsNullForFinancialYearCalendarType(): void
     {
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'calendar',
             (bool) random_int(0, 1)
@@ -108,14 +108,14 @@ class AbstractAdapterTest extends BaseTestCase
      */
     public function assertFyWeeksReturnsIntForFinancialYearBusinessType(): void
     {
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'business', true
         ]);
 
         $this->assertIsInt($fy->getFyWeeks());
 
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'business', false
         ]);
@@ -132,14 +132,14 @@ class AbstractAdapterTest extends BaseTestCase
      */
     public function assertFyWeeksReturnsCorrectWeeksForFinancialYearBusinessType(): void
     {
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'business', true
         ]);
 
         $this->assertEquals(53, $fy->getFyWeeks());
 
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'business', false
         ]);
@@ -159,7 +159,7 @@ class AbstractAdapterTest extends BaseTestCase
         $this->expectException(ConfigException::class);
         $this->expectExceptionMessage('Can not set the financial year weeks property for non business year type.');
 
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'calendar', true
         ]);
@@ -174,7 +174,7 @@ class AbstractAdapterTest extends BaseTestCase
      */
     public function assertFyPeriodsReturnsCorrectIntegerForCalendarTypeFinancialYear(): void
     {
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'calendar', true
         ]);
@@ -190,7 +190,7 @@ class AbstractAdapterTest extends BaseTestCase
      */
     public function assertFyPeriodsReturnsCorrectIntegerForBusinessTypeFinancialYear(): void
     {
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'business', true
         ]);
@@ -211,7 +211,7 @@ class AbstractAdapterTest extends BaseTestCase
         $this->expectException(ConfigException::class);
         $this->expectExceptionMessage('Invalid configuration of financial year adapter.');
 
-        /** @var  $fy AdapterInterface */
+        /** @var AdapterInterface $fy */
         $fy = $this->getMockForAbstractClass(AbstractAdapter::class, [
             'calendar', true
         ]);
