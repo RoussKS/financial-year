@@ -14,7 +14,7 @@ use RoussKS\FinancialYear\Tests\BaseTestCase;
 /**
  * Class DateTimeAdapterTest
  *
- * @package RoussKS\FinancialYear\Tests\Unit\Adapters
+ * @package RoussKS\FinancialYear\Tests\Unit
  */
 class DateTimeAdapterTest extends BaseTestCase
 {
