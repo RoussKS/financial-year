@@ -70,7 +70,7 @@ interface AdapterInterface
     public function setFyStartDate($date): void;
 
     /**
-     * Get the financial year end date.
+     * Get the financial year's end date.
      *
      * @return DateTimeInterface
      */
