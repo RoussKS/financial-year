@@ -1,4 +1,6 @@
 # Uncomment the php version that you want to test.
+# FROM php:7.1-cli
+# FROM php:7.2-cli
 # FROM php:7.3-cli
 # FROM php:7.4-cli
 # FROM php:8.0-cli
@@ -13,6 +15,10 @@ RUN apt update && \
     curl \
     zip \
     unzip
+
+# Install Packages via PECL as not provided by PHP Source
+RUN pecl install xdebug \
+	&& docker-php-ext-enable xdebug
 
 # Clear cache
 RUN apt clean && \

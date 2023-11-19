@@ -7,6 +7,7 @@ use DatePeriod;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
+use DateTimeZone;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 use Traversable;
@@ -16,7 +17,7 @@ use Traversable;
  *
  * Class DateTimeAdapter
  *
- * @package RoussKS\FinancialYear\Adapters
+ * @package RoussKS\FinancialYear
  */
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {
@@ -31,24 +32,32 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     protected $fyEndDate;
 
     /**
+     * @var DateTimeZone|null
+     */
+    private $dateTimeZone;
+
+    /**
      * DateTimeAdapter constructor.
      *
-     * @param  string $fyType
-     * @param  DateTime|DateTimeImmutable|DateTimeInterface|string $fyStartDate, string must be of ISO-8601 format 'YYYY-MM-DD'
-     * @param  bool $fiftyThreeWeeks
+     * @param string $fyType
+     * @param DateTime|DateTimeImmutable|DateTimeInterface|string $fyStartDate // string must be of ISO-8601 format 'YYYY-MM-DD'
+     * @param bool $fiftyThreeWeeks
+     * @param DateTimeZone|string|null $dateTimeZone // this will be used only and only if a string was provided for start date
      *
      * @return void
      *
-     * @throws Exception
      * @throws ConfigException
+     * @throws Exception
      */
-    public function __construct(string $fyType, $fyStartDate, bool $fiftyThreeWeeks = false)
+    public function __construct(string $fyType, $fyStartDate, bool $fiftyThreeWeeks = false, $dateTimeZone = null)
     {
         parent::__construct($fyType, $fiftyThreeWeeks);
 
+        // First set the timezone, then the start date and then auto calculate the end date of the financial year.
+        $this->setDateTimeZone($dateTimeZone);
         $this->setFyStartDate($fyStartDate);
 
-        $this->setFyEndDate();
+        $this->autoSetFyEndDateByStartDate();
     }
 
     /**
@@ -66,7 +75,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // Reset the financial year's end date according to the weeks setting.
         if ($originalFyWeeks !== null && $originalFyWeeks !== $this->fyWeeks) {
-            $this->setFyEndDate();
+            $this->autoSetFyEndDateByStartDate();
         }
     }
 
@@ -96,11 +105,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->validateStartDate();
 
-        // If this method was not called on instantiation,
+        // If this method execution is not triggered on instantiation (constructor) which performs the same action,
         // recalculate financial year's end date from current settings,
         // even if the new start date is the same as the previous one (why re-setting the same date?).
         if ($originalFyStartDate !== null) {
-            $this->setFyEndDate();
+            $this->autoSetFyEndDateByStartDate();
         }
     }
 
@@ -224,17 +233,17 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // If 1st period, get the start of the financial year, regardless of the type.
         if ($id === 1) {
-            return $this->fyStartDate;
+            return $this->getFyStartDate();
         }
 
         // In calendar type, fyPeriods are always 12 as the months,
         // regardless of the start date within the month.
-        if ($this->isCalendarType($this->type)) {
-            return $this->fyStartDate->modify('+' . ($id - 1) . ' months');
+        if ($this->isCalendarType($this->getType())) {
+            return $this->getFyStartDate()->modify('+' . ($id - 1) . ' months');
         }
 
         // Otherwise return business type calculation.
-        return $this->fyStartDate->modify('+' . ($id - 1) * 4 . ' weeks');
+        return $this->getFyStartDate()->modify('+' . ($id - 1) * 4 . ' weeks');
     }
 
     /**
@@ -255,18 +264,18 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // If last period, get the end of the financial year, regardless of the type.
         if ($id === $this->fyPeriods) {
-            return $this->fyEndDate;
+            return $this->getFyEndDate();
         }
 
         // In calendar type, fyPeriods are always 12 as the months,
         // regardless of the start date within the month.
-        if ($this->isCalendarType($this->type)) {
+        if ($this->isCalendarType($this->getType())) {
             // Otherwise calculate for business type.
-            return $this->fyStartDate->modify('+' . $id . ' months')->modify('-1 day');
+            return $this->getFyStartDate()->modify('+' . $id . ' months')->modify('-1 day');
         }
 
         // Otherwise calculate for business type.
-        return $this->fyStartDate->modify('+' . $id * 4 . ' weeks')->modify('-1 day');
+        return $this->getFyStartDate()->modify('+' . $id * 4 . ' weeks')->modify('-1 day');
     }
 
     /**
@@ -284,10 +293,10 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // If 1st week, get the start of the financial year.
         if ($id === 1) {
-            return $this->fyStartDate;
+            return $this->getFyStartDate();
         }
 
-        return $this->fyStartDate->modify('+' . ($id - 1) . ' weeks');
+        return $this->getFyStartDate()->modify('+' . ($id - 1) . ' weeks');
     }
 
     /**
@@ -305,10 +314,10 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // If last week, get the end of the financial year.
         if ($id === $this->fyWeeks) {
-            return $this->fyEndDate;
+            return $this->getFyEndDate();
         }
 
-        return $this->fyStartDate->modify('+' . $id . ' weeks')->modify('-1 day');
+        return $this->getFyStartDate()->modify('+' . $id . ' weeks')->modify('-1 day');
     }
 
     /**
@@ -383,13 +392,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     public function getNextFyStartDate(): DateTimeInterface
     {
         // For calendar type, the next year's start date is + 1 year.
-        if ($this->isCalendarType($this->type)) {
-            return $this->fyStartDate->modify('+1 year');
+        if ($this->isCalendarType($this->getType())) {
+            return $this->getFyStartDate()->modify('+1 year');
         }
 
         // For business type, the next year's start date is + number of weeks.
         // As a financial year would have 52 or 53 weeks, the param handles it.
-        return $this->fyStartDate->modify('+' . $this->fyWeeks . ' weeks');
+        return $this->getFyStartDate()->modify('+' . $this->fyWeeks . ' weeks');
     }
 
     /**
@@ -404,8 +413,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $disallowedFyCalendarTypeDates = ['29', '30', '31'];
 
         if (
-            $this->isCalendarType($this->type) &&
-            in_array($this->fyStartDate->format('d'), $disallowedFyCalendarTypeDates, true)
+            $this->isCalendarType($this->getType()) &&
+            in_array($this->getFyStartDate()->format('d'), $disallowedFyCalendarTypeDates, true)
         ) {
             $this->throwConfigurationException(
                 'This library does not support 29, 30, 31 as start dates of a month for calendar type financial year.'
@@ -424,13 +433,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     protected function validateDateBelongsToCurrentFinancialYear(DateTimeImmutable $dateTime): void
     {
-        if ($dateTime < $this->fyStartDate || $dateTime > $this->fyEndDate) {
+        if ($dateTime < $this->getFyStartDate() || $dateTime > $this->getFyEndDate()) {
             throw new Exception('The requested date is out of range of the current financial year.');
         }
     }
 
     /**
-     * Set the financial year end date.
+     * Automatically set the financial year's end date by the current start date.
      *
      * We will set end date from the start date object which should be present.
      * Both types calculate end date relative to next financial year start date.
@@ -438,9 +447,48 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return void
      */
-    protected function setFyEndDate(): void
+    protected function autoSetFyEndDateByStartDate(): void
     {
         $this->fyEndDate = $this->getNextFyStartDate()->modify('-1 day');
+    }
+
+    /**
+     * Get the DateTimeZone currently set
+     *
+     * @return DateTimeZone|null
+     */
+    protected function getDateTimeZone(): ?DateTimeZone
+    {
+        return $this->dateTimeZone;
+    }
+
+    /**
+     * @param DateTimeZone|string|null $dateTimeZone
+     * @return void
+     * @throws ConfigException
+     */
+    protected function setDateTimeZone($dateTimeZone = null): void
+    {
+        if ($dateTimeZone === null) {
+            return;
+        }
+
+        if ($dateTimeZone instanceof DateTimeZone) {
+            $this->dateTimeZone = $dateTimeZone;
+            return;
+        }
+
+        if (is_string($dateTimeZone)) {
+            try {
+                $this->dateTimeZone = new DateTimeZone($dateTimeZone);
+                return;
+            } catch (\Exception $ex) {
+                // Catch exception, set null timezone string and throw config exception.
+                $this->throwConfigurationException('Invalid dateTimeZone string: ' . $dateTimeZone);
+            }
+        }
+
+        $this->throwConfigurationException('Invalid dateTimeZone parameter');
     }
 
     /**
@@ -495,6 +543,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $date;
         }
 
-        return DateTimeImmutable::createFromFormat('Y-m-d', $date);
+        return DateTimeImmutable::createFromFormat('Y-m-d', $date, $this->getDateTimeZone());
     }
 }

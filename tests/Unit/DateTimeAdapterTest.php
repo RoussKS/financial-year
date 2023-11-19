@@ -5,6 +5,7 @@ namespace RoussKS\FinancialYear\Tests\Unit;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
+use DateTimeZone;
 use RoussKS\FinancialYear\AbstractAdapter;
 use RoussKS\FinancialYear\DateTimeAdapter;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
@@ -14,7 +15,7 @@ use RoussKS\FinancialYear\Tests\BaseTestCase;
 /**
  * Class DateTimeAdapterTest
  *
- * @package RoussKS\FinancialYear\Tests\Unit\Adapters
+ * @package RoussKS\FinancialYear\Tests\Unit
  */
 class DateTimeAdapterTest extends BaseTestCase
 {
@@ -159,6 +160,140 @@ class DateTimeAdapterTest extends BaseTestCase
             $originalFyStartDate->format('YmdHis'),
             $dateTimeAdapter->getFyEndDate()->format('YmdHis')
         );
+    }
+
+    /**
+     * Assert DateTimeZone param is ignored if:
+     * - fyStartDate param is a DateTime instance
+     * - dateTimeZone param is provided.
+     *
+     * @test
+     *
+     * @return void
+     *
+     * @throws Exception
+     * @throws ConfigException
+     * @throws \Exception
+     */
+    public function assertSetFyStartDateIgnoresDateTimeZoneParamIfStartDateParamIsDateTimeInstance(): void
+    {
+        $type = $this->fyTypes[array_rand($this->fyTypes)];
+
+        $defaultTimeZone = new DateTimeZone('UTC');
+        $timeZone = new DateTimeZone('Europe/Athens');
+
+        $dateTimeAdapter = new DateTimeAdapter(
+            $type,
+            $type === 'business'
+                ? $this->getRandomDateTime()->setTimezone($defaultTimeZone) // @phpstan-ignore-line
+                : $this->getRandomDateExcludingDisallowedFyCalendarTypeDates()->setTimezone($defaultTimeZone),
+            (bool) random_int(0, 1),
+            $timeZone
+        );
+
+        $this->assertNotSame($timeZone->getName(), $dateTimeAdapter->getFyStartDate()->getTimezone()->getName());
+    }
+
+    /**
+     * Assert Start Date timezone is set correctly if:
+     * - fyStartDate param is a string
+     * - dateTimeZone param is provided and is DateTimeZone instance.
+     *
+     * @test
+     *
+     * @return void
+     *
+     * @throws Exception
+     * @throws ConfigException
+     * @throws \Exception
+     */
+    public function assertSetFyStartDateSetsCorrectTimeZoneIfStartDateIsStringAndDateTimeZoneInstance(): void
+    {
+        $type = $this->fyTypes[array_rand($this->fyTypes)];
+
+        $timeZone = new DateTimeZone('Europe/Athens');
+
+        $dateTimeAdapter = new DateTimeAdapter($type, '2023-11-19', (bool) random_int(0, 1), $timeZone);
+
+        $this->assertSame($timeZone->getName(), $dateTimeAdapter->getFyStartDate()->getTimezone()->getName());
+    }
+
+    /**
+     * Assert Start Date timezone is set correctly if:
+     * - fyStartDate param is a string
+     * - dateTimeZone param is provided and is a string of available DateTimeZones.
+     *
+     * @test
+     *
+     * @return void
+     *
+     * @throws Exception
+     * @throws ConfigException
+     * @throws \Exception
+     */
+    public function assertSetFyStartDateSetsCorrectTimeZoneIfStartDateIsStringAndDateTimeZoneString(): void
+    {
+        $type = $this->fyTypes[array_rand($this->fyTypes)];
+
+        $timeZone = 'Europe/Athens';
+
+        $dateTimeAdapter = new DateTimeAdapter($type, '2023-11-19', (bool) random_int(0, 1), $timeZone);
+
+        $this->assertSame($timeZone, $dateTimeAdapter->getFyStartDate()->getTimezone()->getName());
+    }
+
+    /**
+     * Assert an exception is thrown on setting FY Start Date if:
+     * - dateTimeZone param is provided and is a string of available DateTimeZones.
+     *
+     * @test
+     *
+     * @return void
+     *
+     * @throws Exception
+     * @throws ConfigException
+     * @throws \Exception
+     */
+    public function assertSetFyStartDateThrowsExceptionIfInvalidDateTimeZoneStringIsProvided(): void
+    {
+        $type = $this->fyTypes[array_rand($this->fyTypes)];
+
+        $timeZone = 'Random TimeZone';
+
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage('Invalid dateTimeZone string: ' . $timeZone);
+
+        new DateTimeAdapter($type, '2023-11-19', (bool) random_int(0, 1), $timeZone);
+    }
+
+    /**
+     * Assert an exception is thrown on setting FY Start Date if:
+     * - dateTimeZone param is provided and is of an unsupported type.
+     *
+     * @test
+     *
+     * @return void
+     *
+     * @throws Exception
+     * @throws ConfigException
+     * @throws \Exception
+     */
+    public function assertSetFyStartDateThrowsExceptionIfInvalidDateTimeZoneTypeIsProvided(): void
+    {
+        $type = $this->fyTypes[array_rand($this->fyTypes)];
+
+        $timeZoneTypes = [
+            new \stdClass(),
+            ['something-1', 'something-2'],
+            random_int(1, 100),
+            (bool) random_int(0, 1)
+        ];
+
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage('Invalid dateTimeZone parameter');
+
+        // @phpstan-ignore-next-line
+        new DateTimeAdapter($type, '2023-11-19', (bool) random_int(0, 1), $timeZoneTypes[array_rand($timeZoneTypes)]);
     }
 
     /**
