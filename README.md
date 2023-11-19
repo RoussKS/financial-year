@@ -74,6 +74,12 @@ so you might need to copy the `phpunit.xml.dist` file to `phpunit.xml` and make 
 XDEBUG_MODE=coverage ./vendor/phpunit/phpunit/phpunit
 ```
 
+
+```shell
+# HTML coverage example
+XDEBUG_MODE=coverage ./vendor/phpunit/phpunit/phpunit --coverage-html tests/report
+```
+
 ### Run Static Analysis
 The library uses PHPStan as a static analysis tool with the default level set to 5.
 

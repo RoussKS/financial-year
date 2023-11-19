@@ -481,6 +481,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         if (is_string($dateTimeZone)) {
             try {
                 $this->dateTimeZone = new DateTimeZone($dateTimeZone);
+                return;
             } catch (\Exception $ex) {
                 // Catch exception, set null timezone string and throw config exception.
                 $this->throwConfigurationException('Invalid dateTimeZone string: ' . $dateTimeZone);
