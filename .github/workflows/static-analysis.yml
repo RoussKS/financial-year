@@ -26,10 +26,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "${{ matrix.php }}"
-      - name: Update composer to v2
-        run: composer self-update --2
-      - name: Install Dependencies via Composer
-        run: composer install --no-ansi --no-interaction --no-progress --no-scripts --prefer-dist
       - name: PHPStan Static Analysis
         uses: docker://oskarstark/phpstan-ga
         env:
