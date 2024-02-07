@@ -1,11 +1,7 @@
 # Uncomment the php version that you want to test.
-# FROM php:7.1-cli
-# FROM php:7.2-cli
-# FROM php:7.3-cli
-# FROM php:7.4-cli
-# FROM php:8.0-cli
 # FROM php:8.1-cli
 # FROM php:8.2-cli
+# FROM php:8.3-cli
 
 # Install dependencies
 RUN apt update && \
