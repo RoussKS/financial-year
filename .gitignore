@@ -10,6 +10,7 @@ docker-compose.yml
 /tests/report/
 clover.xml
 phpunit.xml
+/.phpunit.cache/
 .phpunit.result.cache
 
 # IDE & System
