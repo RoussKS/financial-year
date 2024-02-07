@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RoussKS\FinancialYear\Tests\Unit;
 
 use RoussKS\FinancialYear\AbstractAdapter;
