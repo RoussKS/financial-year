@@ -14,7 +14,7 @@ on:
 # Jobs/Pipelines
 jobs:
   phpstan:
-    name: 'PHP Stan'
+    name: "PHP Static Analysis Tool (PHPStan)"
     runs-on: ubuntu-latest
     strategy:
       matrix:
