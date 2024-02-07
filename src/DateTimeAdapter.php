@@ -53,8 +53,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     {
         parent::__construct($fyType, $fiftyThreeWeeks);
 
-        // First set the timezone, then the start date and then auto calculate the end date of the financial year.
-        $this->setDateTimeZone($dateTimeZone);
+        // First set the timezone if start date is a string,
+        // then the start date and then auto calculate the end date of the financial year.
+        $this->setDateTimeZone(is_string($fyStartDate) ? $dateTimeZone : null);
         $this->setFyStartDate($fyStartDate);
 
         $this->autoSetFyEndDateByStartDate();
