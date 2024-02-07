@@ -26,17 +26,18 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "${{ matrix.php }}"
+          coverage: none
           tools: composer, phpstan
       - name: "Get composer cache directory"
         id: composer-cache
-        run: 'echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT'
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
       - name: "Cache dependencies"
         uses: actions/cache@v4
         with:
-          path: "${{ steps.composer-cache.outputs.dir }}"
-          key: "${{ runner.os }}-php-${{ matrix.php}}-composer-${{ hashFiles('**/composer.json') }}"
-          restore-keys: "${{ runner.os }}-php-${{ matrix.php}}-composer-"
-      - name: "Install Composer dependencies"
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php-${{ matrix.php}}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-php-${{ matrix.php}}-composer-
+      - name: "Install Dependencies via Composer"
         run: composer install --no-ansi --prefer-dist
       - name: "Run PHPStan Static Analysis"
         run: phpstan analyse
