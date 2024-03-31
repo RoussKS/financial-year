@@ -11,10 +11,9 @@ use PHPUnit\Framework\TestCase;
 class BaseTestCase extends TestCase
 {
     /**
-     * @return \DateTimeImmutable|\DateTimeInterface
      * @throws \Exception
      */
-    protected function getRandomDateTime(): DateTimeInterface
+    protected function getRandomDateTime(): DateTimeImmutable
     {
         return (new DateTimeImmutable('now'))->setTimestamp(random_int(1, 2147385600));
     }
