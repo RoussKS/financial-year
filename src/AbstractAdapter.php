@@ -8,11 +8,6 @@ use DateTimeInterface;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 
-/**
- * Class AbstractAdapter
- *
- * @package RoussKS\FinancialYear
- */
 abstract class AbstractAdapter
 {
     /**

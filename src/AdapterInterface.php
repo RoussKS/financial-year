@@ -8,11 +8,6 @@ use DateTimeInterface;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use Traversable;
 
-/**
- * Interface AdapterInterface
- *
- * @package RoussKS\FinancialYear
- */
 interface AdapterInterface
 {
     /**

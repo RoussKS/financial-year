@@ -16,10 +16,6 @@ use Traversable;
 
 /**
  * Implementation of PHP DateTime FinancialYear Adapter
- *
- * Class DateTimeAdapter
- *
- * @package RoussKS\FinancialYear
  */
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {

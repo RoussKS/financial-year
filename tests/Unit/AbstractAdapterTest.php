@@ -9,11 +9,6 @@ use RoussKS\FinancialYear\AdapterInterface;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 
-/**
- * Class AbstractAdapterTest
- *
- * @package RoussKS\FinancialYear\Tests\Unit
- */
 class AbstractAdapterTest extends BaseTestCase
 {
     /**

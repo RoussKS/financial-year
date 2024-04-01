@@ -14,11 +14,6 @@ use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
 
-/**
- * Class DateTimeAdapterTest
- *
- * @package RoussKS\FinancialYear\Tests\Unit
- */
 class DateTimeAdapterTest extends BaseTestCase
 {
     /**
