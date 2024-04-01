@@ -12,6 +12,7 @@ clover.xml
 phpunit.xml
 /.phpunit.cache/
 .phpunit.result.cache
+/tests/coverage/
 
 # IDE & System
 .idea/
