@@ -16,32 +16,43 @@ use Traversable;
 
 /**
  * Implementation of PHP DateTime FinancialYear Adapter
+ *
+ * Class DateTimeAdapter
+ *
+ * @package RoussKS\FinancialYear
  */
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {
-    protected DateTimeImmutable|DateTimeInterface|null $fyStartDate = null;
+    /**
+     * @var DateTimeImmutable
+     */
+    protected $fyStartDate;
 
-    protected DateTimeImmutable|DateTimeInterface|null $fyEndDate = null;
+    /**
+     * @var DateTimeImmutable
+     */
+    protected $fyEndDate;
 
-    private ?DateTimeZone $dateTimeZone = null;
+    /**
+     * @var DateTimeZone|null
+     */
+    private $dateTimeZone;
 
     /**
      * DateTimeAdapter constructor.
      *
-     * If $fyStartDate is a string, it must be of ISO-8601 format 'YYYY-MM-DD'.
-     * The $dateTimeZone parameter is used only and only if a string was provided for start date.
+     * @param string $fyType
+     * @param DateTime|DateTimeImmutable|DateTimeInterface|string $fyStartDate // string must be of ISO-8601 format 'YYYY-MM-DD'
+     * @param bool $fiftyThreeWeeks
+     * @param DateTimeZone|string|null $dateTimeZone // this will be used only and only if a string was provided for start date
      *
      * @return void
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\ConfigException
-     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @throws ConfigException
+     * @throws Exception
      */
-    public function __construct(
-        string $fyType,
-        DateTime|DateTimeImmutable|DateTimeInterface|string $fyStartDate,
-        bool $fiftyThreeWeeks = false,
-        DateTimeZone|string|null $dateTimeZone = null
-    ) {
+    public function __construct(string $fyType, $fyStartDate, bool $fiftyThreeWeeks = false, $dateTimeZone = null)
+    {
         parent::__construct($fyType, $fiftyThreeWeeks);
 
         // First set the timezone if start date is a string,
@@ -57,7 +68,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * Extend parent class in order to recalculate end date if the business year weeks change.
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @throws Exception
      */
     public function setFyWeeks(bool $fiftyThreeWeeks = false): void
     {
@@ -71,7 +82,12 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         }
     }
 
-    public function getFyStartDate(): DateTimeImmutable|DateTimeInterface
+    /**
+     * {@inheritdoc}
+     *
+     * @return DateTimeImmutable
+     */
+    public function getFyStartDate(): DateTimeInterface
     {
         return $this->fyStartDate;
     }
@@ -79,9 +95,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @throws \RoussKS\FinancialYear\Exceptions\Exception
+     * @param  DateTime|DateTimeImmutable|string $date
+     *
+     * @throws Exception
      */
-    public function setFyStartDate(DateTimeInterface|string $date): void
+    public function setFyStartDate($date): void
     {
         // fyStartDate property is an immutable object.
         $originalFyStartDate = $this->fyStartDate;
@@ -452,7 +470,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @return void
      * @throws ConfigException
      */
-    protected function setDateTimeZone(DateTimeZone|string|null $dateTimeZone): void
+    protected function setDateTimeZone($dateTimeZone = null): void
     {
         if ($dateTimeZone === null) {
             return;
@@ -481,9 +499,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * If the object is generated, we set it to the start of the day (0, 0) with setTime.
      * setTime will not return false for valid input of hours and minutes.
      *
+     * @param  DateTime|DateTimeImmutable|string $date
+     *
+     * @return DateTimeImmutable
+     *
      * @throws Exception
      */
-    protected function getDateObject(DateTimeImmutable|DateTime|string $date): DateTimeImmutable
+    protected function getDateObject($date): DateTimeImmutable
     {
         $dateTime = $this->generateDateTimeImmutableObject($date);
 
@@ -509,8 +531,12 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * Otherwise, create the object regardless of the type with createFromFormat.
      * It will return false if it fails.
+     *
+     * @param  DateTime|DateTimeImmutable|string $date
+     *
+     * @return DateTimeImmutable|false
      */
-    protected function generateDateTimeImmutableObject(DateTime|DateTimeImmutable|string $date): DateTimeImmutable|bool
+    protected function generateDateTimeImmutableObject($date)
     {
         if ($date instanceof DateTime) {
             return DateTimeImmutable::createFromMutable($date);

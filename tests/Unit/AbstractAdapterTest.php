@@ -9,28 +9,35 @@ use RoussKS\FinancialYear\AdapterInterface;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 
+/**
+ * Class AbstractAdapterTest
+ *
+ * @package RoussKS\FinancialYear\Tests\Unit
+ */
 class AbstractAdapterTest extends BaseTestCase
 {
     /**
      * @test
      *
-     * @throws \PHPUnit\Framework\MockObject\Exception
-     * @throws \Random\RandomException
+     * @return void
+     * @throws \Exception
      */
     public function assertConstructorThrowsExceptionOnInvalidFinancialYearType(): void
     {
         $this->expectException(ConfigException::class);
         $this->expectExceptionMessage('Invalid Financial Year Type.');
 
-        $this->getMockBuilder(AbstractAdapter::class)
-            ->setConstructorArgs(['test', (bool) random_int(0, 1)])
-            ->getMock();
+        $this->getMockForAbstractClass(AbstractAdapter::class, [
+            'test',
+            (bool) random_int(0, 1)
+        ]);
     }
 
     /**
      * @test
      *
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @return void
+     * @throws \Exception
      */
     public function assertGetTypeReturnsString(): void
     {
@@ -46,7 +53,8 @@ class AbstractAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @return void
+     * @throws \Exception
      */
     public function assertFinancialYearCalendarType(): void
     {
@@ -62,7 +70,8 @@ class AbstractAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @return void
+     * @throws \Exception
      */
     public function assertFinancialYearBusinessType(): void
     {
@@ -78,7 +87,8 @@ class AbstractAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @return void
+     * @throws \Exception
      */
     public function assertFyWeeksReturnsNullForFinancialYearCalendarType(): void
     {
@@ -96,7 +106,7 @@ class AbstractAdapterTest extends BaseTestCase
      *
      * Assert both true and false scenarios.
      *
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @return void
      */
     public function assertFyWeeksReturnsIntForFinancialYearBusinessType(): void
     {
@@ -120,7 +130,7 @@ class AbstractAdapterTest extends BaseTestCase
      *
      * Assert both true (53 weeks) and false (52 weeks) scenarios.
      *
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @return void
      */
     public function assertFyWeeksReturnsCorrectWeeksForFinancialYearBusinessType(): void
     {
@@ -142,7 +152,9 @@ class AbstractAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @return void
+     *
+     * @throws ConfigException
      */
     public function assertFyWeeksSetterThrowsExceptionForFinancialYearCalendarType(): void
     {
@@ -160,7 +172,7 @@ class AbstractAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @return void
      */
     public function assertFyPeriodsReturnsCorrectIntegerForCalendarTypeFinancialYear(): void
     {
@@ -176,7 +188,7 @@ class AbstractAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @return void
      */
     public function assertFyPeriodsReturnsCorrectIntegerForBusinessTypeFinancialYear(): void
     {
@@ -192,7 +204,9 @@ class AbstractAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @return void
+     *
+     * @throws ConfigException
      */
     public function assertValidationThrowsExceptionForMissingDates(): void
     {
