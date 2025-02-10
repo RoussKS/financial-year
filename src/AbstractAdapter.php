@@ -27,12 +27,12 @@ abstract class AbstractAdapter
     /**
      * Applicable to Business financial year type only.
      */
-    protected ?int $fyWeeks;
+    protected ?int $fyWeeks = null;
 
     /**
      * The number of fyPeriods for the selected financial year type.
      */
-    protected int $fyPeriods;
+    protected ?int $fyPeriods = null;
 
     /**
      * @return void

@@ -19,9 +19,9 @@ use Traversable;
  */
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {
-    protected ?DateTimeInterface $fyStartDate;
-    protected ?DateTimeInterface $fyEndDate;
-    private ?DateTimeZone $dateTimeZone;
+    protected ?DateTimeInterface $fyStartDate = null;
+    protected ?DateTimeInterface $fyEndDate = null;
+    private ?DateTimeZone $dateTimeZone = null;
 
     /**
      * @param  DateTime|DateTimeImmutable|DateTimeInterface|string  $fyStartDate  // string must be of ISO-8601 format 'YYYY-MM-DD'
