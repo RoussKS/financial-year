@@ -167,7 +167,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business'
-                ? $this->getRandomDateTime()->setTimezone($defaultTimeZone) // @phpstan-ignore-line
+                ? $this->getRandomDateTime()->setTimezone($defaultTimeZone)
                 : $this->getRandomDateExcludingDisallowedFyCalendarTypeDates()->setTimezone($defaultTimeZone),
             (bool) random_int(0, 1),
             $timeZone
@@ -1145,15 +1145,20 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         $type = $this->fyTypes[array_rand($this->fyTypes)];
 
+        $fyStartDate = $type === 'business' ?
+            $this->getRandomDateTime() :
+            $this->getRandomDateExcludingDisallowedFyCalendarTypeDates();
+
+        $calenderFyStartDate = $this->getRandomDateTime();
+        $businessFyStartDate = $this->getRandomDateExcludingDisallowedFyCalendarTypeDates();
+
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
-            $type === 'business' ?
-                $this->getRandomDateTime() :
-                $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
+            $fyStartDate,
             (bool) random_int(0, 1)
         );
 
-        $this->assertNotNull($dateTimeAdapter->getFyStartDate());
+        $this->assertEquals($fyStartDate->setTime(0, 0), $dateTimeAdapter->getFyStartDate());
     }
 
     /**
