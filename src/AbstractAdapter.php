@@ -20,19 +20,19 @@ abstract class AbstractAdapter
      */
     public const TYPE_BUSINESS = 'business';
 
-    protected ?string $type = null;
     protected ?DateTimeInterface $fyStartDate = null;
     protected ?DateTimeInterface $fyEndDate = null;
+    private ?string $type = null;
 
     /**
      * Applicable to Business financial year type only.
      */
-    protected ?int $fyWeeks = null;
+    private ?int $fyWeeks = null;
 
     /**
      * The number of fyPeriods for the selected financial year type.
      */
-    protected ?int $fyPeriods = null;
+    private ?int $fyPeriods = null;
 
     /**
      * @return void

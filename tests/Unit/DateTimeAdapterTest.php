@@ -243,34 +243,6 @@ class DateTimeAdapterTest extends BaseTestCase
     }
 
     /**
-     * Assert an exception is thrown on setting FY Start Date if:
-     * - dateTimeZone param is provided and is of an unsupported type.
-     *
-     * @test
-     *
-     * @throws Exception
-     * @throws ConfigException
-     * @throws \Exception
-     */
-    public function assertSetFyStartDateThrowsExceptionIfInvalidDateTimeZoneTypeIsProvided(): void
-    {
-        $type = $this->fyTypes[array_rand($this->fyTypes)];
-
-        $timeZoneTypes = [
-            new \stdClass(),
-            ['something-1', 'something-2'],
-            random_int(1, 100),
-            (bool) random_int(0, 1)
-        ];
-
-        $this->expectException(ConfigException::class);
-        $this->expectExceptionMessage('Invalid dateTimeZone parameter');
-
-        // @phpstan-ignore-next-line
-        new DateTimeAdapter($type, '2023-11-19', (bool) random_int(0, 1), $timeZoneTypes[array_rand($timeZoneTypes)]);
-    }
-
-    /**
      * @test
      *
      * @throws ConfigException
@@ -1165,13 +1137,14 @@ class DateTimeAdapterTest extends BaseTestCase
     public function assertGetDateObjectThrowsExceptionForInvalidString(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage(
-            'Invalid date format. Not a valid ISO-8601 date string or DateTime/DateTimeImmutable object.'
-        );
+
+        $date = bin2hex(random_bytes(20));
+
+        $this->expectExceptionMessage('Provided date `' . $date . '` is not a valid ISO-8601 date string.');
 
         new DateTimeAdapter(
             $this->fyTypes[array_rand($this->fyTypes)],
-            bin2hex(random_bytes(20)),
+            $date,
             (bool) random_int(0, 1)
         );
     }

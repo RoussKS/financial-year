@@ -46,11 +46,9 @@ interface AdapterInterface
      * Expects either string ISO-8601 format 'YYYY-MM-DD'
      * or a date object, same object instance as the adapter's that extends the DateTimeInterface
      *
-     * @param string|DateTimeInterface $date
-     *
      * @throws ConfigException
      */
-    public function setFyStartDate($date): void;
+    public function setFyStartDate(DateTimeInterface|string $date): void;
 
     /**
      * Get the financial year's end date.
@@ -72,18 +70,14 @@ interface AdapterInterface
     public function getBusinessWeekById(int $id): Traversable;
 
     /**
-     * @param string|DateTimeInterface $date
-     *
      * @throws ConfigException
      */
-    public function getPeriodIdByDate($date): int;
+    public function getPeriodIdByDate(DateTimeInterface|string $date): int;
 
     /**
-     * @param string|DateTimeInterface $date
-     *
      * @throws ConfigException
      */
-    public function getBusinessWeekIdIdByDate($date): int;
+    public function getBusinessWeekIdIdByDate(DateTimeInterface|string $date): int;
 
     /**
      * Get the first date of the period with the given id.
