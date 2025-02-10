@@ -20,41 +20,21 @@ abstract class AbstractAdapter
      */
     public const TYPE_BUSINESS = 'business';
 
-    /**
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * @var DateTimeInterface
-     */
-    protected $fyStartDate;
-
-    /***
-     * @var DateTimeInterface
-     */
-    protected $fyEndDate;
+    protected ?string $type = null;
+    protected ?DateTimeInterface $fyStartDate = null;
+    protected ?DateTimeInterface $fyEndDate = null;
 
     /**
      * Applicable to Business financial year type only.
-     *
-     * @var int|null
      */
-    protected $fyWeeks;
+    protected ?int $fyWeeks;
 
     /**
      * The number of fyPeriods for the selected financial year type.
-     *
-     * @var int
      */
-    protected $fyPeriods;
+    protected int $fyPeriods;
 
     /**
-     * AbstractAdapter constructor.
-     *
-     * @param  string $type
-     * @param  bool $fiftyThreeWeeks
-     *
      * @return void
      *
      * @throws ConfigException
@@ -83,8 +63,6 @@ abstract class AbstractAdapter
 
     /**
      * Get the financial year type.
-     *
-     * @return string
      */
     public function getType(): string
     {
@@ -93,8 +71,6 @@ abstract class AbstractAdapter
 
     /**
      * Get the number of weeks for business type financial year or null for calendar type.
-     *
-     * @return int|null
      */
     public function getFyWeeks(): ?int
     {
@@ -103,8 +79,6 @@ abstract class AbstractAdapter
 
     /**
      * Get the number of periods of the financial year.
-     *
-     * @return int
      */
     public function getFyPeriods(): int
     {
@@ -115,11 +89,7 @@ abstract class AbstractAdapter
      * Set the number of weeks for the Financial Year.
      *
      * Only applies to business financial year type and will be set either 52 or 53.
-     * Throw ConfigException for calendar type.
-     *
-     * @param  bool $fiftyThreeWeeks
-     *
-     * @return void
+     * Throw ConfigException otherwise.
      *
      * @throws ConfigException
      */
@@ -137,8 +107,6 @@ abstract class AbstractAdapter
     /**
      * Validate configuration.
      *
-     * @return void
-     *
      * @throws ConfigException
      */
     public function validateConfiguration(): void
@@ -152,10 +120,6 @@ abstract class AbstractAdapter
      * Validate period $id is between 1 and 12 for calendar type financial year.
      * Or between 1 and 13 for business type financial year.
      *
-     * @param  int $id
-     *
-     * @return void
-     *
      * @throws Exception
      */
     protected function validatePeriodId(int $id): void
@@ -167,10 +131,6 @@ abstract class AbstractAdapter
 
     /**
      * Validate fyType is business and week $id is between 1 and fyWeeks property (52 or 53).
-     *
-     * @param  int $id
-     *
-     * @return void
      *
      * @throws Exception
      * @throws ConfigException
@@ -188,10 +148,6 @@ abstract class AbstractAdapter
 
     /**
      * Check if calendar type financial year.
-     *
-     * @param  string $value
-     *
-     * @return bool
      */
     protected function isCalendarType(string $value): bool
     {
@@ -200,10 +156,6 @@ abstract class AbstractAdapter
 
     /**
      * Check if business type financial year.
-     *
-     * @param  string $value
-     *
-     * @return bool
      */
     protected function isBusinessType(string $value): bool
     {
@@ -211,10 +163,6 @@ abstract class AbstractAdapter
     }
 
     /**
-     * @param  string|null $message
-     *
-     * @return void
-     *
      * @throws ConfigException
      */
     protected function throwConfigurationException(string $message = null): void
