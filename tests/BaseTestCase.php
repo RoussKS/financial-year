@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class BaseTestCase extends TestCase
 {
     /**
-     * @return \DateTimeImmutable|\DateTimeInterface
+     * @return \DateTimeImmutable
      * @throws \Exception
      */
     protected function getRandomDateTime(): DateTimeInterface

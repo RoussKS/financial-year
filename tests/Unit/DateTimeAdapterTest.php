@@ -16,15 +16,10 @@ use RoussKS\FinancialYear\Tests\BaseTestCase;
 
 class DateTimeAdapterTest extends BaseTestCase
 {
-    /**
-     * @var array
-     */
-    protected $fyTypes = [AbstractAdapter::TYPE_CALENDAR, AbstractAdapter::TYPE_BUSINESS];
+    protected array $fyTypes = [AbstractAdapter::TYPE_CALENDAR, AbstractAdapter::TYPE_BUSINESS];
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -49,8 +44,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -77,8 +70,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -102,8 +93,6 @@ class DateTimeAdapterTest extends BaseTestCase
      * @test
      *
      * Invalid dates are 29, 30, 31 of any month.
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -130,8 +119,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -166,8 +153,6 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @test
      *
-     * @return void
-     *
      * @throws Exception
      * @throws ConfigException
      * @throws \Exception
@@ -198,8 +183,6 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @test
      *
-     * @return void
-     *
      * @throws Exception
      * @throws ConfigException
      * @throws \Exception
@@ -222,8 +205,6 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @test
      *
-     * @return void
-     *
      * @throws Exception
      * @throws ConfigException
      * @throws \Exception
@@ -244,8 +225,6 @@ class DateTimeAdapterTest extends BaseTestCase
      * - dateTimeZone param is provided and is a string of available DateTimeZones.
      *
      * @test
-     *
-     * @return void
      *
      * @throws Exception
      * @throws ConfigException
@@ -268,8 +247,6 @@ class DateTimeAdapterTest extends BaseTestCase
      * - dateTimeZone param is provided and is of an unsupported type.
      *
      * @test
-     *
-     * @return void
      *
      * @throws Exception
      * @throws ConfigException
@@ -296,8 +273,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -319,8 +294,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -345,8 +318,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -369,8 +340,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -395,8 +364,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -419,8 +386,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -445,8 +410,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      */
@@ -468,8 +431,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -493,8 +454,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      */
@@ -515,8 +474,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -554,8 +511,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -578,8 +533,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -604,10 +557,10 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
+     * @throws \DateMalformedPeriodStringException
+     * @throws \DateMalformedStringException
      */
     public function assertGetBusinessWeekByIdReturnsCorrectWeekPeriodForLastWeekOfBusinessTypeFinancialYearFiftyTwoWeeks(): void
     {
@@ -628,10 +581,10 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
+     * @throws \DateMalformedPeriodStringException
+     * @throws \DateMalformedStringException
      */
     public function assertGetBusinessWeekByIdReturnsCorrectWeekPeriodForLastWeekOfBusinessTypeFinancialYearFiftyThreeWeeks(): void
     {
@@ -651,8 +604,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -675,8 +626,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -701,8 +650,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -722,8 +669,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -747,8 +692,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -770,8 +713,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -796,8 +737,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -817,8 +756,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -842,8 +779,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -866,8 +801,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -889,8 +822,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -917,8 +848,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -940,8 +869,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -965,8 +892,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -985,8 +910,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -1012,8 +935,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -1036,8 +957,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -1062,8 +981,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -1095,8 +1012,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -1126,8 +1041,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -1159,8 +1072,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -1191,10 +1102,10 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
+     * @throws \DateMalformedPeriodStringException
+     * @throws \DateMalformedStringException
      */
     public function assertGetFiftyThirdBusinessWeekByPeriodIdReturnsCorrectWeek(): void
     {
@@ -1226,8 +1137,6 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * Random test just to check the allowed Immutable object.
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -1250,8 +1159,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -1272,8 +1179,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws Exception
      * @throws ConfigException
@@ -1304,8 +1209,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws Exception
      * @throws ConfigException
