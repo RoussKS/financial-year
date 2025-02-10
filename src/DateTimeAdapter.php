@@ -24,13 +24,14 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     private ?DateTimeZone $dateTimeZone;
 
     /**
-     * @param DateTime|DateTimeImmutable|DateTimeInterface|string $fyStartDate // string must be of ISO-8601 format 'YYYY-MM-DD'
-     * @param DateTimeZone|string|null $dateTimeZone // this will be used only and only if a string was provided for start date
+     * @param  DateTime|DateTimeImmutable|DateTimeInterface|string  $fyStartDate  // string must be of ISO-8601 format 'YYYY-MM-DD'
+     * @param  DateTimeZone|string|null  $dateTimeZone  // this will be used only and only if a string was provided for start date
      *
      * @return void
      *
      * @throws ConfigException
      * @throws Exception
+     * @throws \DateMalformedStringException
      */
     public function __construct(string $fyType, $fyStartDate, bool $fiftyThreeWeeks = false, $dateTimeZone = null)
     {
