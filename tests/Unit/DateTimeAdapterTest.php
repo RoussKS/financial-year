@@ -559,8 +559,6 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
-     * @throws \DateMalformedPeriodStringException
-     * @throws \DateMalformedStringException
      */
     public function assertGetBusinessWeekByIdReturnsCorrectWeekPeriodForLastWeekOfBusinessTypeFinancialYearFiftyTwoWeeks(): void
     {
@@ -583,8 +581,6 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
-     * @throws \DateMalformedPeriodStringException
-     * @throws \DateMalformedStringException
      */
     public function assertGetBusinessWeekByIdReturnsCorrectWeekPeriodForLastWeekOfBusinessTypeFinancialYearFiftyThreeWeeks(): void
     {
@@ -1104,8 +1100,6 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @throws ConfigException
      * @throws Exception
-     * @throws \DateMalformedPeriodStringException
-     * @throws \DateMalformedStringException
      */
     public function assertGetFiftyThirdBusinessWeekByPeriodIdReturnsCorrectWeek(): void
     {

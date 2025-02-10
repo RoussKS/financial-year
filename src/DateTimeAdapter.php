@@ -31,7 +31,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws ConfigException
      * @throws Exception
-     * @throws \DateMalformedStringException
      */
     public function __construct(string $fyType, $fyStartDate, bool $fiftyThreeWeeks = false, $dateTimeZone = null)
     {
@@ -131,8 +130,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return DatePeriod|DateTimeImmutable[]
      *
-     * @throws \DateMalformedStringException
-     * @throws \DateMalformedPeriodStringException
      * @throws Exception
      */
     public function getBusinessWeekById(int $id): Traversable
@@ -149,7 +146,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @param DateTime|DateTimeImmutable|string $date
      *
-     * @throws \DateMalformedStringException
      * @throws Exception
      */
     public function getPeriodIdByDate($date): int
@@ -175,7 +171,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @param DateTime|DateTimeImmutable|string $date
      *
-     * @throws \DateMalformedStringException
      * @throws Exception
      */
     public function getBusinessWeekIdIdByDate($date): int
@@ -208,7 +203,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * First check for calendar type.
      * Otherwise, it will be business type as no other is supported.
      *
-     * @throws \DateMalformedStringException
      * @throws Exception
      */
     public function getFirstDateOfPeriodById(int $id): DateTimeImmutable
@@ -238,7 +232,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * First check for calendar type.
      * Otherwise, it will be business type as no other is supported.
      *
-     * @throws \DateMalformedStringException
      * @throws Exception
      */
     public function getLastDateOfPeriodById(int $id): DateTimeImmutable
@@ -266,7 +259,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @throws \DateMalformedStringException
      * @throws Exception
      */
     public function getFirstDateOfBusinessWeekById(int $id): DateTimeImmutable
@@ -286,7 +278,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @throws \DateMalformedStringException
      * @throws Exception
      */
     public function getLastDateOfBusinessWeekById(int $id): DateTimeImmutable
@@ -308,8 +299,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return DatePeriod|DateTimeImmutable[]
      *
-     * @throws \DateMalformedStringException
-     * @throws \DateMalformedPeriodStringException
      * @throws Exception
      */
     public function getFirstBusinessWeekByPeriodId(int $id): Traversable
@@ -322,8 +311,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return DatePeriod|DateTimeImmutable[]
      *
-     * @throws \DateMalformedStringException
-     * @throws \DateMalformedPeriodStringException
      * @throws Exception
      */
     public function getSecondBusinessWeekByPeriodId(int $id): Traversable
@@ -336,8 +323,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return DatePeriod|DateTimeImmutable[]
      *
-     * @throws \DateMalformedStringException
-     * @throws \DateMalformedPeriodStringException
      * @throws Exception
      */
     public function getThirdBusinessWeekOfPeriodId(int $id): Traversable
@@ -350,8 +335,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return DatePeriod|DateTimeImmutable[]
      *
-     * @throws \DateMalformedStringException
-     * @throws \DateMalformedPeriodStringException
      * @throws Exception
      */
     public function getFourthBusinessWeekByPeriodId(int $id): Traversable
@@ -364,8 +347,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return DatePeriod|DateTimeImmutable[]
      *
-     * @throws \DateMalformedStringException
-     * @throws \DateMalformedPeriodStringException
      * @throws Exception
      */
     public function getFiftyThirdBusinessWeek(): Traversable
@@ -377,8 +358,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * First check if calendar type and return value.
      * If not calendar type, it is business type (as the only other option available supported and always set).
      * So we can safely return the relevant value.
-     *
-     * @throws \DateMalformedStringException
      */
     public function getNextFyStartDate(): DateTimeImmutable
     {
@@ -429,8 +408,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * We will set end date from the start date object which should be present.
      * Both types calculate end date relative to next financial year start date.
      * As that is automatically calculated for us, regardless of type, we just subtract 1 day.
-     *
-     * @throws \DateMalformedStringException
      */
     protected function autoSetFyEndDateByStartDate(): void
     {
