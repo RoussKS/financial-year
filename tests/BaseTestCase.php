@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RoussKS\FinancialYear\Tests;
 
 use DateTimeImmutable;
@@ -9,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class BaseTestCase extends TestCase
 {
     /**
-     * @return \DateTimeImmutable|\DateTimeInterface
+     * @return \DateTimeImmutable
      * @throws \Exception
      */
     protected function getRandomDateTime(): DateTimeInterface

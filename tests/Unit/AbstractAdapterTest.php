@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RoussKS\FinancialYear\Tests\Unit;
 
 use RoussKS\FinancialYear\AbstractAdapter;
@@ -7,11 +9,6 @@ use RoussKS\FinancialYear\AdapterInterface;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 
-/**
- * Class AbstractAdapterTest
- *
- * @package RoussKS\FinancialYear\Tests\Unit
- */
 class AbstractAdapterTest extends BaseTestCase
 {
     /**

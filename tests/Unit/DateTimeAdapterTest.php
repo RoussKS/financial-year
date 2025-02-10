@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RoussKS\FinancialYear\Tests\Unit;
 
 use DateTime;
@@ -12,22 +14,12 @@ use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
 
-/**
- * Class DateTimeAdapterTest
- *
- * @package RoussKS\FinancialYear\Tests\Unit
- */
 class DateTimeAdapterTest extends BaseTestCase
 {
-    /**
-     * @var array
-     */
-    protected $fyTypes = [AbstractAdapter::TYPE_CALENDAR, AbstractAdapter::TYPE_BUSINESS];
+    protected array $fyTypes = [AbstractAdapter::TYPE_CALENDAR, AbstractAdapter::TYPE_BUSINESS];
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -52,8 +44,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -80,8 +70,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -105,8 +93,6 @@ class DateTimeAdapterTest extends BaseTestCase
      * @test
      *
      * Invalid dates are 29, 30, 31 of any month.
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -133,8 +119,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -169,8 +153,6 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @test
      *
-     * @return void
-     *
      * @throws Exception
      * @throws ConfigException
      * @throws \Exception
@@ -185,7 +167,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business'
-                ? $this->getRandomDateTime()->setTimezone($defaultTimeZone) // @phpstan-ignore-line
+                ? $this->getRandomDateTime()->setTimezone($defaultTimeZone)
                 : $this->getRandomDateExcludingDisallowedFyCalendarTypeDates()->setTimezone($defaultTimeZone),
             (bool) random_int(0, 1),
             $timeZone
@@ -200,8 +182,6 @@ class DateTimeAdapterTest extends BaseTestCase
      * - dateTimeZone param is provided and is DateTimeZone instance.
      *
      * @test
-     *
-     * @return void
      *
      * @throws Exception
      * @throws ConfigException
@@ -225,8 +205,6 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @test
      *
-     * @return void
-     *
      * @throws Exception
      * @throws ConfigException
      * @throws \Exception
@@ -248,8 +226,6 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @test
      *
-     * @return void
-     *
      * @throws Exception
      * @throws ConfigException
      * @throws \Exception
@@ -267,39 +243,7 @@ class DateTimeAdapterTest extends BaseTestCase
     }
 
     /**
-     * Assert an exception is thrown on setting FY Start Date if:
-     * - dateTimeZone param is provided and is of an unsupported type.
-     *
      * @test
-     *
-     * @return void
-     *
-     * @throws Exception
-     * @throws ConfigException
-     * @throws \Exception
-     */
-    public function assertSetFyStartDateThrowsExceptionIfInvalidDateTimeZoneTypeIsProvided(): void
-    {
-        $type = $this->fyTypes[array_rand($this->fyTypes)];
-
-        $timeZoneTypes = [
-            new \stdClass(),
-            ['something-1', 'something-2'],
-            random_int(1, 100),
-            (bool) random_int(0, 1)
-        ];
-
-        $this->expectException(ConfigException::class);
-        $this->expectExceptionMessage('Invalid dateTimeZone parameter');
-
-        // @phpstan-ignore-next-line
-        new DateTimeAdapter($type, '2023-11-19', (bool) random_int(0, 1), $timeZoneTypes[array_rand($timeZoneTypes)]);
-    }
-
-    /**
-     * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -322,8 +266,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -348,8 +290,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -372,8 +312,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -398,8 +336,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -422,8 +358,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -448,8 +382,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      */
@@ -471,8 +403,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -496,8 +426,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      */
@@ -518,8 +446,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -557,8 +483,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -581,8 +505,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -607,8 +529,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      */
@@ -630,8 +550,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -655,8 +573,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -678,8 +594,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -704,8 +618,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -725,8 +637,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -750,8 +660,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -773,8 +681,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -799,8 +705,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -820,8 +724,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -845,8 +747,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -869,8 +769,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -892,8 +790,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -920,8 +816,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -943,8 +837,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -968,8 +860,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -988,8 +878,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -1015,8 +903,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -1039,8 +925,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -1065,8 +949,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -1098,8 +980,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -1129,8 +1009,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -1162,8 +1040,6 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -1193,8 +1069,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -1229,8 +1103,6 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * Random test just to check the allowed Immutable object.
      *
-     * @return void
-     *
      * @throws ConfigException
      * @throws Exception
      * @throws \Exception
@@ -1239,21 +1111,24 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         $type = $this->fyTypes[array_rand($this->fyTypes)];
 
+        $fyStartDate = $type === 'business' ?
+            $this->getRandomDateTime() :
+            $this->getRandomDateExcludingDisallowedFyCalendarTypeDates();
+
+        $calenderFyStartDate = $this->getRandomDateTime();
+        $businessFyStartDate = $this->getRandomDateExcludingDisallowedFyCalendarTypeDates();
+
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
-            $type === 'business' ?
-                $this->getRandomDateTime() :
-                $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
+            $fyStartDate,
             (bool) random_int(0, 1)
         );
 
-        $this->assertNotNull($dateTimeAdapter->getFyStartDate());
+        $this->assertEquals($fyStartDate->setTime(0, 0), $dateTimeAdapter->getFyStartDate());
     }
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws ConfigException
      * @throws Exception
@@ -1262,21 +1137,20 @@ class DateTimeAdapterTest extends BaseTestCase
     public function assertGetDateObjectThrowsExceptionForInvalidString(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage(
-            'Invalid date format. Not a valid ISO-8601 date string or DateTime/DateTimeImmutable object.'
-        );
+
+        $date = bin2hex(random_bytes(20));
+
+        $this->expectExceptionMessage('Provided date `' . $date . '` is not a valid ISO-8601 date string.');
 
         new DateTimeAdapter(
             $this->fyTypes[array_rand($this->fyTypes)],
-            bin2hex(random_bytes(20)),
+            $date,
             (bool) random_int(0, 1)
         );
     }
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws Exception
      * @throws ConfigException
@@ -1307,8 +1181,6 @@ class DateTimeAdapterTest extends BaseTestCase
 
     /**
      * @test
-     *
-     * @return void
      *
      * @throws Exception
      * @throws ConfigException

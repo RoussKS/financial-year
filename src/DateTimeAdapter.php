@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RoussKS\FinancialYear;
 
 use DateInterval;
@@ -10,59 +12,41 @@ use DateTimeInterface;
 use DateTimeZone;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
-use Traversable;
 
 /**
  * Implementation of PHP DateTime FinancialYear Adapter
- *
- * Class DateTimeAdapter
- *
- * @package RoussKS\FinancialYear
  */
 class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 {
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $fyStartDate;
+    private DateTimeZone $dateTimeZone;
 
     /**
-     * @var DateTimeImmutable
-     */
-    protected $fyEndDate;
-
-    /**
-     * @var DateTimeZone|null
-     */
-    private $dateTimeZone;
-
-    /**
-     * DateTimeAdapter constructor.
-     *
-     * @param string $fyType
-     * @param DateTime|DateTimeImmutable|DateTimeInterface|string $fyStartDate // string must be of ISO-8601 format 'YYYY-MM-DD'
-     * @param bool $fiftyThreeWeeks
-     * @param DateTimeZone|string|null $dateTimeZone // this will be used only and only if a string was provided for start date
+     * @param DateTimeInterface|string $fyStartDate  // string must be of ISO-8601 format 'YYYY-MM-DD'
+     * @param DateTimeZone|string|null $dateTimeZone  // this will be used only and only if a string was provided for start date
      *
      * @return void
      *
      * @throws ConfigException
      * @throws Exception
      */
-    public function __construct(string $fyType, $fyStartDate, bool $fiftyThreeWeeks = false, $dateTimeZone = null)
-    {
+    public function __construct(
+        string $fyType,
+        DateTimeInterface|string $fyStartDate,
+        bool $fiftyThreeWeeks = false,
+        DateTimeZone|string|null $dateTimeZone = null
+    ) {
         parent::__construct($fyType, $fiftyThreeWeeks);
 
-        // First set the timezone if start date is a string,
+        // First set the timezone, use param if start date is a string, otherwise use datetime object timezone.
         // then the start date and then auto calculate the end date of the financial year.
-        $this->setDateTimeZone(is_string($fyStartDate) ? $dateTimeZone : null);
+        $this->setDateTimeZone(is_string($fyStartDate) ? $dateTimeZone : $fyStartDate->getTimezone());
         $this->setFyStartDate($fyStartDate);
 
         $this->autoSetFyEndDateByStartDate();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * Extend parent class in order to recalculate end date if the business year weeks change.
      *
@@ -70,34 +54,31 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function setFyWeeks(bool $fiftyThreeWeeks = false): void
     {
-        $originalFyWeeks = $this->fyWeeks;
+        $originalFyWeeks = $this->getFyWeeks();
 
         parent::setFyWeeks($fiftyThreeWeeks);
 
         // Reset the financial year's end date according to the weeks setting.
-        if ($originalFyWeeks !== null && $originalFyWeeks !== $this->fyWeeks) {
+        if ($originalFyWeeks !== null && $originalFyWeeks !== $this->getFyWeeks()) {
             $this->autoSetFyEndDateByStartDate();
         }
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @return DateTimeImmutable
+     * {@inheritDoc}
      */
-    public function getFyStartDate(): DateTimeInterface
+    public function getFyStartDate(): DateTimeImmutable
     {
+        /** @var \DateTimeImmutable */
         return $this->fyStartDate;
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @param  DateTime|DateTimeImmutable|string $date
+     * {@inheritDoc}
      *
      * @throws Exception
      */
-    public function setFyStartDate($date): void
+    public function setFyStartDate(DateTimeInterface|string $date): void
     {
         // fyStartDate property is an immutable object.
         $originalFyStartDate = $this->fyStartDate;
@@ -107,35 +88,32 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $this->validateStartDate();
 
         // If this method execution is not triggered on instantiation (constructor) which performs the same action,
-        // recalculate financial year's end date from current settings,
+        // set the timezone again (in case it is changed) & recalculate financial year's end date from current settings,
         // even if the new start date is the same as the previous one (why re-setting the same date?).
         if ($originalFyStartDate !== null) {
+            $this->setDateTimeZone($this->getFyStartDate()->getTimezone());
             $this->autoSetFyEndDateByStartDate();
         }
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return DateTimeImmutable
-     */
-    public function getFyEndDate(): DateTimeInterface
+    public function getFyEndDate(): DateTimeImmutable
     {
+        /** @var DateTimeImmutable */
         return $this->fyEndDate;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * First check for calendar type and the return the corresponding value.
      * Otherwise, it is business type as the only other available.
      *
-     * @return DatePeriod|DateTimeImmutable[]
+     * @return DatePeriod<DateTimeImmutable, DateTimeImmutable, null>
      *
      * @throws Exception
      * @throws \Exception
      */
-    public function getPeriodById(int $id): Traversable
+    public function getPeriodById(int $id): DatePeriod
     {
         return new DatePeriod(
             $this->getFirstDateOfPeriodById($id),
@@ -145,13 +123,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
-     * @return DatePeriod|DateTimeImmutable[]
+     * @return DatePeriod<DateTimeImmutable, DateTimeImmutable, null>
      *
      * @throws Exception
      */
-    public function getBusinessWeekById(int $id): Traversable
+    public function getBusinessWeekById(int $id): DatePeriod
     {
         return new DatePeriod(
             $this->getFirstDateOfBusinessWeekById($id),
@@ -161,19 +139,17 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @param  DateTime|DateTimeImmutable|string $date
+     * {@inheritDoc}
      *
      * @throws Exception
      */
-    public function getPeriodIdByDate($date): int
+    public function getPeriodIdByDate(DateTimeInterface|string $date): int
     {
         $dateTime = $this->getDateObject($date);
 
         $this->validateDateBelongsToCurrentFinancialYear($dateTime);
 
-        for ($id = 1; $id <= $this->fyPeriods; $id++) {
+        for ($id = 1; $id <= $this->getFyPeriods(); $id++) {
             // If the date is between the start and the end date of the period, get the period's id.
             if ($dateTime >= $this->getFirstDateOfPeriodById($id) && $dateTime <= $this->getLastDateOfPeriodById($id)) {
                 return $id;
@@ -186,13 +162,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @param  DateTime|DateTimeImmutable|string $date
+     * {@inheritDoc}
      *
      * @throws Exception
      */
-    public function getBusinessWeekIdIdByDate($date): int
+    public function getBusinessWeekIdIdByDate(DateTimeInterface|string $date): int
     {
         $dateTime = $this->getDateObject($date);
 
@@ -202,7 +176,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->validateDateBelongsToCurrentFinancialYear($dateTime);
 
-        for ($id = 1; $id <= $this->fyWeeks; $id++) {
+        for ($id = 1; $id <= $this->getFyWeeks(); $id++) {
             if (
                 $dateTime >= $this->getFirstDateOfBusinessWeekById($id) &&
                 $dateTime <= $this->getLastDateOfBusinessWeekById($id)
@@ -217,16 +191,14 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * First check for calendar type.
      * Otherwise, it will be business type as no other is supported.
      *
-     * @return DateTimeImmutable
-     *
      * @throws Exception
      */
-    public function getFirstDateOfPeriodById(int $id): DateTimeInterface
+    public function getFirstDateOfPeriodById(int $id): DateTimeImmutable
     {
         $this->validateConfiguration();
 
@@ -248,23 +220,21 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * First check for calendar type.
      * Otherwise, it will be business type as no other is supported.
      *
-     * @return DateTimeImmutable
-     *
      * @throws Exception
      */
-    public function getLastDateOfPeriodById(int $id): DateTimeInterface
+    public function getLastDateOfPeriodById(int $id): DateTimeImmutable
     {
         $this->validateConfiguration();
 
         $this->validatePeriodId($id);
 
         // If last period, get the end of the financial year, regardless of the type.
-        if ($id === $this->fyPeriods) {
+        if ($id === $this->getFyPeriods()) {
             return $this->getFyEndDate();
         }
 
@@ -280,13 +250,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @return DateTimeImmutable
+     * {@inheritDoc}
      *
      * @throws Exception
      */
-    public function getFirstDateOfBusinessWeekById(int $id): DateTimeInterface
+    public function getFirstDateOfBusinessWeekById(int $id): DateTimeImmutable
     {
         $this->validateConfiguration();
 
@@ -301,20 +269,18 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @return DateTimeImmutable
+     * {@inheritDoc}
      *
      * @throws Exception
      */
-    public function getLastDateOfBusinessWeekById(int $id): DateTimeInterface
+    public function getLastDateOfBusinessWeekById(int $id): DateTimeImmutable
     {
         $this->validateConfiguration();
 
         $this->validateBusinessWeekId($id);
 
         // If last week, get the end of the financial year.
-        if ($id === $this->fyWeeks) {
+        if ($id === $this->getFyWeeks()) {
             return $this->getFyEndDate();
         }
 
@@ -322,61 +288,61 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
-     * @return DatePeriod|DateTimeImmutable[]
+     * @return DatePeriod<DateTimeImmutable, DateTimeImmutable, null>
      *
      * @throws Exception
      */
-    public function getFirstBusinessWeekByPeriodId(int $id): Traversable
+    public function getFirstBusinessWeekByPeriodId(int $id): DatePeriod
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 1);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
-     * @return DatePeriod|DateTimeImmutable[]
+     * @return DatePeriod<DateTimeImmutable, DateTimeImmutable, null>
      *
      * @throws Exception
      */
-    public function getSecondBusinessWeekByPeriodId(int $id): Traversable
+    public function getSecondBusinessWeekByPeriodId(int $id): DatePeriod
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 2);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
-     * @return DatePeriod|DateTimeImmutable[]
+     * @return DatePeriod<DateTimeImmutable, DateTimeImmutable, null>
      *
      * @throws Exception
      */
-    public function getThirdBusinessWeekOfPeriodId(int $id): Traversable
+    public function getThirdBusinessWeekOfPeriodId(int $id): DatePeriod
     {
         return $this->getBusinessWeekById(($id - 1) * 4 + 3);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
-     * @return DatePeriod|DateTimeImmutable[]
+     * @return DatePeriod<DateTimeImmutable, DateTimeImmutable, null>
      *
      * @throws Exception
      */
-    public function getFourthBusinessWeekByPeriodId(int $id): Traversable
+    public function getFourthBusinessWeekByPeriodId(int $id): DatePeriod
     {
         return $this->getBusinessWeekById($id * 4);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
-     * @return DatePeriod|DateTimeImmutable[]
+     * @return DatePeriod<DateTimeImmutable, DateTimeImmutable, null>
      *
      * @throws Exception
      */
-    public function getFiftyThirdBusinessWeek(): Traversable
+    public function getFiftyThirdBusinessWeek(): DatePeriod
     {
         return $this->getBusinessWeekById(53);
     }
@@ -385,12 +351,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * First check if calendar type and return value.
      * If not calendar type, it is business type (as the only other option available supported and always set).
      * So we can safely return the relevant value.
-     *
-     * {@inheritdoc}
-     *
-     * @return DateTimeImmutable
      */
-    public function getNextFyStartDate(): DateTimeInterface
+    public function getNextFyStartDate(): DateTimeImmutable
     {
         // For calendar type, the next year's start date is + 1 year.
         if ($this->isCalendarType($this->getType())) {
@@ -399,13 +361,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // For business type, the next year's start date is + number of weeks.
         // As a financial year would have 52 or 53 weeks, the param handles it.
-        return $this->getFyStartDate()->modify('+' . $this->fyWeeks . ' weeks');
+        return $this->getFyStartDate()->modify('+' . $this->getFyWeeks() . ' weeks');
     }
 
     /**
      * Validate that the start date is not disallowed.
-     *
-     * @return void
      *
      * @throws ConfigException
      */
@@ -414,8 +374,8 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $disallowedFyCalendarTypeDates = ['29', '30', '31'];
 
         if (
-            $this->isCalendarType($this->getType()) &&
-            in_array($this->getFyStartDate()->format('d'), $disallowedFyCalendarTypeDates, true)
+            $this->isCalendarType($this->getType())
+            && in_array($this->getFyStartDate()->format('d'), $disallowedFyCalendarTypeDates, true)
         ) {
             $this->throwConfigurationException(
                 'This library does not support 29, 30, 31 as start dates of a month for calendar type financial year.'
@@ -425,10 +385,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
     /**
      * Validate that a date belongs to the set financial year.
-     *
-     * @param  DateTimeImmutable $dateTime
-     *
-     * @return void
      *
      * @throws Exception
      */
@@ -445,8 +401,6 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * We will set end date from the start date object which should be present.
      * Both types calculate end date relative to next financial year start date.
      * As that is automatically calculated for us, regardless of type, we just subtract 1 day.
-     *
-     * @return void
      */
     protected function autoSetFyEndDateByStartDate(): void
     {
@@ -455,41 +409,31 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
     /**
      * Get the DateTimeZone currently set
-     *
-     * @return DateTimeZone|null
      */
-    protected function getDateTimeZone(): ?DateTimeZone
+    private function getDateTimeZone(): DateTimeZone
     {
         return $this->dateTimeZone;
     }
 
     /**
-     * @param DateTimeZone|string|null $dateTimeZone
-     * @return void
      * @throws ConfigException
      */
-    protected function setDateTimeZone($dateTimeZone = null): void
+    private function setDateTimeZone(DateTimeZone|string|null $dateTimeZone = null): void
     {
-        if ($dateTimeZone === null) {
-            return;
-        }
-
+        // If a DateTimeZone object is provided, set it directly.
         if ($dateTimeZone instanceof DateTimeZone) {
             $this->dateTimeZone = $dateTimeZone;
             return;
         }
 
-        if (is_string($dateTimeZone)) {
-            try {
-                $this->dateTimeZone = new DateTimeZone($dateTimeZone);
-                return;
-            } catch (\Exception $ex) {
-                // Catch exception, set null timezone string and throw config exception.
-                $this->throwConfigurationException('Invalid dateTimeZone string: ' . $dateTimeZone);
-            }
+        // Otherwise, set the DateTimeZone either by the string provided or the system's default if null provided.
+        // If none of the other options, a string is provided
+        try {
+            $this->dateTimeZone = new DateTimeZone($dateTimeZone ?? date_default_timezone_get());
+        } catch (\Exception) {
+            // Catch exception and throw as config exception.
+            $this->throwConfigurationException('Invalid dateTimeZone string: ' . $dateTimeZone);
         }
-
-        $this->throwConfigurationException('Invalid dateTimeZone parameter');
     }
 
     /**
@@ -497,28 +441,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * If the object is generated, we set it to the start of the day (0, 0) with setTime.
      * setTime will not return false for valid input of hours and minutes.
      *
-     * @param  DateTime|DateTimeImmutable|string $date
-     *
-     * @return DateTimeImmutable
-     *
      * @throws Exception
      */
-    protected function getDateObject($date): DateTimeImmutable
+    protected function getDateObject(DateTimeInterface|string $date): DateTimeImmutable
     {
-        $dateTime = $this->generateDateTimeImmutableObject($date);
-
-        // Validation that the datetime object was created and set to the start of the day.
-        if (!$dateTime) {
-            throw new Exception(
-                'Invalid date format. Not a valid ISO-8601 date string or DateTime/DateTimeImmutable object.'
-            );
-        }
-
-        /** @var DateTimeImmutable $dateTime */
-        $dateTime = $dateTime->setTime(0, 0);
-
-        // We have set a valid hour and minutes, so false is not a possible result of the above method.
-        return $dateTime;
+        return $this->generateImmutableObjectFromDatetime($date)->setTime(0, 0);
     }
 
     /**
@@ -530,11 +457,9 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * Otherwise, create the object regardless of the type with createFromFormat.
      * It will return false if it fails.
      *
-     * @param  DateTime|DateTimeImmutable|string $date
-     *
-     * @return DateTimeImmutable|false
+     * @throws Exception
      */
-    protected function generateDateTimeImmutableObject($date)
+    private function generateImmutableObjectFromDatetime(DateTimeInterface|string $date): DateTimeImmutable
     {
         if ($date instanceof DateTime) {
             return DateTimeImmutable::createFromMutable($date);
@@ -544,6 +469,12 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
             return $date;
         }
 
-        return DateTimeImmutable::createFromFormat('Y-m-d', $date, $this->getDateTimeZone());
+        $dateImmutable = DateTimeImmutable::createFromFormat('Y-m-d', $date, $this->getDateTimeZone());
+
+        if ($dateImmutable === false) {
+            throw new Exception('Provided date `' . $date . '` is not a valid ISO-8601 date string.');
+        }
+
+        return $dateImmutable;
     }
 }
