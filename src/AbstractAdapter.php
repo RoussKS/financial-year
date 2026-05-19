@@ -220,7 +220,7 @@ abstract class AbstractAdapter
      *
      * @throws ConfigException
      */
-    protected function throwConfigurationException(string $message = null): void
+    protected function throwConfigurationException(?string $message = null): void
     {
         if ($message === null) {
             $message = 'Invalid configuration of financial year adapter.';
