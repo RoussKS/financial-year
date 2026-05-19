@@ -4,7 +4,6 @@ namespace RoussKS\FinancialYear;
 
 use DateInterval;
 use DatePeriod;
-use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
@@ -40,7 +39,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * DateTimeAdapter constructor.
      *
      * @param string $fyType
-     * @param DateTime|DateTimeImmutable|DateTimeInterface|string $fyStartDate // string must be of ISO-8601 format 'YYYY-MM-DD'
+     * @param string|DateTimeInterface $fyStartDate // string must be of ISO-8601 format 'YYYY-MM-DD'
      * @param bool $fiftyThreeWeeks
      * @param DateTimeZone|string|null $dateTimeZone // this will be used only and only if a string was provided for start date
      *
@@ -49,7 +48,7 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @throws ConfigException
      * @throws Exception
      */
-    public function __construct(string $fyType, $fyStartDate, bool $fiftyThreeWeeks = false, $dateTimeZone = null)
+    public function __construct(string $fyType, string|\DateTimeInterface $fyStartDate, bool $fiftyThreeWeeks = false, DateTimeZone|string|null $dateTimeZone = null)
     {
         parent::__construct($fyType, $fiftyThreeWeeks);
 
@@ -93,11 +92,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  DateTime|DateTimeImmutable|string $date
+     * @param  string|DateTimeInterface $date
      *
      * @throws Exception
      */
-    public function setFyStartDate($date): void
+    public function setFyStartDate(string|\DateTimeInterface $date): void
     {
         // fyStartDate property is an immutable object.
         $originalFyStartDate = $this->fyStartDate;
@@ -163,11 +162,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  DateTime|DateTimeImmutable|string $date
+     * @param  string|DateTimeInterface $date
      *
      * @throws Exception
      */
-    public function getPeriodIdByDate($date): int
+    public function getPeriodIdByDate(string|\DateTimeInterface $date): int
     {
         $dateTime = $this->getDateObject($date);
 
@@ -188,11 +187,11 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  DateTime|DateTimeImmutable|string $date
+     * @param  string|DateTimeInterface $date
      *
      * @throws Exception
      */
-    public function getBusinessWeekIdIdByDate($date): int
+    public function getBusinessWeekIdIdByDate(string|\DateTimeInterface $date): int
     {
         $dateTime = $this->getDateObject($date);
 
@@ -497,13 +496,13 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * If the object is generated, we set it to the start of the day (0, 0) with setTime.
      * setTime will not return false for valid input of hours and minutes.
      *
-     * @param  DateTime|DateTimeImmutable|string $date
+     * @param  string|DateTimeInterface $date
      *
      * @return DateTimeImmutable
      *
      * @throws Exception
      */
-    protected function getDateObject($date): DateTimeImmutable
+    protected function getDateObject(string|\DateTimeInterface $date): DateTimeImmutable
     {
         $dateTime = $this->generateDateTimeImmutableObject($date);
 
@@ -524,24 +523,24 @@ class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * Generate and return a DateTimeImmutable object for the given $date parameter.
      *
-     * First check if we have received an object relevant to the adapter and return it.
-     * This can be either a DateTime or DateTimeImmutable object.
+     * First check if we have received a DateTimeImmutable object and return it.
+     * If we have any other DateTimeInterface object, create DateTimeImmutable from it.
      *
-     * Otherwise, create the object regardless of the type with createFromFormat.
+     * Otherwise, create the object from string with createFromFormat.
      * It will return false if it fails.
      *
-     * @param  DateTime|DateTimeImmutable|string $date
+     * @param  string|DateTimeInterface $date
      *
      * @return DateTimeImmutable|false
      */
-    protected function generateDateTimeImmutableObject($date)
+    protected function generateDateTimeImmutableObject(string|\DateTimeInterface $date): DateTimeImmutable|false
     {
-        if ($date instanceof DateTime) {
-            return DateTimeImmutable::createFromMutable($date);
-        }
-
         if ($date instanceof DateTimeImmutable) {
             return $date;
+        }
+
+        if ($date instanceof DateTimeInterface) {
+            return DateTimeImmutable::createFromInterface($date);
         }
 
         return DateTimeImmutable::createFromFormat('Y-m-d', $date, $this->getDateTimeZone());
