@@ -23,11 +23,10 @@ jobs:
       - name: 'Checkout Code'
         uses: actions/checkout@v3
       - name: 'Setup PHP'
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # 2.37.1
         with:
           php-version: "${{ matrix.php }}"
-      - name: Update composer to v2
-        run: composer self-update --2
+          tools: composer:v2
       - name: Install Dependencies via Composer
         run: composer install --no-ansi --no-interaction --no-progress --no-scripts --prefer-dist
       - name: Run PHPUnit
