@@ -53,6 +53,13 @@ $fy = new \RoussKS\FinancialYear\DateTimeAdapter('calendar', $startDate);
 echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31 
 ```
 
+```php
+// DateTimeAdapterFactory
+$fy = \RoussKS\FinancialYear\DateTimeAdapterFactory::create('calendar', '2019-01-01');
+
+echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31
+```
+
 ### Docker images
 The library provides a sample Dockerfile to assist in development use if you want to contribute.
 This using the official php cli images.
