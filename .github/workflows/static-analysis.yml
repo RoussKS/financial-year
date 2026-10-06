@@ -28,7 +28,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "${{ matrix.php }}"
-          tools: phpstan
+          tools: phpstan:v1
 
       - name: PHPStan Static Analysis
-        run: phpstan analyse src
+        run: phpstan analyse
