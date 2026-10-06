@@ -17,6 +17,7 @@ jobs:
     name: 'PHP Unit'
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         php: [7.1, 7.2, 7.3, 7.4, 8.0, 8.1, 8.2]
     steps:
@@ -44,6 +45,5 @@ jobs:
         run: composer install --no-ansi --no-interaction --no-progress --no-scripts --prefer-dist
 
       - name: 'Run PHPUnit'
-        run: ./vendor/bin/phpunit
-#        run: ./vendor/bin/phpunit --coverage-clover=coverage.xml - Add when coverage is fixed
-# ToDo: Add Code Coverage
+        run: phpunit
+        # ToDo: Add Code Coverage
