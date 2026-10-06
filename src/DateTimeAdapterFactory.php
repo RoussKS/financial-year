@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RoussKS\FinancialYear;
 
 use DateTime;
@@ -15,9 +17,7 @@ use RoussKS\FinancialYear\Exceptions\Exception;
 final class DateTimeAdapterFactory
 {
     /**
-     * @param string $fyType
      * @param DateTime|DateTimeImmutable|DateTimeInterface|string $fyStartDate
-     * @param bool $fiftyThreeWeeks
      * @param DateTimeZone|string|null $dateTimeZone
      *
      * @throws ConfigException
