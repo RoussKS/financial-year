@@ -12,7 +12,6 @@ use DateTimeZone;
 use Exception;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception as FinancialYearException;
-use Traversable;
 
 /**
  * Implementation of PHP DateTime FinancialYear Adapter
@@ -380,7 +379,7 @@ final class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * Get the DateTimeZone currently set
      */
-    protected function getDateTimeZone(): ?DateTimeZone
+    private function getDateTimeZone(): ?DateTimeZone
     {
         return $this->dateTimeZone;
     }
