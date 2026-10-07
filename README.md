@@ -62,7 +62,7 @@ echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31
 
 ### Makefile & Docker images
 The library provides a Dockerfile per supported PHP version to assist in development use if you want to contribute.
-These use the official php cli images.
+These use the official PHP CLI images.
 
 It also provides a `Makefile` to assist in setting up development environment per PHP version, running tests & static analysis.
 
