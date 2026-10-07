@@ -31,4 +31,4 @@ jobs:
           tools: phpstan:v2
 
       - name: PHPStan Static Analysis
-        run: phpstan analyse src
+        run: phpstan analyse

@@ -245,6 +245,7 @@ class DateTimeAdapterTest extends BaseTestCase
         );
 
         $originalFyStartDate = $dateTimeAdapter->getFyStartDate();
+        $originalFyEndDate = $dateTimeAdapter->getFyEndDate();
 
         $dateTimeAdapter->setFyStartDate(date:
             $type->isBusiness() ?
@@ -254,6 +255,11 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $this->assertNotSame(
             $originalFyStartDate->format(format: 'YmdHis'),
+            $dateTimeAdapter->getFyStartDate()->format(format: 'YmdHis')
+        );
+
+        $this->assertNotSame(
+            $originalFyEndDate->format(format: 'YmdHis'),
             $dateTimeAdapter->getFyEndDate()->format(format: 'YmdHis')
         );
     }
