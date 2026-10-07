@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RoussKS\FinancialYear\Tests\Unit;
 
 use DateTime;
@@ -9,110 +11,194 @@ use DateTimeZone;
 use RoussKS\FinancialYear\AbstractAdapter;
 use RoussKS\FinancialYear\DateTimeAdapter;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
-use RoussKS\FinancialYear\Exceptions\Exception;
+use RoussKS\FinancialYear\Exceptions\Exception as FinancialYearException;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
 
-/**
- * Class DateTimeAdapterTest
- *
- * @package RoussKS\FinancialYear\Tests\Unit
- */
 class DateTimeAdapterTest extends BaseTestCase
 {
-    /**
-     * @var array
-     */
-    protected $fyTypes = [AbstractAdapter::TYPE_CALENDAR, AbstractAdapter::TYPE_BUSINESS];
+    protected array $fyTypes = [AbstractAdapter::TYPE_CALENDAR, AbstractAdapter::TYPE_BUSINESS];
 
     /**
-     * @test
-     *
-     * @return void
-     *
-     * @throws ConfigException
-     * @throws Exception
      * @throws \Exception
      */
-    public function settingSameFyWeeksSetsWeeksWithoutChangingEndDateForBusinessType(): void
+    public function test_constructor_throws_exception_on_invalid_financial_year_type(): void
+    {
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage('Invalid Financial Year Type.');
+
+        new DateTimeAdapter(
+            fyType: 'invalid-type',
+            fyStartDate: $this->getRandomDateTime(),
+            fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
+        );
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_financial_year_calendar_type_is_set_correctly(): void
+    {
+        $fy = new DateTimeAdapter(
+            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyStartDate: $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
+            fiftyThreeWeeks: false
+        );
+
+        $this->assertEquals(AbstractAdapter::TYPE_CALENDAR, $fy->getType());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_financial_year_business_type_is_set_correctly(): void
+    {
+        $fy = new DateTimeAdapter(
+            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyStartDate: $this->getRandomDateTime(),
+            fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
+        );
+
+        $this->assertEquals(AbstractAdapter::TYPE_BUSINESS, $fy->getType());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_fy_weeks_returns_null_for_financial_year_calendar_type(): void
+    {
+        $fy = new DateTimeAdapter(
+            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyStartDate: $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
+            fiftyThreeWeeks: true
+        );
+
+        $this->assertNull($fy->getFyWeeks());
+    }
+
+    /**
+     * Assert both true and false 53rd week scenarios.
+     *
+     * @throws \Exception
+     */
+    public function test_fy_weeks_returns_correct_weeks_for_financial_year_business_type(): void
+    {
+        $fy = new DateTimeAdapter(
+            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyStartDate: $this->getRandomDateTime(),
+            fiftyThreeWeeks: true
+        );
+
+        $this->assertEquals(53, $fy->getFyWeeks());
+
+        $fy = new DateTimeAdapter(
+            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyStartDate: $this->getRandomDateTime(),
+            fiftyThreeWeeks: false
+        );
+
+        $this->assertEquals(52, $fy->getFyWeeks());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_fy_weeks_setter_throws_exception_for_financial_year_calendar_type(): void
+    {
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage('Can not set the financial year weeks property for non business year type.');
+
+        $fy = new DateTimeAdapter(
+            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyStartDate: $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
+        );
+
+        $fy->setFyWeeks(fiftyThreeWeeks: (bool) random_int(0, 1));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_fy_periods_returns_correct_integer_for_calendar_type_financial_year(): void
+    {
+        $fy = new DateTimeAdapter(
+            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyStartDate: $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
+        );
+
+        // Calendar type has 12 periods
+        $this->assertSame(12, $fy->getFyPeriods());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_fy_periods_returns_correct_integer_for_business_type_financial_year(): void
+    {
+        $fy = new DateTimeAdapter(
+            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyStartDate: $this->getRandomDateTime(),
+            fiftyThreeWeeks: false
+        );
+
+        // Business type has 13 periods
+        $this->assertSame(13, $fy->getFyPeriods());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_setting_same_fy_weeks_sets_weeks_without_changing_end_date_for_business_type(): void
     {
         $fiftyThreeWeeks = (bool) random_int(0, 1);
 
         $dateTimeAdapter = new DateTimeAdapter(
-            AbstractAdapter::TYPE_BUSINESS,
-            $this->getRandomDateTime(),
-            $fiftyThreeWeeks
+            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyStartDate: $this->getRandomDateTime(),
+            fiftyThreeWeeks: $fiftyThreeWeeks
         );
 
         $fyEndDate = $dateTimeAdapter->getFyEndDate();
 
-        $dateTimeAdapter->setFyWeeks($fiftyThreeWeeks);
+        $dateTimeAdapter->setFyWeeks(fiftyThreeWeeks: $fiftyThreeWeeks);
 
-        $this->assertSame($fyEndDate->format('YmdHis'), $dateTimeAdapter->getFyEndDate()->format('YmdHis'));
+        $this->assertSame(
+            $fyEndDate->format('YmdHis'),
+            $dateTimeAdapter->getFyEndDate()->format('YmdHis')
+        );
     }
 
     /**
-     * @test
-     *
-     * @return void
-     *
-     * @throws ConfigException
-     * @throws Exception
      * @throws \Exception
      */
-    public function settingDifferentFyWeeksSetsWeeksWithDifferentEndDateForBusinessType(): void
+    public function test_setting_different_fy_weeks_sets_weeks_with_different_end_date_for_business_type(): void
     {
         $fiftyThreeWeeks = (bool) random_int(0, 1);
 
         $dateTimeAdapter = new DateTimeAdapter(
-            AbstractAdapter::TYPE_BUSINESS,
-            $this->getRandomDateTime(),
-            $fiftyThreeWeeks
+            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyStartDate: $this->getRandomDateTime(),
+            fiftyThreeWeeks: $fiftyThreeWeeks
         );
 
         $fyEndDate = $dateTimeAdapter->getFyEndDate();
 
         // Set the opposite of original weeks.
-        $dateTimeAdapter->setFyWeeks(!$fiftyThreeWeeks);
+        $dateTimeAdapter->setFyWeeks(fiftyThreeWeeks: !$fiftyThreeWeeks);
 
-        $this->assertNotSame($fyEndDate->format('YmdHis'), $dateTimeAdapter->getFyEndDate()->format('YmdHis'));
-    }
-
-    /**
-     * @test
-     *
-     * @return void
-     *
-     * @throws ConfigException
-     * @throws Exception
-     * @throws \Exception
-     */
-    public function assertGetFyStartDateReturnsDateTimeImmutableObject(): void
-    {
-        $type = $this->fyTypes[array_rand($this->fyTypes)];
-
-        $dateTimeAdapter = new DateTimeAdapter(
-            $type,
-            $type === 'business' ?
-                $this->getRandomDateTime() :
-                $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
-            (bool) random_int(0, 1)
+        $this->assertNotSame(
+            $fyEndDate->format('YmdHis'),
+            $dateTimeAdapter->getFyEndDate()->format('YmdHis')
         );
-
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeAdapter->getFyStartDate());
     }
 
     /**
-     * @test
-     *
      * Invalid dates are 29, 30, 31 of any month.
      *
-     * @return void
-     *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
-    public function assertSetFyStartDateThrowsExceptionForInvalidDates(): void
+    public function test_set_fy_start_date_throws_exception_for_invalid_dates(): void
     {
         $this->expectException(ConfigException::class);
         $this->expectExceptionMessage(
@@ -125,36 +211,36 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Random Year, random disallowed date. Fix to May as we know it includes all 3 dates.
         new DateTimeAdapter(
-            AbstractAdapter::TYPE_CALENDAR,
-            $randomDateTime->format('Y') . '-05-' . $datesArray[array_rand($datesArray)],
-            (bool) random_int(0, 1)
+            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyStartDate: $randomDateTime->format('Y') . '-05-' . $datesArray[array_rand($datesArray)],
+            fiftyThreeWeeks: (bool) random_int(0, 1)
         );
     }
 
     /**
-     * @test
-     *
-     * @return void
-     *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
-    public function assertSetFyStartDateSetsNewFyEndDateIfFyStartDateChanges(): void
+    public function test_set_fy_start_date_sets_new_fy_end_date_if_fy_start_date_is_different(): void
     {
         $type = $this->fyTypes[array_rand($this->fyTypes)];
 
         $dateTimeAdapter = new DateTimeAdapter(
-            $type,
-            $type === 'business' ?
+            fyType: $type,
+            fyStartDate: $type === 'business' ?
                 $this->getRandomDateTime() :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
-            (bool) random_int(0, 1)
+            fiftyThreeWeeks: (bool) random_int(0, 1)
         );
 
         $originalFyStartDate = $dateTimeAdapter->getFyStartDate();
 
-        $dateTimeAdapter->setFyStartDate($this->getRandomDateExcludingDisallowedFyCalendarTypeDates());
+        $dateTimeAdapter->setFyStartDate(date:
+            $type === 'business' ?
+                $this->getRandomDateTime() :
+                $this->getRandomDateExcludingDisallowedFyCalendarTypeDates()
+        );
 
         $this->assertNotSame(
             $originalFyStartDate->format('YmdHis'),
@@ -171,7 +257,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws ConfigException
      * @throws \Exception
      */
@@ -185,7 +271,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $dateTimeAdapter = new DateTimeAdapter(
             $type,
             $type === 'business'
-                ? $this->getRandomDateTime()->setTimezone($defaultTimeZone) // @phpstan-ignore-line
+                ? $this->getRandomDateTime()->setTimezone($defaultTimeZone)
                 : $this->getRandomDateExcludingDisallowedFyCalendarTypeDates()->setTimezone($defaultTimeZone),
             (bool) random_int(0, 1),
             $timeZone
@@ -203,7 +289,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws ConfigException
      * @throws \Exception
      */
@@ -227,7 +313,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws ConfigException
      * @throws \Exception
      */
@@ -250,7 +336,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws ConfigException
      * @throws \Exception
      */
@@ -270,30 +356,22 @@ class DateTimeAdapterTest extends BaseTestCase
      * Assert an exception is thrown on setting FY Start Date if:
      * - dateTimeZone param is provided and is of an unsupported type.
      *
-     * @test
-     *
-     * @return void
-     *
-     * @throws Exception
-     * @throws ConfigException
+     * @throws FinancialYearException
      * @throws \Exception
      */
-    public function assertSetFyStartDateThrowsExceptionIfInvalidDateTimeZoneTypeIsProvided(): void
+    public function test_set_fy_start_date_throws_exception_if_invalid_date_time_zone_is_provided(): void
     {
         $type = $this->fyTypes[array_rand($this->fyTypes)];
 
-        $timeZoneTypes = [
-            new \stdClass(),
-            ['something-1', 'something-2'],
-            random_int(1, 100),
-            (bool) random_int(0, 1)
-        ];
-
         $this->expectException(ConfigException::class);
-        $this->expectExceptionMessage('Invalid dateTimeZone parameter');
+        $this->expectExceptionMessage('Invalid dateTimeZone string: invalid-date-time-zone');
 
-        // @phpstan-ignore-next-line
-        new DateTimeAdapter($type, '2023-11-19', (bool) random_int(0, 1), $timeZoneTypes[array_rand($timeZoneTypes)]);
+        new DateTimeAdapter(
+            fyType: $type,
+            fyStartDate: '2023-11-19',
+            fiftyThreeWeeks: (bool) random_int(min: 0, max: 1),
+            dateTimeZone: 'invalid-date-time-zone'
+        );
     }
 
     /**
@@ -302,7 +380,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetFyEndDateReturnsDateTimeImmutableObject(): void
@@ -326,7 +404,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
@@ -351,7 +429,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
@@ -376,7 +454,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForCalendarTypeFinancialYear(): void
@@ -401,7 +479,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear(): void
@@ -426,7 +504,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetFirstPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYear(): void
@@ -451,7 +529,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      */
     public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYearFiftyTwoWeeks(): void
     {
@@ -475,7 +553,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      */
     public function assertGetLastPeriodByIdReturnsCorrectTimePeriodForBusinessTypeFinancialYearFiftyThreeWeeks(): void
     {
@@ -499,7 +577,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      */
     public function assertGetBusinessWeekByIdThrowsExceptionOnNonBusinessTypeFinancialYearType(): void
     {
@@ -522,12 +600,12 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetBusinessWeekByIdThrowsExceptionOnInvalidWeekId(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(FinancialYearException::class);
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
@@ -560,7 +638,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetBusinessWeekByIdReturnsCorrectWeekPeriodForBusinessTypeFinancialYear(): void
@@ -585,7 +663,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetBusinessWeekByIdReturnsCorrectWeekPeriodForFirstWeekOfBusinessTypeFinancialYear(): void
@@ -610,7 +688,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      */
     public function assertGetBusinessWeekByIdReturnsCorrectWeekPeriodForLastWeekOfBusinessTypeFinancialYearFiftyTwoWeeks(): void
     {
@@ -634,7 +712,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      */
     public function assertGetBusinessWeekByIdReturnsCorrectWeekPeriodForLastWeekOfBusinessTypeFinancialYearFiftyThreeWeeks(): void
     {
@@ -658,12 +736,12 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetPeriodIdByDateThrowsExceptionOnDateBeforeFinancialYear(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(FinancialYearException::class);
         $this->expectExceptionMessage('The requested date is out of range of the current financial year.');
 
         // Financial Year starts at 2019-01-01
@@ -682,12 +760,12 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetPeriodIdByDateThrowsExceptionOnDateAfterFinancialYear(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(FinancialYearException::class);
         $this->expectExceptionMessage('The requested date is out of range of the current financial year.');
 
         // Financial Year starts at 2019-01-01
@@ -707,7 +785,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetPeriodIdByDateReturnsCorrectIdForDate(): void
@@ -729,7 +807,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetBusinessWeekIdByDateThrowsExceptionOnNonBusinessTypeFinancialYear(): void
@@ -753,12 +831,12 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetBusinessWeekIdByDateThrowsExceptionOnDateBeforeFinancialYear(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(FinancialYearException::class);
         $this->expectExceptionMessage('The requested date is out of range of the current financial year.');
 
         // Financial Year starts at 2019-01-01
@@ -777,12 +855,12 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetBusinessWeekIdByDateThrowsExceptionOnDateAfterFinancialYear(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(FinancialYearException::class);
         $this->expectExceptionMessage('The requested date is out of range of the current financial year.');
 
         // Financial Year starts at 2019-01-01
@@ -802,7 +880,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetBusinessWeekIdByDateReturnsCorrectIdForDate(): void
@@ -824,7 +902,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetFirstDateOfPeriodByIdReturnsFinancialYearStartDateForFirstPeriod(): void
@@ -848,7 +926,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetFirstDateOfPeriodByIdReturnsCorrectDateForCalendarType(): void
@@ -872,7 +950,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetFirstDateOfPeriodByIdReturnsCorrectDateForBusinessType(): void
@@ -896,7 +974,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetLastDateOfPeriodByIdReturnsFinancialYearEndDateForLastPeriod(): void
@@ -923,7 +1001,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetLastDateOfPeriodByIdReturnsCorrectDateForCalendarType(): void
@@ -947,7 +1025,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetLastDateOfPeriodByIdReturnsCorrectDateForBusinessType(): void
@@ -971,7 +1049,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetFirstDateOfBusinessWeekByIdReturnsFinancialYearStartDateForFirstWeek(): void
@@ -992,7 +1070,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetFirstDateOfBusinessWeekByIdReturnsCorrectDate(): void
@@ -1018,7 +1096,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetLastDateOfBusinessWeekByIdReturnsFinancialYearEndDateForLastWeekWeek(): void
@@ -1043,7 +1121,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetLastDateOfBusinessWeekByIdReturnsCorrectDate(): void
@@ -1069,7 +1147,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetFirstBusinessWeekByPeriodIdReturnsCorrectWeek(): void
@@ -1101,7 +1179,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetSecondBusinessWeekByPeriodIdReturnsCorrectWeek(): void
@@ -1133,7 +1211,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetThirdBusinessWeekByPeriodIdReturnsCorrectWeek(): void
@@ -1165,7 +1243,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
     public function assertGetFourthBusinessWeekByPeriodIdReturnsCorrectWeek(): void
@@ -1197,7 +1275,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return void
      *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      */
     public function assertGetFiftyThirdBusinessWeekByPeriodIdReturnsCorrectWeek(): void
     {
@@ -1225,43 +1303,13 @@ class DateTimeAdapterTest extends BaseTestCase
     }
 
     /**
-     * @test
-     *
-     * Random test just to check the allowed Immutable object.
-     *
-     * @return void
-     *
      * @throws ConfigException
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws \Exception
      */
-    public function assertGetDateObjectAcceptsImmutableParameter(): void
+    public function test_get_date_object_throws_exception_for_invalid_string(): void
     {
-        $type = $this->fyTypes[array_rand($this->fyTypes)];
-
-        $dateTimeAdapter = new DateTimeAdapter(
-            $type,
-            $type === 'business' ?
-                $this->getRandomDateTime() :
-                $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
-            (bool) random_int(0, 1)
-        );
-
-        $this->assertNotNull($dateTimeAdapter->getFyStartDate());
-    }
-
-    /**
-     * @test
-     *
-     * @return void
-     *
-     * @throws ConfigException
-     * @throws Exception
-     * @throws \Exception
-     */
-    public function assertGetDateObjectThrowsExceptionForInvalidString(): void
-    {
-        $this->expectException(Exception::class);
+        $this->expectException(FinancialYearException::class);
         $this->expectExceptionMessage(
             'Invalid date format. Not a valid ISO-8601 date string or DateTime/DateTimeImmutable object.'
         );
@@ -1274,15 +1322,11 @@ class DateTimeAdapterTest extends BaseTestCase
     }
 
     /**
-     * @test
-     *
-     * @return void
-     *
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws ConfigException
      * @throws \Exception
      */
-    public function assertExceptionOnInvalidPeriodIdForCalendarTypeFinancialYear(): void
+    public function test_exception_on_invalid_period_for_calendar_type_financial_year(): void
     {
         $startDate = new DateTime('2019-01-01');
 
@@ -1298,7 +1342,7 @@ class DateTimeAdapterTest extends BaseTestCase
             $randomPeriodId = random_int(-1000, 1000);
         } while (in_array($randomPeriodId, $fyPeriodsArray, true));
 
-        $this->expectException(Exception::class);
+        $this->expectException(FinancialYearException::class);
         $this->expectExceptionMessage('There is no period with id: ' . $randomPeriodId);
 
         // A Calendar Type Financial Year has 12 periods only.
@@ -1310,7 +1354,7 @@ class DateTimeAdapterTest extends BaseTestCase
      *
      * @return void
      *
-     * @throws Exception
+     * @throws FinancialYearException
      * @throws ConfigException
      * @throws \Exception
      */
@@ -1330,7 +1374,7 @@ class DateTimeAdapterTest extends BaseTestCase
             $randomPeriodId = random_int(-1000, 1000);
         } while (in_array($randomPeriodId, $fyPeriodsArray, true));
 
-        $this->expectException(Exception::class);
+        $this->expectException(FinancialYearException::class);
         $this->expectExceptionMessage('There is no period with id: ' . $randomPeriodId . '.');
 
         // A Calendar Type Financial Year has 12 periods only.
@@ -1345,7 +1389,7 @@ class DateTimeAdapterTest extends BaseTestCase
      * @return DateTimeImmutable
      * @throws \Exception
      */
-    protected function getRandomDateExcludingDisallowedFyCalendarTypeDates(): DateTimeInterface
+    private function getRandomDateExcludingDisallowedFyCalendarTypeDates(): DateTimeInterface
     {
         $randomDateTime = $this->getRandomDateTime();
 

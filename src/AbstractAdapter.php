@@ -1,16 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RoussKS\FinancialYear;
 
 use DateTimeInterface;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 
-/**
- * Class AbstractAdapter
- *
- * @package RoussKS\FinancialYear
- */
 abstract class AbstractAdapter
 {
     /**
@@ -23,41 +20,21 @@ abstract class AbstractAdapter
      */
     public const TYPE_BUSINESS = 'business';
 
-    /**
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * @var DateTimeInterface
-     */
-    protected $fyStartDate;
-
-    /***
-     * @var DateTimeInterface
-     */
-    protected $fyEndDate;
+    protected string $type;
+    protected DateTimeInterface $fyStartDate;
+    protected DateTimeInterface $fyEndDate;
 
     /**
      * Applicable to Business financial year type only.
-     *
-     * @var int|null
      */
-    protected $fyWeeks;
+    protected int|null $fyWeeks = null;
 
     /**
      * The number of fyPeriods for the selected financial year type.
-     *
-     * @var int
      */
-    protected $fyPeriods;
+    protected int $fyPeriods;
 
     /**
-     * AbstractAdapter constructor.
-     *
-     * @param  string $type
-     * @param  bool $fiftyThreeWeeks
-     *
      * @return void
      *
      * @throws ConfigException
@@ -65,7 +42,7 @@ abstract class AbstractAdapter
     public function __construct(string $type, bool $fiftyThreeWeeks = false)
     {
         // Calendar Type has 12 periods.
-        if ($this->isCalendarType($type)) {
+        if ($this->isCalendarType(value: $type)) {
             $this->type = $type;
             $this->fyPeriods = 12;
 
@@ -73,21 +50,19 @@ abstract class AbstractAdapter
         }
 
         // Business Type has 13 periods.
-        if ($this->isBusinessType($type)) {
+        if ($this->isBusinessType(value: $type)) {
             $this->type = $type;
             $this->fyPeriods = 13;
-            $this->setFyWeeks($fiftyThreeWeeks);
+            $this->setFyWeeks(fiftyThreeWeeks: $fiftyThreeWeeks);
 
             return;
         }
 
-        $this->throwConfigurationException('Invalid Financial Year Type.');
+        $this->throwConfigurationException(message: 'Invalid Financial Year Type.');
     }
 
     /**
      * Get the financial year type.
-     *
-     * @return string
      */
     public function getType(): string
     {
@@ -96,8 +71,6 @@ abstract class AbstractAdapter
 
     /**
      * Get the number of weeks for business type financial year or null for calendar type.
-     *
-     * @return int|null
      */
     public function getFyWeeks(): ?int
     {
@@ -106,8 +79,6 @@ abstract class AbstractAdapter
 
     /**
      * Get the number of periods of the financial year.
-     *
-     * @return int
      */
     public function getFyPeriods(): int
     {
@@ -120,17 +91,13 @@ abstract class AbstractAdapter
      * Only applies to business financial year type and will be set either 52 or 53.
      * Throw ConfigException for calendar type.
      *
-     * @param  bool $fiftyThreeWeeks
-     *
-     * @return void
-     *
      * @throws ConfigException
      */
     public function setFyWeeks(bool $fiftyThreeWeeks = false): void
     {
-        if (!$this->isBusinessType($this->getType())) {
+        if (!$this->isBusinessType(value: $this->getType())) {
             $this->throwConfigurationException(
-                'Can not set the financial year weeks property for non business year type.'
+                message: 'Can not set the financial year weeks property for non business year type.'
             );
         }
 
@@ -138,63 +105,39 @@ abstract class AbstractAdapter
     }
 
     /**
-     * Validate configuration.
-     *
-     * @return void
-     *
-     * @throws ConfigException
-     */
-    public function validateConfiguration(): void
-    {
-        if ($this->type === null || $this->fyStartDate === null || $this->fyEndDate === null) {
-            $this->throwConfigurationException();
-        }
-    }
-
-    /**
      * Validate period $id is between 1 and 12 for calendar type financial year.
      * Or between 1 and 13 for business type financial year.
-     *
-     * @param  int $id
-     *
-     * @return void
      *
      * @throws Exception
      */
     protected function validatePeriodId(int $id): void
     {
         if ($id < 1 || $id > $this->getFyPeriods()) {
-            throw new Exception('There is no period with id: ' . $id . '.');
+            throw new Exception(message: 'There is no period with id: ' . $id . '.');
         }
     }
 
     /**
      * Validate fyType is business and week $id is between 1 and fyWeeks property (52 or 53).
      *
-     * @param  int $id
-     *
-     * @return void
-     *
      * @throws Exception
      * @throws ConfigException
      */
     protected function validateBusinessWeekId(int $id): void
     {
-        if (!$this->isBusinessType($this->getType())) {
-            $this->throwConfigurationException('Week id is not applicable for non business type financial year.');
+        if (!$this->isBusinessType(value: $this->getType())) {
+            $this->throwConfigurationException(
+                message: 'Week id is not applicable for non business type financial year.'
+            );
         }
 
         if ($id < 1 || $id > $this->getFyWeeks()) {
-            throw new Exception('There is no week with id: ' . $id . '.');
+            throw new Exception(message: 'There is no week with id: ' . $id . '.');
         }
     }
 
     /**
      * Check if calendar type financial year.
-     *
-     * @param  string $value
-     *
-     * @return bool
      */
     protected function isCalendarType(string $value): bool
     {
@@ -203,10 +146,6 @@ abstract class AbstractAdapter
 
     /**
      * Check if business type financial year.
-     *
-     * @param  string $value
-     *
-     * @return bool
      */
     protected function isBusinessType(string $value): bool
     {
@@ -214,10 +153,6 @@ abstract class AbstractAdapter
     }
 
     /**
-     * @param  string|null $message
-     *
-     * @return void
-     *
      * @throws ConfigException
      */
     protected function throwConfigurationException(?string $message = null): void
@@ -226,6 +161,6 @@ abstract class AbstractAdapter
             $message = 'Invalid configuration of financial year adapter.';
         }
 
-        throw new ConfigException($message);
+        throw new ConfigException(message: $message);
     }
 }

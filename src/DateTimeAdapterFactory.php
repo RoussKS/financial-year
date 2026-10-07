@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace RoussKS\FinancialYear;
 
-use DateTime;
-use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
@@ -17,18 +15,20 @@ use RoussKS\FinancialYear\Exceptions\Exception;
 final class DateTimeAdapterFactory
 {
     /**
-     * @param DateTime|DateTimeImmutable|DateTimeInterface|string $fyStartDate
-     * @param DateTimeZone|string|null $dateTimeZone
-     *
      * @throws ConfigException
      * @throws Exception
      */
     public static function create(
         string $fyType,
-        $fyStartDate,
+        DateTimeInterface|string $fyStartDate,
         bool $fiftyThreeWeeks = false,
-        $dateTimeZone = null
+        DateTimeZone|string|null $dateTimeZone = null
     ): DateTimeAdapter {
-        return new DateTimeAdapter($fyType, $fyStartDate, $fiftyThreeWeeks, $dateTimeZone);
+        return new DateTimeAdapter(
+            fyType: $fyType,
+            fyStartDate: $fyStartDate,
+            fiftyThreeWeeks: $fiftyThreeWeeks,
+            dateTimeZone: $dateTimeZone
+        );
     }
 }

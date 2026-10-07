@@ -1,0 +1,26 @@
+FROM php:8.4-cli
+
+# Install dependencies
+RUN apt update && \
+    apt upgrade -y && \
+    apt install -y \
+    git \
+    curl \
+    zip \
+    unzip
+
+# Install Packages via PECL as not provided by PHP Source
+RUN pecl install xdebug \
+	&& docker-php-ext-enable xdebug
+
+# Clear cache
+RUN apt clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --2 --install-dir=/usr/local/bin --filename=composer
+
+COPY . /usr/src/financial-year
+WORKDIR /usr/src/financial-year
+
+CMD [ "php"]
