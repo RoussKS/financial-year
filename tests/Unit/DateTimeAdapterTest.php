@@ -238,7 +238,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $dateTimeAdapter = new DateTimeAdapter(
             fyType: $type,
-            fyStartDate: $type === 'business' ?
+            fyStartDate: $type->isBusiness() ?
                 $this->getRandomDateTime() :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
@@ -247,7 +247,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $originalFyStartDate = $dateTimeAdapter->getFyStartDate();
 
         $dateTimeAdapter->setFyStartDate(date:
-            $type === 'business' ?
+            $type->isBusiness() ?
                 $this->getRandomDateTime() :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates()
         );
@@ -274,7 +274,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $dateTimeAdapter = new DateTimeAdapter(
             fyType: $type,
-            fyStartDate: $type === 'business'
+            fyStartDate: $type->isBusiness()
                 ? $this->getRandomDateTime()->setTimezone(timezone: $defaultTimeZone)
                 : $this->getRandomDateExcludingDisallowedFyCalendarTypeDates()->setTimezone(timezone: $defaultTimeZone),
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1),
@@ -633,7 +633,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $this->assertEquals('2020-01-06 00:00:00', $lastWeek->getEndDate()->format(format: 'Y-m-d H:i:s'));
     }
 
-    /**=
+    /**
      * @throws \Exception
      */
     public function test_get_period_id_by_date_throws_exception_on_date_before_financial_year(): void
@@ -766,7 +766,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $dateTimeAdapter = new DateTimeAdapter(
             fyType: $type,
-            fyStartDate: $type === 'business' ?
+            fyStartDate: $type->isBusiness() ?
                 $this->getRandomDateTime() :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
@@ -820,7 +820,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         $dateTimeAdapter = new DateTimeAdapter(
             fyType: $type,
-            fyStartDate: $type === 'business' ?
+            fyStartDate: $type->isBusiness() ?
                 $this->getRandomDateTime() :
                 $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)

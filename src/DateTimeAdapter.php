@@ -78,7 +78,7 @@ final class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * @throws FinancialYearException
      */
-    public function setFyStartDate(string|DateTimeInterface $date): void
+    public function setFyStartDate(DateTimeInterface|string $date): void
     {
         $this->fyStartDate = $this->getDateObject(date: $date);
 

@@ -33,7 +33,7 @@ An organisation financial year can be based on the following 2 methods:
 Available methods can be followed through the [RoussKS\FinancialYear\AdapterInterface](https://github.com/RoussKS/financial-year/blob/master/src/AdapterInterface.php) until a full-fledged readme is provided.
 
 ### Requirements
-- PHP Version ^8.1 ( 8.1 =< PHP Version =< 9.x.x according to [Composer docs version constraints](https://getcomposer.org/doc/articles/versions.md#caret-version-range-) )
+- PHP Version ^8.1 ( 8.1 =< PHP Version < 9 according to [Composer docs version constraints](https://getcomposer.org/doc/articles/versions.md#caret-version-range-) )
 
 ### Installation
 ```console
@@ -62,7 +62,7 @@ echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31
 
 ### Makefile & Docker images
 The library provides a Dockerfile per supported PHP version to assist in development use if you want to contribute.
-These using the official php cli images.
+These use the official php cli images.
 
 It also provides a `Makefile` to assist in setting up development environment per PHP version, running tests & static analysis.
 

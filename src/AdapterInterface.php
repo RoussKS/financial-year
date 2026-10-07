@@ -48,7 +48,7 @@ interface AdapterInterface
      *
      * @throws ConfigException
      */
-    public function setFyStartDate(string|DateTimeInterface $date): void;
+    public function setFyStartDate(DateTimeInterface|string $date): void;
 
     /**
      * Get the financial year's end date.
@@ -72,12 +72,12 @@ interface AdapterInterface
     /**
      * @throws ConfigException
      */
-    public function getPeriodIdByDate(string|DateTimeInterface $date): int;
+    public function getPeriodIdByDate(DateTimeInterface|string $date): int;
 
     /**
      * @throws ConfigException
      */
-    public function getBusinessWeekIdByDate(string|DateTimeInterface $date): int;
+    public function getBusinessWeekIdByDate(DateTimeInterface|string $date): int;
 
     /**
      * Get the first date of the period with the given id.
