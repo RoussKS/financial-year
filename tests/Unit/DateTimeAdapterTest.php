@@ -35,6 +35,21 @@ class DateTimeAdapterTest extends BaseTestCase
     /**
      * @throws \Exception
      */
+    public function test_constructor_accepts_valid_string_and_converts_to_type_enum(): void
+    {
+        $calendar = new DateTimeAdapter(
+            fyType: 'calendar',
+            fyStartDate: $this->getRandomDateExcludingDisallowedFyCalendarTypeDates()
+        );
+        $business = new DateTimeAdapter(fyType: 'business', fyStartDate: $this->getRandomDateTime());
+
+        $this->assertSame(Type::CALENDAR, $calendar->getType());
+        $this->assertSame(Type::BUSINESS, $business->getType());
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function test_financial_year_calendar_type_is_set_correctly(): void
     {
         $fy = new DateTimeAdapter(
