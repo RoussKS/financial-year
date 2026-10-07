@@ -74,7 +74,7 @@ composer-install:
 
 # Remove Dockerfile
 --remove-dockerfile:
-	rm -f ./docker/Dockerfile
+	rm -f ./.docker/Dockerfile
 
 # Remove composer related files
 --remove-packages: --remove-lockfile --remove-vendor

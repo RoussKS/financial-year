@@ -60,10 +60,11 @@ $fy = \RoussKS\FinancialYear\DateTimeAdapterFactory::create('calendar', '2019-01
 echo $fy->getFyEndDate()->format('Y-m-d'); // 2019-12-31
 ```
 
-### Docker images
-The library provides a sample Dockerfile to assist in development use if you want to contribute.
-This using the official php cli images.
-Copy the `Dockerfile.example` file to Dockerfile, uncommenting the required php version.
+### Makefile & Docker images
+The library provides a Dockerfile per supported PHP version to assist in development use if you want to contribute.
+These using the official php cli images.
+
+It also provides a `Makefile` to assist in setting up development environment per PHP version, running tests & static analysis.
 
 However, you are free to use any methodology you want for developing updates & bugfixes.
 
