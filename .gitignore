@@ -3,8 +3,9 @@
 composer.lock
 
 # Docker files
-docker-compose.yml
+# Docker
 .docker/Dockerfile
+docker-compose.yml
 
 # PHPUnit report
 /tests/report/
