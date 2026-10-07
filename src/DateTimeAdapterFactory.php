@@ -19,7 +19,7 @@ final class DateTimeAdapterFactory
      * @throws Exception
      */
     public static function create(
-        string $fyType,
+        Type|string $fyType,
         DateTimeInterface|string $fyStartDate,
         bool $fiftyThreeWeeks = false,
         DateTimeZone|string|null $dateTimeZone = null

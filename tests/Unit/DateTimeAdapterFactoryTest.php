@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace RoussKS\FinancialYear\Tests\Unit;
 
 use DateTimeZone;
-use RoussKS\FinancialYear\AbstractAdapter;
 use RoussKS\FinancialYear\DateTimeAdapterFactory;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
+use RoussKS\FinancialYear\Type;
 
 class DateTimeAdapterFactoryTest extends BaseTestCase
 {
@@ -20,12 +20,12 @@ class DateTimeAdapterFactoryTest extends BaseTestCase
     public function test_create_returns_date_time_adapter_with_provided_configuration(): void
     {
         $dateTimeAdapter = DateTimeAdapterFactory::create(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2023-01-01',
             fiftyThreeWeeks: true
         );
 
-        $this->assertSame(AbstractAdapter::TYPE_BUSINESS, $dateTimeAdapter->getType());
+        $this->assertSame(Type::BUSINESS, $dateTimeAdapter->getType());
         $this->assertSame(53, $dateTimeAdapter->getFyWeeks());
         $this->assertSame(
             '2023-01-01 00:00:00',
@@ -42,7 +42,7 @@ class DateTimeAdapterFactoryTest extends BaseTestCase
         $timeZone = new DateTimeZone(timezone: 'Europe/Athens');
 
         $dateTimeAdapter = DateTimeAdapterFactory::create(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: '2023-11-19',
             dateTimeZone: $timeZone
         );

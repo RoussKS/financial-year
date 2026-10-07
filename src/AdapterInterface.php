@@ -13,7 +13,7 @@ interface AdapterInterface
     /**
      * Get the financial year type.
      */
-    public function getType(): string;
+    public function getType(): Type;
 
     /**
      * Get the number of weeks for business type financial year or null for calendar type.
@@ -77,7 +77,7 @@ interface AdapterInterface
     /**
      * @throws ConfigException
      */
-    public function getBusinessWeekIdIdByDate(string|DateTimeInterface $date): int;
+    public function getBusinessWeekIdByDate(string|DateTimeInterface $date): int;
 
     /**
      * Get the first date of the period with the given id.

@@ -7,20 +7,11 @@ namespace RoussKS\FinancialYear;
 use DateTimeInterface;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception;
+use ValueError;
 
 abstract class AbstractAdapter
 {
-    /**
-     * The financial year calendar type constant.
-     */
-    public const TYPE_CALENDAR = 'calendar';
-
-    /**
-     * The financial year business type constant.
-     */
-    public const TYPE_BUSINESS = 'business';
-
-    protected string $type;
+    protected Type $type;
     protected DateTimeInterface $fyStartDate;
     protected DateTimeInterface $fyEndDate;
 
@@ -39,32 +30,37 @@ abstract class AbstractAdapter
      *
      * @throws ConfigException
      */
-    public function __construct(string $type, bool $fiftyThreeWeeks = false)
+    public function __construct(Type|string $type, bool $fiftyThreeWeeks = false)
     {
+        if (is_string($type)) {
+            try {
+                $type = Type::from($type);
+            } catch (ValueError) {
+                $this->throwConfigurationException(message: 'Invalid Financial Year Type.');
+            }
+        }
+
+        $this->type = $type;
+
+        // We only support 2 types of financial years: Calendar and Business.
+        // First check for calendar, otherwise it's business.
+
         // Calendar Type has 12 periods.
-        if ($this->isCalendarType(value: $type)) {
-            $this->type = $type;
+        if ($this->type->isCalendar()) {
             $this->fyPeriods = 12;
 
             return;
         }
 
         // Business Type has 13 periods.
-        if ($this->isBusinessType(value: $type)) {
-            $this->type = $type;
-            $this->fyPeriods = 13;
-            $this->setFyWeeks(fiftyThreeWeeks: $fiftyThreeWeeks);
-
-            return;
-        }
-
-        $this->throwConfigurationException(message: 'Invalid Financial Year Type.');
+        $this->fyPeriods = 13;
+        $this->setFyWeeks(fiftyThreeWeeks: $fiftyThreeWeeks);
     }
 
     /**
      * Get the financial year type.
      */
-    public function getType(): string
+    public function getType(): Type
     {
         return $this->type;
     }
@@ -95,7 +91,7 @@ abstract class AbstractAdapter
      */
     public function setFyWeeks(bool $fiftyThreeWeeks = false): void
     {
-        if (!$this->isBusinessType(value: $this->getType())) {
+        if ($this->getType()->isNotBusiness()) {
             $this->throwConfigurationException(
                 message: 'Can not set the financial year weeks property for non business year type.'
             );
@@ -125,7 +121,7 @@ abstract class AbstractAdapter
      */
     protected function validateBusinessWeekId(int $id): void
     {
-        if (!$this->isBusinessType(value: $this->getType())) {
+        if ($this->getType()->isNotBusiness()) {
             $this->throwConfigurationException(
                 message: 'Week id is not applicable for non business type financial year.'
             );
@@ -134,22 +130,6 @@ abstract class AbstractAdapter
         if ($id < 1 || $id > $this->getFyWeeks()) {
             throw new Exception(message: 'There is no week with id: ' . $id . '.');
         }
-    }
-
-    /**
-     * Check if calendar type financial year.
-     */
-    protected function isCalendarType(string $value): bool
-    {
-        return $value === self::TYPE_CALENDAR;
-    }
-
-    /**
-     * Check if business type financial year.
-     */
-    protected function isBusinessType(string $value): bool
-    {
-        return $value === self::TYPE_BUSINESS;
     }
 
     /**

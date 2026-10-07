@@ -7,15 +7,15 @@ namespace RoussKS\FinancialYear\Tests\Unit;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
-use RoussKS\FinancialYear\AbstractAdapter;
 use RoussKS\FinancialYear\DateTimeAdapter;
 use RoussKS\FinancialYear\Exceptions\ConfigException;
 use RoussKS\FinancialYear\Exceptions\Exception as FinancialYearException;
 use RoussKS\FinancialYear\Tests\BaseTestCase;
+use RoussKS\FinancialYear\Type;
 
 class DateTimeAdapterTest extends BaseTestCase
 {
-    protected array $fyTypes = [AbstractAdapter::TYPE_CALENDAR, AbstractAdapter::TYPE_BUSINESS];
+    protected array $fyTypes = [Type::CALENDAR, Type::BUSINESS];
 
     /**
      * @throws \Exception
@@ -38,12 +38,12 @@ class DateTimeAdapterTest extends BaseTestCase
     public function test_financial_year_calendar_type_is_set_correctly(): void
     {
         $fy = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             fiftyThreeWeeks: false
         );
 
-        $this->assertEquals(AbstractAdapter::TYPE_CALENDAR, $fy->getType());
+        $this->assertEquals(Type::CALENDAR, $fy->getType());
     }
 
     /**
@@ -52,12 +52,12 @@ class DateTimeAdapterTest extends BaseTestCase
     public function test_financial_year_business_type_is_set_correctly(): void
     {
         $fy = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: $this->getRandomDateTime(),
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
 
-        $this->assertEquals(AbstractAdapter::TYPE_BUSINESS, $fy->getType());
+        $this->assertEquals(Type::BUSINESS, $fy->getType());
     }
 
     /**
@@ -66,7 +66,7 @@ class DateTimeAdapterTest extends BaseTestCase
     public function test_fy_weeks_returns_null_for_financial_year_calendar_type(): void
     {
         $fy = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
             fiftyThreeWeeks: true
         );
@@ -82,7 +82,7 @@ class DateTimeAdapterTest extends BaseTestCase
     public function test_fy_weeks_returns_correct_weeks_for_financial_year_business_type(): void
     {
         $fy = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: $this->getRandomDateTime(),
             fiftyThreeWeeks: true
         );
@@ -90,7 +90,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $this->assertEquals(53, $fy->getFyWeeks());
 
         $fy = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: $this->getRandomDateTime(),
             fiftyThreeWeeks: false
         );
@@ -107,7 +107,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $this->expectExceptionMessage('Can not set the financial year weeks property for non business year type.');
 
         $fy = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
         );
 
@@ -120,7 +120,7 @@ class DateTimeAdapterTest extends BaseTestCase
     public function test_fy_periods_returns_correct_integer_for_calendar_type_financial_year(): void
     {
         $fy = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: $this->getRandomDateExcludingDisallowedFyCalendarTypeDates(),
         );
 
@@ -134,7 +134,7 @@ class DateTimeAdapterTest extends BaseTestCase
     public function test_fy_periods_returns_correct_integer_for_business_type_financial_year(): void
     {
         $fy = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: $this->getRandomDateTime(),
             fiftyThreeWeeks: false
         );
@@ -151,7 +151,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $fiftyThreeWeeks = (bool) random_int(min: 0, max: 1);
 
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: $this->getRandomDateTime(),
             fiftyThreeWeeks: $fiftyThreeWeeks
         );
@@ -174,7 +174,7 @@ class DateTimeAdapterTest extends BaseTestCase
         $fiftyThreeWeeks = (bool) random_int(min: 0, max: 1);
 
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: $this->getRandomDateTime(),
             fiftyThreeWeeks: $fiftyThreeWeeks
         );
@@ -208,7 +208,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Random Year, random disallowed date. Fix to May as we know it includes all 3 dates.
         new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: $randomDateTime->format(format: 'Y') . '-05-' . $datesArray[array_rand(array: $datesArray)],
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -366,7 +366,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -385,7 +385,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -404,7 +404,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -423,7 +423,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -442,7 +442,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -461,7 +461,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: false
         );
@@ -480,7 +480,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: true
         );
@@ -502,7 +502,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: true
         );
@@ -519,7 +519,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -549,7 +549,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -568,7 +568,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -587,7 +587,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: false
         );
@@ -606,7 +606,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: true
         );
@@ -681,12 +681,12 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
 
-        $dateTimeAdapter->getBusinessWeekIdIdByDate(date: '2019-01-04');
+        $dateTimeAdapter->getBusinessWeekIdByDate(date: '2019-01-04');
     }
 
     /**
@@ -699,12 +699,12 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
 
-        $dateTimeAdapter->getBusinessWeekIdIdByDate(date: '2018-12-31');
+        $dateTimeAdapter->getBusinessWeekIdByDate(date: '2018-12-31');
     }
 
     /**
@@ -717,13 +717,13 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
 
         // 2020-01-07 is out of range even if the type is business and weeks 53, if start date is 2019-01-01
-        $dateTimeAdapter->getBusinessWeekIdIdByDate(date: '2020-01-07');
+        $dateTimeAdapter->getBusinessWeekIdByDate(date: '2020-01-07');
     }
 
     /**
@@ -733,13 +733,13 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
 
         // 2019-01-31 belongs to 5th week
-        $this->assertEquals(5, $dateTimeAdapter->getBusinessWeekIdIdByDate(date: '2019-01-31'));
+        $this->assertEquals(5, $dateTimeAdapter->getBusinessWeekIdByDate(date: '2019-01-31'));
     }
 
     /**
@@ -767,7 +767,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -785,7 +785,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -824,7 +824,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_CALENDAR,
+            fyType: Type::CALENDAR,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -842,7 +842,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -860,7 +860,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -875,7 +875,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -895,7 +895,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -914,7 +914,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -934,7 +934,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -960,7 +960,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -986,7 +986,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -1012,7 +1012,7 @@ class DateTimeAdapterTest extends BaseTestCase
     {
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: (bool) random_int(min: 0, max: 1)
         );
@@ -1040,7 +1040,7 @@ class DateTimeAdapterTest extends BaseTestCase
 
         // Financial Year starts at 2019-01-01
         $dateTimeAdapter = new DateTimeAdapter(
-            fyType: AbstractAdapter::TYPE_BUSINESS,
+            fyType: Type::BUSINESS,
             fyStartDate: '2019-01-01',
             fiftyThreeWeeks: true
         );

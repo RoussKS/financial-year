@@ -40,7 +40,7 @@ final class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
      * @throws FinancialYearException
      */
     public function __construct(
-        string $fyType,
+        Type|string $fyType,
         DateTimeInterface|string $fyStartDate,
         bool $fiftyThreeWeeks = false,
         DateTimeZone|string|null $dateTimeZone = null
@@ -152,11 +152,11 @@ final class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * @throws FinancialYearException
      */
-    public function getBusinessWeekIdIdByDate(DateTimeInterface|string $date): int
+    public function getBusinessWeekIdByDate(DateTimeInterface|string $date): int
     {
         $dateTime = $this->getDateObject(date: $date);
 
-        if (!$this->isBusinessType(value: $this->getType())) {
+        if ($this->getType()->isNotBusiness()) {
             throw new ConfigException(message: 'Business weeks are set only for a business type financial year.');
         }
 
@@ -193,7 +193,7 @@ final class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // In calendar type, fyPeriods are always 12 as the months,
         // regardless of the start date within the month.
-        if ($this->isCalendarType(value: $this->getType())) {
+        if ($this->getType()->isCalendar()) {
             return $this->getFyStartDate()->modify(modifier: '+' . ($id - 1) . ' months');
         }
 
@@ -218,7 +218,7 @@ final class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
 
         // In calendar type, fyPeriods are always 12 as the months,
         // regardless of the start date within the month.
-        if ($this->isCalendarType(value: $this->getType())) {
+        if ($this->getType()->isCalendar()) {
             // Otherwise calculate for business type.
             return $this->getFyStartDate()->modify(modifier: '+' . $id . ' months')->modify(modifier: '-1 day');
         }
@@ -315,7 +315,7 @@ final class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
     public function getNextFyStartDate(): DateTimeImmutable
     {
         // For calendar type, the next year's start date is + 1 year.
-        if ($this->isCalendarType(value: $this->getType())) {
+        if ($this->getType()->isCalendar()) {
             return $this->getFyStartDate()->modify(modifier: '+1 year');
         }
 
@@ -338,7 +338,7 @@ final class DateTimeAdapter extends AbstractAdapter implements AdapterInterface
         $disallowedFyCalendarTypeDates = ['29', '30', '31'];
 
         if (
-            $this->isCalendarType(value: $this->getType()) &&
+            $this->getType()->isCalendar() &&
             in_array(
                 needle: $this->getFyStartDate()->format(format: 'd'),
                 haystack: $disallowedFyCalendarTypeDates,
