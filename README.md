@@ -2,6 +2,7 @@
 
 [![Latest Version](https://img.shields.io/github/release/RoussKS/financial-year.svg?style=round-square)](https://github.com/RoussKS/financial-year/releases)
 ![Build Status](https://github.com/RoussKS/financial-year/actions/workflows/test.yml/badge.svg)
+[![codecov](https://codecov.io/github/RoussKS/financial-year/graph/badge.svg?token=HVuRyb3jtK)](https://codecov.io/github/RoussKS/financial-year)
 [![GitHub license](https://img.shields.io/github/license/RoussKS/financial-year.svg)](https://github.com/RoussKS/financial-year/blob/master/LICENSE)
 
 ### Introduction / Background / Purpose

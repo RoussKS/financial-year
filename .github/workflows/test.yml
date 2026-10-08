@@ -28,6 +28,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "${{ matrix.php }}"
+          coverage: true
           tools: composer:v2, phpunit
 
       - name: 'Get composer cache directory'
@@ -44,6 +45,12 @@ jobs:
       - name: 'Install Composer dependencies'
         run: composer install --no-ansi --no-interaction --no-progress --no-scripts --prefer-dist
 
-      - name: 'Run PHPUnit'
-        run: phpunit
-        # ToDo: Add Code Coverage
+      - name: 'Run PHPUnit with coverage'
+        run: XDEBUG_MODE=coverage phpunit --coverage-clover=coverage.xml
+
+      - name: 'Upload coverage to Codecov'
+        uses: codecov/codecov-action@v7.1.1
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: ./coverage.xml
